@@ -1,0 +1,159 @@
+<HTML>
+<HEAD>
+   <TITLE>Readme file for codonW</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#800080" BACKGROUND="edge.gif" leftmargin="110">
+
+<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+
+<TABLE BORDER=0 WIDTH="620" >
+<TR>
+<TD VALIGN=TOP WIDTH="95"></TD>
+
+<TD VALIGN=TOP WIDTH="515">
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+
+
+<P><A HREF="http://www.molbiol.ox.ac.uk/cu/">CodonW</A>was written by John
+Peden <A HREF="mailto:pdxjfp@molbiol.ox.ac.uk">pdxjfp@molbiol.ox.ac.uk</A>
+in the laboratory of Paul Sharp at the University of Nottingham. It is
+distributed under the terms of the GNU public license, see the file License
+included with the distribution.&nbsp;
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+
+
+<P>CodonW is a package for codon usage analysis. It was designed to simplify
+Multivariate Analysis (MVA) of codon usage. The MVA method employed in
+CodonW is correspondence analysis (COA) (the most popular MVA method for
+codon usage analysis). CodonW can generate a COA for codon usage, relative
+synonymous codon usage or amino acid usage. Additional analyses of codon
+usage include investigation of optimal codons, codon and dinucleotide bias,
+and/or base composition. CodonW analyses sequences encoded by genetic codes
+other than the universal code.&nbsp;
+
+<P><U>Why call it codonW?&nbsp;</U>&nbsp;
+
+<P>Well, "clustal" (a very popular multiple alignment program by Des Higgins)
+was originally written in Paul's lab in Trinity College Dublin. Clustal
+has since been rewritten from FORTRAN into C and undergone several name
+changes clustal-> clustalv-> clustalw -> clustalx. There was also a program
+called "codons" written in FORTRAN by <A HREF="http://acer.gen.tcd.ie/incbi/atl.html">Andrew
+Lloyd</A> (another post-doc in Paul's lab), this was the original inspiration
+for codonW. An early version of codonW, written in C, was called codonv.
+When the code was enhanced to include multivariate analysis, what better
+name than codonW&nbsp;
+
+<P><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439>&nbsp;
+<BR>&nbsp;
+<H3>
+CodonW version 1.3 June 1997</H3>
+<p>The source code for CodonW can be obtained from <A HREF="ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z">ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z</A>
+. Binaries for a number of platforms are also available at this site see
+<A HREF="ftp://molbiol.ox.ac.uk/cu">ftp://molbiol.ox.ac.uk/cu</A>.&nbsp;
+
+<P><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439>&nbsp;
+<H3>
+To Install and Build on UNIX Platforms</H3>
+Get the source code from <A HREF="ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z">ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z&nbsp;</A>&nbsp;
+<BR>Change directory to the directory where you intend to install CodonW.&nbsp;
+
+<P><B><TT>uncompress codonW.tar.Z&nbsp;</TT></B>&nbsp;
+<BR><B><TT>tar -xvf codonW.tar&nbsp;&nbsp;</TT></B>&nbsp;
+<BR><B><TT>cd codonw&nbsp;</TT></B>&nbsp;
+<BR><TT><B>./codonWinstall all </B>(asks some questions,
+then builds codonw)&nbsp;</TT>&nbsp;
+
+<P>This will ask a few questions regarding 'make' and 'cc' and then
+configure the installation and compile the programs. If you don't understand
+the questions, just accept the default by pressing the return key and the
+installation should be OK using the defaults. The install script by default
+also creates a number of links to the compiled executable codonW. These
+links allow codonW to emulate other useful codon usage analysis and sequence
+manipulation software by passing the menu interface (for more information
+see <A HREF="http://www.molbiol.ox.ac.uk/cu/ReadmeLinks.html">README.links</A>).
+Alternatively you can just elect to only build the main program, and not
+install the linked programs.
+
+<P><TT><B>./codonWinstall codonw </B>(compile only)</TT>
+<BR>Once you have successfully built codonw, try these commands to
+get you started.
+
+<P><TT><B>./codonw -help </B>(for commandline summary)</TT>
+<BR><TT><B>./codonw</B> (menu interface)</TT>
+
+<P>&nbsp;There is also a short<A HREF="http://www.molbiol.ox.ac.uk/cu/Tutorial.html"> tutorial</A> available.For the most recent documentation on codonW see <A HREF="http://www.molbiol.ox.ac.uk/cu/">http://www.molbiol.ox.ac.uk/cu/</A>
+<P><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439>
+<H4>
+To Set the Codonw Help Environment:&nbsp;</H4>
+
+
+<P>CodonW has an in-built help system, the help file is called
+codonW.hlp and should be located in the same directory as the executable
+codonw. Alternatively the help file can be pointed to by the environment
+variable CODONW_H, if you are using a C shell you can add something similar
+to this to your .login script.&nbsp;&nbsp;
+
+<P><B>setenv CODONW_H <I>file_path</I><I>&nbsp;</I></B>
+
+<P>Where file_path is the fully defined path name for codonW.hlp.&nbsp;&nbsp;
+
+<P><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439>&nbsp;
+<H3>
+Additional Files&nbsp;</H3>
+<A HREF="http://www.molbiol.ox.ac.uk/cu/Indices.html">Indices</A>
+- explanation about the various codon usage indices that codonW calculates.&nbsp;&nbsp;
+
+<P><A HREF="http://www.molbiol.ox.ac.uk/cu/ReadmeCoa.html">Readme.coa</A>-
+explanation about the output files from the correspondence analysis.&nbsp;&nbsp;
+
+<P><A HREF="http://www.molbiol.ox.ac.uk/cu/ReadmeLinks.html">Readme.links</A>-
+explanation about the auxiliary programmes created during the making of
+codonw.&nbsp;
+
+<P><A HREF="http://www.molbiol.ox.ac.uk/cu/Tutorial.html">Tutorial</a>
+- A quick tutorial on the analysis of codon usage of the open reading frames 
+from Saccharomyces cerevisiae chromosome III. 
+
+<P><A HREF="http://www.molbiol.ox.ac.uk/cu/input.dat">input.dat</a>
+- An input file containing 111 open reading frames from Saccharomyces cerevisiae chromosome III. (see 
+<A HREF="http://www.molbiol.ox.ac.uk/cu/Tutorial.html">Tutorial</a>).
+
+<p><A HREF="http://www.molbiol.ox.ac.uk/cu/DataRecoding.html">Recoding</A>
+- A quick explanation about how amino acids and codons have are represented
+internally within codonW.&nbsp;&nbsp;
+<IMG SRC="bar.gif" HEIGHT=15 WIDTH=439>&nbsp;
+<H3>
+Bugs</H3>
+This is a beta version of codonW, therefore there may be bugs within
+the code. If you do find or notice anything strange please e-mail bug reports/complaints/suggestions
+to <A HREF="mailto:johnp@molbiol.ox.ac.uk">johnp@molbiol.ox.ac.uk</A>.
+Remember to include an example of the input file (and output files) and
+the options selected that generated the error, don't forget to tell me
+the make of computer and operating system it was running under.
+<H4>
+<IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></H4>
+
+<H4>
+Updates</H4>
+If you are interested in hearing about updates, just
+send me an email and I'll stick you on a mailing list
+
+<P>If you have any questions or comments, please contact me at <A HREF="file:///F|/public_html/cu/johnp@molbiol.ox.ac.uk">johnp@molbiol.ox.ac.uk</A>&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD></TD>
+</TR>
+</TABLE>
+
+<p>
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+
+<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+
+
+&nbsp;
+</BODY>
+</HTML>

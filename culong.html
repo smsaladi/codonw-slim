@@ -1,0 +1,776 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+
+<body background="/cu/edge.gif" bgcolor="#FFFFFF" link="#0000FF"
+vlink="#800080" leftmargin="110">
+
+<p align="center"><a
+  href="http://www.molbiol.ox.ac.uk/cu/codonW.html"><img
+  src="/cu/back.gif" border="0" width="88" height="33"></a></p>
+
+<head>
+<title>Correspondence Analysis of Codon Usage</title>
+</head>
+
+
+<table border="0" width="620">
+    <tr>
+        <td valign="top" width="95"><br>
+        </td>
+        <td valign="top" width="515">
+
+<p align="center">
+<font size="5" face="Helvetica,Arial">
+<b>Correspondence Analysis of Codon Usage</b></font></p>
+
+<p align="center" ><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+<ul>
+ <li><a href="#System and Hardware" ><font
+        color="#008040"><em><i>System and Hardware </i></em></font></a></li>
+    <li><a href="http://www.molbiol.ox.ac.uk/cu/culong.html#CodonW"><font color="#008040"><em><i>CodonW</i></em></font></a></li>
+    <li><a href="#Introduction to Codon Usage"><font color="#008040"><em><i>Introduction
+        to Codon Usage </i></em></font></a></li>
+    <li><a href="#Correspondence Analysis"><font color="#008040"><em><i>Correspondence
+        Analysis</i></em></font></a></li>
+    <li><a href="#Input files" ><font
+        color="#008040"><em><i>Input files</i></em></font></a></li>
+    <li><a href="#The Menu Interface"><font
+        color="#008040"><em><i>The Menu Interface</i></em></font></a></li>
+    <li><a href="#Correspondence analysis in CodonW."><font
+        color="#008040"><em><i>Correspondence analysis in CodonW</i>
+	</em></font></a></li>
+  
+     <li><a href="#Description of output files created during a correspondence analysis"><font
+        color="#008040"><em><i>Correspondence analysis output files</i></em></font></a></li>
+
+
+
+   <li><a href="#License"><font color="#008040"><em><i>License</i></em></font></a></li>
+    <li><a href="#References" ><font
+        color="#008040" ><em>References</em></font></a></li>
+    <li><a href="#README"><font color="#008040"><em>README</em></font></a></li>
+
+    <li><a href="#Name"><font color="#008040" ><em>Contact</em></font></a></li>
+</ul>
+
+
+<p align="center" ><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+<p><a name="System and Hardware"><font color="#80400" 
+face="Helvetica,Arial"><b><i>System and Hardware </i></b></font></a></p>
+
+<p><font  size="3">The programme CodonW is written in standard
+ANSI C (Kernighan and Richie 1988). It compiles cleanly using the
+GNU C compiler (version 2.7.2.1) with the stringent ANSI and
+pedantic command line switches. The CodonW source code and Makefile
+can be downloaded as a compressed UNIX tar archive, via anonymous
+FTP (</font><a href="ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z"><font
+ size="3">ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z</font></a><font
+ size="3">). The source code consists of seven C
+files and a common header file. Correspondence analysis as
+implemented by CodonW is based on the NetMul library (Thioulouse
+and Chevenet 1996), a subset of the ADE (Analysis of Environmental
+Data) package (Thioulouse <i>et al</i>. 1995).</font></p>
+
+<p><a name="CodonW"><font color="#80400" 
+face="Helvetica,Arial"><b><i>CodonW</i></b></font></a></p>
+
+<p><font  size="3">A biological feature that many
+codon based analysis programmes ignore is that the universal
+genetic code is an exaggeration (there are several genetic codes). 
+CodonW was designed to work with any genetic code. Decisions regarding whether an amino acid
+is synonymous or non-synonymous, the translation of a codon, the
+number of codons in a codon family, how many synonyms a codon
+has, are all determined at run time. Seven alternatives to the
+universal genetic code have been in-built, others can be added.</font></p>
+
+<p><font  size="3">The COA output from CodonW is
+most easily interpreted when presented graphically.
+CodonW does not try to handle graphics, as there are numerous
+programs that do this much better and are also better designed to work with numerical data
+(e.g. 
+ </font><a href="http://www.cai.com/"><font
+        size="3">Cricket Graph</font></a><font size="3">
+        (MAC/PC), </font><a href="http://www.abacus.com/"><font
+        size="3">StatView</font></a><font size="3"> (MAC/PC), </font><a
+        href="http://www.microsoft.com/excel/"><font size="3">Excel
+   	</font></a><font
+        size="3"> (MAC/PC), </font><a\        href="http://www.minitab.com/"><font size="3">Minitab</font></a><font
+        size="3"> (MAC/PC/VMS/UNIX), </font><a
+        href="http://www.sas.com"><font size="3">SAS</font></a><font
+        size="3"> (PC/UNIX/VMS), </font><a
+        href="http://www.spss.com/"><font size="3">SPSS</font></a><font
+        size="3"> (PC/UNIX/VMS), </font><a
+        href="http://www.spco.com/"><font size="3">Harvard
+        Graphics</font></a><font size="3"> (PC), </font><a
+        href="http://www.cs.dartmouth.edu/gnuplot_info.html"><font
+        size="3">Gnuplot </font></a><font size="3">(X-windows)
+
+). Therefore, graphical
+presentation of the data is left to external software. These
+mentioned programs accept ASCII input files. By default, CodonW
+creates much of its output in a format designed to be easily read
+by eye (output from COA is always machine-readable). The command
+line switch (-machine) or &quot;Defaults menu&quot; (Menu 3)
+selection <b><u>Machine readable</u></b> changes the output
+format to machine-readable ASCII delimited values. The delimiter
+can be changed using the<b> </b><b><u>Change ASCII delimiter in
+output</u></b> option under the &quot;Defaults menu&quot; (Menu
+3).</font></p>
+
+<p><a name="Introduction to Codon Usage"><font color="#80400" 
+face="Helvetica,Arial"><b><i>Introduction to Codon Usage </i></b>
+</font></a></p>
+
+<p><font  size="3">The vast majority of
+prokaryotic and eukaryotic species have non-random codon usage.
+The major factor in codon choice in many unicellular and some
+multicellular organisms is Darwinian selection between synonyms;
+highly expressed genes using a restricted set of codons </font><font
+ size="3">(Gouy and Gautier 1982; Ikemura 1985;
+Sharp and Matassi 1994). </font><font  size="3">This
+selection is almost certainly for optimal translational
+efficiency, and is most pronounced in highly expressed genes in
+species whose effective population size is large (Bulmer 1991;
+Li, 1987 ). Divergence of codon usage and choice of optimal
+codons correlates with evolutionary distance, but usage patterns
+in phylogenetically distant species may converge due to the
+similarities of factors that influence the drift in choice of
+optimal codons. </font></p>
+
+<p><font  size="3">Analysis of codon usage has
+been used to identify highly expressed genes. (</font><font
+ size="3">Cancilla <i>et al</i>. 1995b;
+Freirepicos <i>et al</i>. 1994; Gharbia <i>et al</i>. 1995).
+Atypical codon usage has been used to infer that genes have been
+acquired by horizontal transfer (Delorme <i>et al</i>. 1994;
+Groisman <i>et al</i>. 1992; Medigue <i>et al</i>. 1991).</font></p>
+
+<p><a name="Correspondence Analysis"><font color="#80400" 
+face="Helvetica,Arial"><b><i>Correspondence
+Analysis</i></b></font></a></p>
+<p><font  size="3">The purpose of statistics has
+been described as to summarise, simplify and eventually explain
+(Greenacre, 1984). Since codon usage by its very nature is
+multivariate, it is necessary to analyse this data
+with multivariate statistical techniques (i.e Correspondence
+analysis). If one examines the set of conventional statistical
+techniques in use today, it is clear that the statistician can
+rarely proceed without introducing a certain degree of
+subjectivity into the analysis (Greenacre, 1984). It is therefore
+advantageous to use a method that can examine data without <i>a
+priori</i> assumptions and there are several multivariate
+analysis techniques that satisfy this condition (Greenacre,
+1984).</font></p>
+
+<p><font  size="3">Multivariate analyses (MVA) are
+used to simplify rectangular matrices in which (for our purposes)
+the columns represent some measurement of codon usage or amino
+acid usage and the rows represent individual genes. Examples of
+MVA techniques that have been successfully applied to the
+analysis of codon usage are cluster analysis and correspondence
+analysis. Cluster analysis partitions data into discrete groups
+based on the trends within the data, but has the disadvantage
+that it sometimes forces arbitrary divisions of a dataset even
+when presented with continuous variation. Correspondence analysis
+is an ordination technique that identifies the major trends in
+the variation of the data and distributes genes along continuous
+axes in accordance with these trends. Correspondence analysis has
+the advantage that it does not assume that the data falls into
+discrete clusters and therefore can therefore represent continuous variation
+accurately. </font></p>
+
+<p><a name="Input files"><font color="#80400" 
+face="Helvetica,Arial"><b><i>Input
+files</i></b></font></a></p>
+ 
+<p><font  size="3">Sequences to be analysed should
+be in a single file. Sequences must be nucleic acid, protein-encoding, 
+sequential, and separated by at least one header line.
+A header line; is defined as any line whose first character is
+either a semicolon &#145;</font><font color="#000000" size="3"><strong>;</strong></font><font
+ size="3">&#146; or a right angled bracket &#145;</font><font
+color="#000000" size="3"><strong>&gt;</strong></font><font
+ size="3">&#146;. There may be any number of
+header lines but at least one must precede each sequence; the second and any
+subsequent header lines are ignored. The first 20 characters
+after the &#145;;&#146; or &#145;&gt;&#146; should be some unique
+description of the sequence, because they are used to label the
+sequences in the output files. To overcome the limitation of 20
+characters and to take into account the possibility of blank
+sequence descriptors, each descriptor is preceded by the numerical position 
+of that sequence in the input file. Any line that does not start
+with either &#145;;&#146; or &#145;&gt;&#146;, is considered to
+contain sequence information. Sequences must be in the correct
+reading frame. CodonW assumes that the first alphabetical
+character of the sequence is equivalent to the first position of
+the first codon. If this is not so, the reading frame of the
+sequences must be edited, i.e. untranslated 5&#146; or 3&#146;
+sequence, or 5&#146; partial codons must be removed.</font></p>
+
+<p><font  size="3">The format of each line of
+sequence data is relaxed and sequences can be either DNA or RNA,
+containing upper or lower case characters. Input lines may be any width and
+contain spaces and/or numbers. All non-alphabetical characters
+including white space (spaces, tabs, new-line) are stripped from
+the input. Each nucleotide in the sequence must be represented by
+an IUB-IUPAC code. Nucleotides that cannot be identified must be
+represented by the IUPAC codes X or N. Any codon that does not
+consist entirely of &quot;A/T/C/G/U&quot; bases is considered
+non-translatable. </font></p>
+
+<p><font  size="3">CodonW performs some basic
+checks on the integrity of the input data. These include whether
+the sequence contains internal stop codons (usually an indicator
+that the sequence is out of frame), for the presence of
+non-standard characters, and that the sequence is not amino acid.
+Codon usage has been shown to vary with position within a gene in
+<i>E. coli </i>(Eyre-Walker 1995; Eyre-Walker and Bulmer 1993).
+Therefore, variation in codon usage may be introduced by
+comparing partial and full-length sequences. CodonW checks that
+each sequence contains a valid start and termination codon; the
+prokaryotic start codons (i.e. NTG, ATN) (Osawa <i>et al</i>.
+1992) are accepted as valid start codons. If a problem is found
+warning messages are displayed and these can be redirected to a
+file. CodonW only warns about problems,
+ but sequences that generate warnings
+should be carefully checked as these problem sequences are not excluded. </font></p>
+
+<p><font  size="3">While only one input file is
+required to use CodonW, selection of some options will cause
+CodonW to prompt for additional input files. The indices CAI, CBI
+and F</font><font  size="1">op</font><font
+ size="3"> quantify the adaptation of codon usage
+towards a set of preferred codons and for some species these have
+been built into CodonW. However, the selection of any of these
+indices causes CodonW to prompt for a personal choice of optimal
+codons or CAI adaptiveness values. Before creating a personal
+choice of CAI adaptiveness values, it is recommended that the original
+paper (Sharp and Li 1987) be consulted. The input files prompted
+for, if calculating the CBI/F</font><font 
+size="1">op</font><font  size="3"> indices, are
+expected to contain a score for each codon: 1 for a rare codon; 3
+for an optimal codon; 2 for other codons. The values can be
+separated by any white space character, but must occur in the file in  
+
+<a href="http://www.molbiol.ox.ac.uk/cu/DataRecoding.html"> 
+a set order. </a></font></p>
+
+<p><font  size="3">There is an alternative to
+creating these F</font><font  size="1">op</font><font
+ size="3">/CAI input files by hand. During a
+correspondence analysis (of codon usage) the files
+&quot;fop.coa&quot;, &quot;cbi.coa&quot;, and &quot;cai.coa&quot; are generated
+automatically (fop.coa is also the appropriate file for the CBI
+indices). These files can then be used to calculate their
+respective indices. However, in order to make these files CodonW makes
+important assumptions about the dataset, which must be verified
+by the researcher. These are:</font></p>
+
+<ol>
+    <li><font size="3">That the dataset is a
+        representative sample.</font></li>
+    <li><font size="3">That the dataset contains genes that are
+        lowly and highly expressed.</font></li>
+    <li><font size="3">The subset of genes with
+        the strongest codon bias is the more highly expressed.</font></li>
+    <li><font size="3">All genes automatically
+        assigned to the highly expressed subset are highly
+        expressed.</font></li>
+    <li><font size="3">The major trend in the
+        codon usage is selection for optimal translation. </font></li>
+</ol>
+
+<p><font  size="3">The verification of these
+assumptions is not trivial. If the files &quot;fop.coa&quot; and
+&quot;cai.coa&quot; are accepted uncritically, it is very likely
+that results will be erroneous. When these assumptions are valid,
+these files greatly simplify the task of calculating these
+indices. </font></p>
+
+<p><font  size="3">
+Correspondence analysis can be adversely affected by genes
+that have atypical codon or amino acid usage. These genes (i.e.
+plasmid genes, transposons, etc.) are normally excluded from the
+analysis. However, it is often interesting to view where these
+genes lie relative to the genes used to identify the trends. This
+is possible by identifying the trends using a dataset of
+&quot;good&quot; genes (the main input file), then using these to
+transform the codon usage of the additional genes into
+co-ordinates. This is possible if the &quot;add additional genes after COA&quot; is
+selected under the &quot;advanced correspondence analysis&quot;
+menu. After the initial COA, the second file (containg the additional genes)
+will be prompted for.</font></p>
+
+<p><a name="The Menu Interface"><font color="#80400"  
+face="Helvetica,Arial"><b><i>The
+Menu Interface</i></b></font></a></p>
+
+<p><font  size="3">CodonW was designed to be
+driven via a series of nested menus, each menu having its own
+online help. The initial menu allows the user to choose a
+sub-menu, to start an analysis, or to exit the programme. There
+are nine sub-menus. </font></p>
+
+<p><a name="Correspondence analysis in CodonW."><font color="#80400" 
+face="Helvetica,Arial"><b><i>Correspondence analysis in CodonW.</i>
+</b></font></a></p>
+
+<p><font  size="3">The most complex analysis that
+CodonW performs is correspondence analysis of either amino acid
+or codon usage. In essence, correspondence analysis creates a
+series of orthogonal axes to identify trends that explain the
+data variation, with each subsequent axis explaining a decreasing
+amount of the variation (Benzecri 1992). Correspondence analysis
+assigns ordination for each gene and codon (or amino acid) on
+these axes, and a very useful property is that the ordination of
+the genes and codons are superimposable. When used to analyse
+codon usage data, we routinely include the 59 synonymous sense
+codons, which generate up to 58 axes, while the alternative analysis of
+the 20 standard amino acid usage produces 19 axes. </font></p>
+
+<p><font  size="3">Correspondence analysis
+generates a large volume of data and CodonW writes the core data
+necessary to interpret the correspondence analysis to the file
+&quot;summary.coa&quot. To aid analysis most of this
+information is duplicated and compartmentalised into separate
+files. To reduce the memory requirements, additional data from
+intermediate stages of the analysis are also stored as temporary
+files. Depending on the precise options selected more than 20
+permanent and temporary files may be created, however, to minimise amount
+of user interaction required for a correspondence analysis these
+files are created, overwritten and deleted automatically.
+Permanent correspondence analysis files created by CodonW have
+the extension &quot;.coa&quot. For a description of their format
+and contents see the </font><a
+href="#Description of output files created during a correspondence analysis"><font
+ size="3">Table</font></a> below.</p>
+
+<p><font  size="3">If the major trend in variation
+identified with the codon or RSCU usage is correlated with
+gene expression it is possible to identify those codons which are
+used preferentially in highly expressed genes, i.e. the optimal
+codons. To simplify analysis, CodonW assumes that the principal
+trend is correlated with gene expression. It then uses this
+assumption to identify optimal codons and then to draw tables and
+create files. It is, however, the researcher's responsibility to
+establish this fact before accepting those codons putatively
+identified as optimal codons. This poses the question of how one can
+establish that the major trend is correlated with expression.
+While not definitive there are a number of indicators that are
+very useful, which are as follows:</font></p>
+
+<blockquote>
+    <p><font color="#FF0000" size="3">(1) The location of the
+    genes on the principal axis is very important evidence
+    for the hypothesis that the major trend is correlated with
+    expression. If true, the genes found at one
+    extreme of the ordination scale for the principal sould be
+    highly
+    expressed or expected to be (i.e. ribosomal proteins and
+    glycolytic genes) while those at the opposite end would be
+    expected to be lowly expressed (i.e. regulatory proteins and
+    cytoplasmic membrane proteins).</font></p>
+    <p><font color="#FF0000" size="3">(2) The principal axis
+    should explain a large proportion ( &gt;15%) of the total
+    variation in the data and should ideally explain approximately two
+    times as much of the variation as the second and subsequent
+    axes. </font></p>
+    <p><(3) A codons (UUC, UAC, AUC,
+    AAC, GAC and GGU) are optimal in <i>E. coli</i>, <i>B.
+    subtilis</i>, <i>S. cerevisiae</i>, <i>S. pombe</i>, and <i>D.
+    melanogaster </i>(Sharp and Devine 1989) and are almost
+    always preferentially used in highly expressed genes;
+    similarly certain codons are commonly avoided in highly
+    expressed prokaryotic genes (AGG, AGA).
+    The predicted optimal codons should agree with these
+    observations. </font></p>
+    <p><font color="#FF0000" size="3">(4) The ordination of the
+    genes on the principal axis should be significantly
+    correlated with some independent measure of codon bias such
+    as the effective number of codons N</font><font
+    color="#FF0000" size="3">c</font><font color="#FF0000"
+    size="3">.</font></p>
+    <p><font color="#FF0000" size="3">(5) The possibility that
+    the major trend is due to some additional mutational bias
+    such as the variation in the GC content (the principal trend
+    in the codon usage of many eukaryotes), must always be
+    considered and eliminated, particularly where there is a significant
+    correlation between the principal axis and some measure of base composition (such as
+    GC</font><font color="#FF0000" size="3">3s </font><font
+    color="#FF0000" size="3">or GC) and the principal axis. </font></p>
+    <p>&nbsp;</p>
+</blockquote>
+
+<p><font  size="3">While CodonW assumes that the
+trend represented by axis 1 is correlated with expression, and
+attempts to identify optimal codons, the adage GIGO &quot;garbage
+in, garbage out&quot; must be stressed. If the trend represented
+by axis 1 does not correlate with expression then codons will be
+erroneously reported as optimal. So although CodonW automatically
+generates putative optimal codons these should not be accepted
+until a correlation between the principal trend in codon usage variation and
+expression level is established. </font></p>
+
+<p><font  size="3">To identify the putative
+optimal codons, the genes are sorted according to their position
+on the principal axis, and the sorted codon usage of these genes is
+written to the file &quot;cusort.coa&quot;. Then a number of
+genes, decided by the advanced correspondence analysis menu
+option &quot;number of genes used to identify optimal
+codons&quot;, are read from the start and end of this file (i.e.
+equivalent to the extremes of the principle axis), and the codon usage
+of each set of genes is totalled. A prerequisite for the
+identification of optimal codons is the identification of which
+group of genes are &quot;more highly&quot; expressed. As the
+orientation of the principal axis is arbitrary, highly expressed
+genes can be located at either the positive or negative extreme
+of the axis. Fortuitously, in those species where codon usage is a
+function of gene expression, selection for optimal codons in more
+highly expressed genes has the effect of increasing their codon
+bias. The codon bias of the totalled codon usage from
+both sets of genes is estimated using N</font><font
+ size="1">c</font><font  size="3">
+(an index independent of the choice of optimal codons) and the set
+of genes with the lower N</font><font  size="1">c</font><font
+ size="3"> (more highly biased) is putatively
+identified as the more highly expressed. </font></p>
+
+<p><font  size="3">Optimal codons have been
+defined as those codons which occur more often </font><font
+ size="3">(relative to their synonyms) in</font><font
+ size="3"> highly expressed genes than in lowly
+expressed genes (Ikemura
+1981). CodonW uses a modification of this definition, insofar as
+optimal codons are defined as those codons that occur
+significantly more often in highly expressed genes relative to
+their frequency in lowly expressed genes (Lloyd and Sharp 1991;
+Lloyd and Sharp 1993; Sharp and Cowe 1991; Sharp <i>et al</i>.
+1988; Shields and Sharp 1987). Significance is assessed by a two
+way chi-squared contingency test with the criterion of
+0.01. The advantage of using a test of
+significance to identify optimal codons is that variation in
+codon usage between highly and lowly expressed genes, that is due
+to random noise is suppressed, the disadvantage is that the level of
+significance is related to sample size. 
+After CodonW does a two way chi-squared test on the
+genes taken from the extremes of axis 1, their codon usage and
+RSCU is output as a table to &quot;summary.coa&quot; and
+&quot;hilo.coa&quot;. those codons which have been putatively
+identified as optimal p&nbsp;&lt;&nbsp;0.01 are indicated with an
+asterisk (*). Although not considered optimal by CodonW, codons
+that occur more frequently in the highly expressed dataset at 
+0.01 &lt; p&nbsp;&lt;&nbsp;0.05 are indicated with an &quot;@&quot; symbol. </font></p>
+
+<p><font  size="3">CodonW calculates two indices
+that measure the degree to which the codon usage of a gene has
+adapted towards the usage of optimal codons, namely the
+frequency of optimal codons (F</font><font 
+size="1">op</font><font  size="3">) and the codon
+adaptation index (CAI). Before either of these indices can be
+calculated information about codon usage in the species being
+analysed is required. The index F</font><font 
+size="1">op</font><font  size="3"> requires the
+identification of the optimal codons for the species, while the
+index CAI requires that a set of highly expressed genes be
+identified (and that the major trend in codon usage is correlated
+with expression). For several species where this information is
+known, it is been included within CodonW (under the &quot;Change
+Defaults&quot; menu). For other species either these indices
+cannot be calculated or the user must supply additional
+information, for which they are prompted during the calculation
+of the indices. The format for this data has been discussed
+previously, but during correspondence analysis of codon usage (or
+RSCU), based on the assumptions given above, CodonW generates the 
+output files &quot;cai.coa&quot;, &quot;cbi.coa&quot; 
+and &quot;fop.coa&quot;. These
+files can be used as input files for their respective indices, as
+they are already in the correct format. Again, it must be stressed
+that CodonW must make a number of assumptions to generate this
+information, these are: that the major trend in the codon usage
+is correlated with expression level; that the dataset contains
+highly expressed genes; and that the genes used to identify
+optimal codons are highly expressed. If these assumptions are
+valid then the files &quot;cai.coa&quot;, &quot;cbi.coa&quot; and &quot;fop.coa&quot;
+can be used to calculates the indices CAI, CBI and F</font><font
+ size="1">op</font><font  size="3">
+respectively. To do this, select the index to be calculated and when
+prompted for a &quot;personal choice of values&quot; input the
+relevant filename. </font></p>
+
+<p align="center" ><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+<h1><a
+        name="Description of output files created during a correspondence analysis"><font
+        color="#804000" size="4">Description of output files
+        created during a correspondence analysis</font></a></h1>
+
+</td>
+</tr>
+</table>
+
+<ul><ul><ul>
+<table border="1" cellpadding="7" cellspacing="1" width="568"
+bordercolor="#000000">
+    <tr>
+        <td valign="top" width="15%"><font size="2">Filename</font></td>
+        <td valign="top" width="85%"><font size="2">Description
+        of contents </font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">summary.coa</font></td>
+        <td valign="top" width="85%"><font size="2">This file
+        contains a summary of all the information generated by
+        correspondence analysis, including all the data written
+        to files listed below, except for the output which is written to
+        cusort.coa. </font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">eigen.coa</font></td>
+        <td valign="top" width="85%"><font size="2">Each axis
+        generated in the correspondence analysis is represented
+        by a row of information. Each row consists of four
+        columns, (1) the number of the axis, (2) the axis
+        eigenvalue, (3) the relative inertia of the axis, (4) the
+        sum of the relative inertia. </font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">amino.coa</font><font
+        size="1">&#134;</font><p><font size="2">or</font></p>
+        <p><font size="2">codon.coa</font></p>
+        </td>
+        <td valign="top" width="85%"><font size="2">Each codon or
+        amino acid included in the correspondence analysis is
+        represented by a row. The first column contains a description of
+        the variable while the subsequent columns contain the
+        coordinate of the codon or amino acid on each axis, the
+        number of axes is user definable.</font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">genes.coa</font></td>
+        <td valign="top" width="85%"><font size="2">Each row
+        represents one gene. The first column contains a unique
+        description for each gene, subsequent columns contain the
+        gene's coordinate on each of the recorded axes. If
+        additional genes are added to the correspondence analysis
+        (&quot advanced correspondence analysis option &quot), the
+        coordinates of these genes are appended to this file.</font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">cusort.coa</font><font
+        size="1">&#134;</font></td>
+        <td valign="top" width="85%"><font size="2">Contains the
+        codon usage of each gene, sorted by the gene&#146;s
+        coordinate on the principal axis. This information is
+        used to generate the table in hilo.coa. </font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">hilo.coa</font><font
+        size="1">&#134;</font></td>
+        <td valign="top" width="85%"><font size="2">This files
+        records a 2 way Chi squared contingency test between two
+        subsets (which are determined by the &quot;advanced
+        correspondence analysis option&quot;) of genes positioned
+        at the extremes of axis 1 as recorded in cusort.coa. </font></td>
+    </tr>
+
+    <tr>
+        <td valign="top" width="15%"><font size="2">cai.coa</font><font
+        size="1">&#134;</font></td>
+        <td valign="top" width="85%"><font size="2">Contains the
+        relative usage of each codon within each synonym family.
+        The most frequent codon is assigned the value one and all
+        other codons are expressed relative to this. This file
+        can be used to calculate species specific CAI values. </font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">fop.coa</font><font
+        size="1">&#134;</font></td>
+        <td valign="top" width="85%"><font size="2">Contains a
+        list of the optimal codons and non-optimal codons as
+        identified in the file &quot;hilo.coa&quot;. The format
+        of this file can be utilised by CodonW to calculate F</font><font
+        size="1">op</font><font size="2"> using a personal choice
+        of optimal codons.</font></td>
+    </tr>
+    <tr>
+        <td valign="top" width="15%"><font size="2">inertia.coa</font></td>
+        <td valign="top" width="85%"><font size="2">This file is
+        only generated if the &quot exhaustive output option&quot is
+        selected under the advanced correspondence analysis menu.
+        It contains fours blocks of information. The first two
+        blocks report the absolute contribution of each gene
+        (block 1) and codon or amino acid (block 2) to the
+        inertia explained by each of the axes. The second two
+        blocks report the fraction of variation in each gene
+        (block 3) and codon or amino acid (block 4) explained by
+        the axes. </font></td>
+    </tr>
+</table>
+</ul></ul></ul>
+
+<table border="0" width="620">
+    <tr>
+        <td valign="top" width="95"><br>
+        </td>
+        <td valign="top" width="515">
+
+
+<p><font size="1">&#134; These </font><font size="2">files are
+not created during the correspondence analysis of amino acids</font></p>
+
+<p>&nbsp;</p>
+
+<p align="center"><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+<h2><a name="Name"><font color="#804000"
+face="Helvetica,Arial">Readme</a></font></h2>
+<p>
+For more information about codonW and to have quick tutorial on codon usage
+<a href="http://www.molbiol.ox.ac.uk/cu/Tutorial.html"> click here</a>. 
+I also suggest that the  
+<a href="http://www.molbiol.ox.ac.uk/cu/Readme.html">Readme files</a>
+included with the distribution are a good starting place to learn 
+about more codonW. 
+</p>
+
+
+
+<h2><a name="License"><font color="#804000" 
+face="Helvetica,Arial">License</a></font></h2>
+
+<p>CodonW is freeware and is distributed under the conditions of
+the <a href="GNUlicense.html">GNU General Public License version
+2</a>, which allows free distribution and modification but
+prevents the use of this code in commercial packages. </p>
+
+<p align="center" ><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+<p><a name="References"><font s color="#804000" ize="4" face="Helvetica,Arial"><b>References</b></font></a></p>
+
+
+<p><font size="2"><b>Benzecri, J.P..</b>, (1992). The
+Correspondence analysis hankbook;Statistics: textbooks and monographs;
+Publish. Marcel Dekker </font></p>
+
+<p><font size="2"><b>Bulmer, M.</b>, (1991). The
+selection-mutation-drift theory of synonymous codon usage.
+Genetics <b>129:</b> 897-907.</font></p>
+
+
+
+<p><font size="2"><b>Cancilla, M. R., A. J. Hillier and B. E.
+Davidson</b>, (1995). <i>Lactococcus lactis </i>glyceraldehyde-3-phosphate
+dehydrogenase gene, <i>gap </i>- further evidence for strongly
+biased codon usage in glycolytic pathway genes. Microbiology-uk, <b>141:</b>
+1027-1036.</font></p>
+
+<p><font size="2"><b>Delorme, C., J. J. Godon, S. D. Ehrlich and
+P. Renault</b>, (1994). Mosaic structure of large regions of the<i>
+Lactococcus lactis </i>subsp <i>cremoris </i>chromosome.
+Microbiology-uk, <b>140:</b> 3053-3060.</font></p>
+
+<p><font size="2"><b>Eyre-Walker, A.</b>, (1995). The distance
+between <i>Escherichia coli</i> genes is related to gene
+expression levels. Journal of Bacteriology, <b>177:</b>
+5368-5369.</font></p>
+
+<p><font size="2"><b>Eyre-Walker, A., and M. Bulmer</b>, (1993).
+Reduced synonymous substitution rate at the start of
+Enterobacterial genes. Nucleic Acids Research <b>21:</b>
+4599-4603.</font></p>
+
+<p><font size="2"><b>Freirepicos, M. A., M. I. Gonzalezsiso, E.
+Rodriguezbelmonte, A. M. Rodrigueztorres, E. Ramil </b><b><i>et
+al.</i></b>, (1994). Codon usage in <i>Kluyveromyces lactis</i>
+and in yeast cytochrome c-encoding genes. Gene <b>139:</b> 43-49.</font></p>
+
+<p><font size="2"><b>Gharbia, S. E., J. C. Williams, D. M. A.
+Andrews and H. N. Shah</b>, (1995). Genomic clusters and codon
+usage in relation to gene-expression in oral gram-negative
+anaerobes. Anaerobe, <b>1 :</b> 239-262.</font></p>
+
+<p><font size="2"><b>Greenacre, M. J.</b>, (1984). <i>Theory and
+applications of correspondence analysis.</i> Academic Press,
+London.</font></p>
+
+<p><font size="2"><b>Groisman, E. A., M. H. J. Saier and H.
+Ouchman</b>, (1992). Horizontal transfer of a phosphatase gene as
+evidence for mosaic structure of the <i>Salmonella</i>. EMBO
+Journal <b>11:</b> 1309-1316.</font></p>
+
+<p><font size="2"><b>Gouy, M., and C. Gautier</b>, (1982). Codon
+usage in bacteria correlation with gene expressivity. Nucleic
+Acids Research <b>10:</b> 7055-7074.</font></p>
+
+<p><font size="2"><b>Ikemura, T.</b>, (1985). Codon usage and
+transfer-RNA content in unicellular and multicellular organisms.
+Molecular Biology And Evolution <b>2:</b> 13-34.</font></p>
+
+<p><font size="2"><b>Li, W. H.</b>, (1987). Models of nearly
+neutral mutations with particular implications for non-random
+usage of synonymous codons. Journal of Molecular Evolution <b>24:</b>
+337-345.</font></p>
+
+<p><font size="2"><b>Kernighan, B. W., and D. M. Richie</b>,
+(1988). <i>The C programming language</i>. Prentice-Hall,
+Englewood Cliffs, NJ.</font></p>
+
+<p><font size="2"><b>Medigue, C., T. Rouxel, P. Vigier, A. Henaut
+and A. Danchin</b>, (1991). Evidence for horizontal gene transfer
+in <i>Escherichia coli </i>speciation. Journal of Molecular
+Biology <b>222:</b> 851-856.</font></p>
+
+<p><font size="2"><b>Osawa, S., T. H. Jukes, K. Watanabe and A.
+Muto</b>, (1992). Recent evidence for evolution of the genetic
+code. Microbiology Reviews <b>56:</b> 229-64.</font></p>
+
+<p><font size="2"><b>Sharp, P. M., and W. H. Li</b>, (1987). The
+codon adaptation index a measure of directional synonymous codon
+usage bias, and its potential applications. Nucleic Acids
+Research <b>15:</b> 1281-1295.</font></p>
+
+<p><font size="2"><b>Sharp, P. M., and G. Matassi</b>, (1994).
+Codon usage and genome evolution. Current Opinions in Genetics
+and Development <b>4:</b> 851-860.</font></p>
+
+<p><font size="2"><b>Thioulouse, J., and F. Chevenet</b>, (1996).
+Netmul, a world-wide-web user interface for multivariate analysis
+software. Computational Statistics &amp; Data Analysis, <b>21:</b>
+369-372.</font></p>
+
+<p><font size="2"><b>Thioulouse, J., S. Doledec, D. Chessel and
+J. M. Oliver</b>, (1995). ADE softeware: multivariate analysis
+and graphical display of enviromental data, pp. 57-61 in <i>Sofware
+per l'Ambiente</i>, edited by G. Guariso, and A. Rizzoli. Patron
+editor, Bolonia.</font></p>
+
+<p align="center" ><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+<p align="center"><IMG SRC="http://worf.molbiol/cgi-bin/nph-count?width=4&link=http://www.molbiol.ox.ac.uk/cu/culong.html" HEIGHT=20 WIDTH=60></p>
+
+<p>Page maintained by <a href="mailto:johnp@molbiol.ox.ac.uk"
+name="Name">John Peden</a>, last updated 06/06/97. </p>
+
+       <p align="center"><a
+        href="http://www.molbiol.ox.ac.uk/cu/codonW.html"><img
+        src="/cu/back.gif" border="0" width="88" height="33"></a></p>
+       
+<p align="center"><font face="Helvetica,Arial"><img src="/cu/bar.gif" width="439"
+height="15"></font></p>
+
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<HTML>
+<HEAD>
+   <TITLE>Codon usage indices</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#800080" BACKGROUND="edge.gif" leftmargin="110">
+
+<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+
+<TABLE BORDER=0 WIDTH="620" >
+<TR>
+<TD VALIGN=TOP WIDTH="95"></TD>
+
+<TD VALIGN=TOP WIDTH="515">
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+<B><FONT FACE="Arial"><FONT SIZE=+1>Codon usage indices&nbsp;</FONT></FONT></B>
+
+<P>This document describes the indices calculated by CodonW, by default
+only the G+C content of the sequence is reported. The others being dependent
+on the genetic code selected. More than one index may be calculated at
+the same time.&nbsp;
+
+<P><B><FONT FACE="Helvetica,Arial">Codon Adaptation Index (CAI)</FONT>
+(Sharp and Li 1987).&nbsp;</B>
+
+<P>CAI is a measurement of the relative adaptiveness of the codon usage
+of a gene towards the codon usage of highly expressed genes. The relative
+adaptiveness (<I>w</I>) of each codon is the ratio of the usage of each
+codon, to that of the most abundant codon for the same amino acid. The
+relative adaptiveness of codons for albeit a limited choice of species,
+can be selected from Menu 3. The user can also input a personal choice
+of values. The CAI index is defined as the geometric mean of these relative
+adaptiveness values. Non-synonymous codons and termination codons (dependent
+on genetic code) are excluded.&nbsp;
+
+<P>To prevent a codon absent from the reference set but present in other
+genes from having a relative adaptiveness value of zero, which would cause
+CAI to evaluate to zero for any genes which used that codon; it was suggested
+that absent codons should be assigned a frequency of 0.5 when estimating
+<FONT FACE="Symbol">w</FONT>(Sharp and Li 1987). An alternative suggestion
+was that <FONT FACE="Symbol">w</FONT> should be adjusted to 0.01 where
+otherwise it would be less than this value (Bulmer 1988). CodonW does not
+adjust the <FONT FACE="Symbol">w</FONT> value if a non-zero-input value
+is found; zero values are assigned a value of 0.01.
+
+<P><B><FONT FACE="Helvetica,Arial">Frequency of Optimal codons (F<SUB>op</SUB>)</FONT><FONT SIZE=-1>
+</FONT>(Ikemura 1981).&nbsp;</B>
+
+<P>This index, is the ratio of optimal codons to synonymous codons (genetic
+code dependent). Optimal codons for several species are in-built and can
+be selected using Menu 3. By default, the optimal codons of <I>E. coli</I>
+are assumed. The user may also enter a personal choice of optimal codons.
+If rare synonymous codons have been identified, there is a choice of calculating
+the original F<SUB>op</SUB> index or a modified F<SUB>op</SUB> index. F<SUB>op</SUB>
+values for the original index are always between 0 (where no optimal codons
+are used) and 1 (where only optimal codons are used). When calculating
+the modified F <SUB>op</SUB> index, negative values are adjusted to zero.
+
+<P><B><FONT FACE="Helvetica,Arial">Codon Bias Index (CBI)</FONT> (Bennetzen
+and Hall 1982).</B>
+
+<P>Codon bias index is another measure of directional codon bias, it measures
+the extent to which a gene uses a subset of optimal codons. CBI is similar
+to F<SUB>op</SUB> as used by Ikemura, with expected usage used as a scaling
+factor. In a gene with extreme codon bias, CBI will equal 1.0, in a gene
+with random codon usage CBI will equal 0.0. Note that it is possible for
+the number of optimal codons to be less than expected by random change.
+This results in a negative value for CBI.
+
+<P><B><FONT FACE="Helvetica,Arial">The effective number of codons (N<SUB>C</SUB>)</FONT>
+(Wright 1990).</B>
+
+<P>This index is a simple measure of overall codon bias and is analogous
+to the effective number of alleles measure used in population genetics.
+Knowledge of the optimal codons or a reference set of highly expressed
+genes is unnecessary. Initially the homozygosity for each amino acid is
+estimated from the squared codon frequencies (see Wright 1990 ).
+
+<P>If amino acids are rare or missing, adjustments must be made. When there
+are no amino acids in a synonymous family, Nc is not calculated as the
+gene is either too short or has extremely skewed amino acid usage (Wright
+1990). An exception to this is made for genetic codes where isoleucine
+is the only 3-fold synonymous amino acid, and is not used in the protein
+gene. The reported value of N<SUB>c</SUB> is always between 20 (when only
+one codon is effectively used for each amino acid) and 61 (when codons
+are used randomly). If the calculated N<SUB>c</SUB> is greater than 61
+(because codon usage is more evenly distributed than expected), it is adjusted
+to 61.
+
+<P><B><FONT FACE="Arial,Helvetica">G+C content of the gene.&nbsp;</FONT></B>
+<DIR>
+<LI>
+The frequency of nucleotides that are guanine or cytosine.</LI>
+</DIR>
+<B><FONT FACE="Arial,Helvetica">G+C content 3rd position of synonymous
+codons (GC<SUB>3s</SUB>)</FONT></B>
+
+<P>This the fraction of codons, that are synonymous at the third codon
+position, which have either a guanine of cytosine at that third codon position.&nbsp;
+
+<P><B><FONT FACE="Arial,Helvetica">Base composition at silent sites.</FONT></B>
+
+<P>Selection of this option calculates four separate indices, i.e. G<SUB>3s</SUB>,
+C<SUB>3s</SUB>, A<SUB>3s</SUB> &amp; T<SUB>3s</SUB>. Although correlated
+with GC<SUB>3s</SUB>, this index is not directly comparable. It quantifies
+the usage of each base at synonymous third codon positions. When calculating
+GC<SUB>3s</SUB> each synonymous amino acid has at least one synonym with
+G or C in the third position. Two or three fold synonymous amino acids
+do not have an equal choice between bases in the synonymous third position.
+The index A<SUB>3s</SUB> is the frequency that codons have an A at their
+synonymous third position, relative to the amino acids that could have
+a synonym with A in the synonymous third codon position. The codon usage
+analysis of <I>Caenorhabditis elegans</I> identified a trend correlated
+with the frequency of G<SUB>3s</SUB>. Though it was not clear whether it
+reflected variation in base composition (or mutational biases) among regions
+of the <I>C. elegans</I> genome, or another factor (Stenico <I>et al</I>.
+1994).
+
+<P><B><FONT FACE="Arial,Helvetica">Length silent sites (L<FONT SIZE=-1>sil</FONT>).&nbsp;</FONT></B>
+<DIR>
+<LI>
+Frequency of synonymous codons.</LI>
+</DIR>
+<B><FONT FACE="Arial,Helvetica">Length amino acids (L<FONT SIZE=-2>aa</FONT>).</FONT></B>
+<DIR>
+<LI>
+Equivalent to the number of translatable codons.</LI>
+</DIR>
+<FONT FACE="Helvetica,Arial"><B>Hydropathicity of protein</B>&nbsp;</FONT>
+
+<P>The general average hydropathicity or (GRAVY) score, for the hypothetical
+translated gene product. It is calculated as the arithmetic mean of the
+sum of the hydropathic indices of each amino acid (Kyte and Doolittle 1982).
+This index has been used to quantify the major COA trends in the amino
+acid usage of <I>E. coli</I> genes (Lobry and Gautier 1994).&nbsp;
+
+<P><B><FONT FACE="Helvetica,Arial">Aromaticity score</FONT></B>
+
+<P>The frequency of aromatic amino acids (Phe, Tyr, Trp) in the hypothetical
+translated gene product. The hydropathicity and aromaticity protein scores
+are indices of amino acid usage. The strongest trend in the variation in
+the amino acid composition of <I>E. coli</I> genes is correlated with protein
+hydropathicity, the second trend is correlated with gene expression, while
+the third is correlated with aromaticity (Lobry and Gautier 1994). The
+variation in amino acid composition can have applications for the analysis
+of codon usage. If total codon usage is analysed, a component of the variation
+will be due to differences in the amino acid composition of genes.&nbsp;
+<BR>&nbsp;
+
+<P><FONT SIZE=-1>Last updated on July 14, 1997 by<A HREF="mailto:johnp@molbiol.ox.ac.uk">
+John Peden&nbsp;</A></FONT>
+
+<P><FONT SIZE=-1>For the most up to date versions see <A HREF="http://www.molbiol.ox.ac.uk/cu/Indices.html">http://www.molbiol.ox.ac.uk/cu/Indices.html</A></FONT>
+
+<P><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439>
+<H1>
+References</H1>
+<FONT SIZE=-1><B>Bennetzen, J. L., and B. D. Hall</B>, (1982). Codon selection
+in yeast. Journal of Biological Chemistry <B>257:</B> 3026-3031.</FONT>
+
+<P><FONT SIZE=-1><B>Bulmer, M.</B>, (1988). Are codon usage patterns in
+unicellular organisms determined by selection-mutation balance. Journal
+of Evolutionary Biology <B>1:</B> 15-26.</FONT>
+
+<P><FONT SIZE=-1><B>Ikemura, T.</B>, (1981). Correlation between the abundance
+of <I>Escherichia coli</I> transfer RNAs and the occurrence of the respective
+codons in its protein genes: a proposal for a synonymous codon choice that
+is optimal for the <I>E. coli </I>system. Journal of Molecular Biology
+<B>151:</B> 389-409.</FONT>
+
+<P><FONT SIZE=-1><B>Kyte, J., and R. Doolittle</B>, (1982). A simple method
+for displaying the hydropathic character of a protein. Journal of Molecular
+Biology <B>157:</B> 105-132.</FONT>
+
+<P><FONT SIZE=-1><B>Lobry, J. R., and C. Gautier</B>, (1994). Hydrophobicity,
+expressivity and aromaticity are the major trends of amino acid usage in
+999<I> Escherichia coli</I> chromosome encoded genes. Nucleic Acids Research
+<B>22:</B> 3174-3180.</FONT>
+
+<P><FONT SIZE=-1><B>Sharp, P. M., and W. H. Li</B>, (1987). The codon adaptation
+index a measure of directional synonymous codon usage bias, and its potential
+applications. Nucleic Acids Research <B>15:</B> 1281-1295.</FONT>
+
+<P><FONT SIZE=-1><B>Stenico, M., A. T. Lloyd and P. M. Sharp</B>, (1994).
+Codon usage in <I>Caenorhabditis elegans</I> delineation of translational
+selection and mutational biases. Nucleic Acids Research <B>22:</B> 2437-2446.</FONT>
+
+<P><FONT SIZE=-1><B>Wright, F.</B>, (1990). The effective number of codons
+used in a gene. Gene <B>87 :</B> 23-29.</FONT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD></TD>
+</TR>
+</TABLE><p>
+
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+
+<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+
+
+
+&nbsp;
+</BODY>
+</HTML>

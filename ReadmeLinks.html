@@ -1,0 +1,177 @@
+<HTML>
+<HEAD>
+   <TITLE>Readme file explaining how codonW emulates other programs</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#0000FF" VLINK="#800080" BACKGROUND="edge.gif" leftmargin="110">
+
+<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+
+<OL><OL><OL>
+
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+
+
+<P>========================================</P>
+<P>CodonW was written by John Peden <A HREF="mailto://pdxjfp@evol.nott.ac.uk"> pdxjfp@evol.nott.ac.uk</A>in the laboratory of Paul Sharp at the University of Nottingham. It is distributed under the terms of the GNU public license, see the file License included with the distribution.</P>
+<P>========================================</P>
+<P>Readme.Links</P>
+<P>CodonW can emulate a range of useful utility codon usage and sequence analysis programs. These programs perform tasks that CodonW can also accomplish, but where often several menu items or commandline options need to be selected. Making several menu selections every time you want to concepually translate sequences into protein is tedious; likewise maintenance of these auxiliary programs can often be time-consuming. Therefore, when designing codonW I tried to minimise these problems. When the first program argument (i.e. the name which you call the executable program) matches a list of accepted names, the executable file (i.e. codonW) will emulate the program appropriately.</P>
+<P>For example, if we start codonw using its normal name </P>
+
+
+<PRE><B>./codonw</B>&#9;&#9;&#9;&#9;&#9;(starts menu interface)
+Welcome to CodonW  1.3  for Help type h
+  Initial Menu 
+  Options
+         (1) Load sequence file
+         ( )
+         (3) Change defaults
+         (4) Codon usage indices
+         (5) Correspondence analysis
+         ( )
+         (7) A bit of fun
+         (8) Change the output written to file
+         (9) About C-codons
+         (R) Run C-codons
+         (Q) Quit
+</B>
+</PRE>
+
+
+<P>we see the menu interface, however if we rename codonw to transl (one of the recognised list of names) then we see a much more succinct interface.</P>
+
+<PRE>
+<B>
+
+mv codonw transl</B>            (mv is UNIX for rename)<B>
+./transl</B>                    (translates DNA to AA)
+
+<B>DNA 2 AA translating Program
+
+Name of input filename (h for help) [input.dat]
+</B>
+</PRE>
+
+<P>Though the commandline is largely unnecessary when emulating these auxiliary programs, it is still functional. Commandline options such as concatenating genes, selecting machine or human readable output, or selecting an alternative genetic code are still valid.</P>
+
+<P>The accepted program names and the functions/tasks that are emulated are</P>
+
+
+<TABLE BORDER CELLSPACING=2 BORDERCOLOR="#000000" CELLPADDING=7 WIDTH=568>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>Name </B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<B><P>Function</B></TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>cu</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Counts codon usage </TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>cutab</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Counts and tabulates codon usage </TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>cutot</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Counts and tabulate total codon usage of all genes </TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>rscu</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculate relative synonymous codon usage</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>aau</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Count amino acid usage</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>raau</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculate relative amino acid usage </TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>tidy</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Reformat sequences into fasta/Pearson format</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>reader</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Reformat input sequence data into space codons </TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>transl</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Reformat DNA by conceptually translating to protein</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>bases</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates base composition in each reading frame</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>gc3s</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates GC content of synonymous third codon positions</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>gc</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates GC content of each gene</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>base3s</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculate base composition of synonymous third codon positions</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>dinuc</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates dinucleotide frequency in three frames</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>cai</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates codon adaptation index </TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>fop</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates frequency of optimal codons</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>enc</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates effective number of codons</TD>
+</TR>
+<TR><TD WIDTH="12%" VALIGN="TOP">
+<B><P>cbi</B></TD>
+<TD WIDTH="88%" VALIGN="TOP">
+<P>Calculates codon bias index</TD>
+</TR>
+</TABLE>
+
+<P>&nbsp;</P>
+<P>All the above programs are created during the default codonw build process (i.e. codonWinstall all). </P>
+
+<P>Last updated on July 4, 1997 by <A HREF="mailto://johnp@molbiol.ox.ac.uk">John Peden </A>
+<P>For the most up to date version see <A HREF="http://www.molbiol.ox.ac.uk/cu/DataRecoding.html">
+http://www.molbiol.ox.ac.uk/cu/ReadmeLinks.html</A></P>
+
+</OL></OL></OL>
+
+<p>
+<CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
+
+<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+
+</BODY>
+</HTML>
+
+
+
+

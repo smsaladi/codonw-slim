@@ -1,0 +1,458 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./cu_files/filelist.xml">
+<link rel=Edit-Time-Data href="./cu_files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Correspondence Analysis of Codon Usage</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>John Peden</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>John Peden</o:LastAuthor>
+  <o:Revision>3</o:Revision>
+  <o:TotalTime>22</o:TotalTime>
+  <o:Created>2003-02-16T22:02:00Z</o:Created>
+  <o:LastSaved>2003-02-16T22:22:00Z</o:LastSaved>
+  <o:Pages>3</o:Pages>
+  <o:Words>962</o:Words>
+  <o:Characters>5484</o:Characters>
+  <o:Company>Bicester</o:Company>
+  <o:Lines>45</o:Lines>
+  <o:Paragraphs>10</o:Paragraphs>
+  <o:CharactersWithSpaces>6734</o:CharactersWithSpaces>
+  <o:Version>9.2720</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+@font-face
+	{font-family:Helvetica;
+	panose-1:2 11 6 4 2 2 2 2 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536902279 -2147483648 8 0 511 0;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:fuchsia;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{margin-right:0cm;
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+@list l0
+	{mso-list-id:278807275;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-16362898 -1235597294 1281385680 -183490968 -338910652 -1555521428 -673008114 -580511398 106856184 1940957502;}
+@list l0:level2
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1
+	{mso-list-id:931206350;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1825269542 -1935251744 151431524 335344578 -419402550 421698298 171079408 1780384542 1943573180 -808690940;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:1141925717;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-875288636 227735764 1902269250 -1972345654 617357248 -1825252872 -1983602568 -980755392 567550314 1422450504;}
+@list l2:level1
+	{mso-level-start-at:7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level2
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1027"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body bgcolor=white background="http://www.molbiol.ox.ac.uk/cu/edge.gif"
+lang=EN-GB link=blue vlink=fuchsia style='tab-interval:36.0pt' leftmargin=110>
+
+<div class=Section1>
+
+<p class=MsoNormal>&nbsp; </p>
+
+<table border=0 cellpadding=0 width=620 style='width:465.0pt;mso-cellspacing:
+ 1.5pt;mso-padding-alt:0cm 0cm 0cm 0cm'>
+ <tr>
+  <td width=95 valign=top style='width:71.25pt;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+  </td>
+  <td width=515 valign=top style='width:386.25pt;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:18.0pt;font-family:Helvetica'>Correspondence Analysis of
+  Codon Usage</span></b> </p>
+  <p align=center style='text-align:center'><img width=439 height=15
+  id="_x0000_i1025" src="http://www.molbiol.ox.ac.uk/cu/bar.gif"></p>
+  <p><a href="ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z">CodonW</a> is a programme
+  designed to simplify the Multivariate analysis (correspondence analysis) of
+  codon and amino acid usage. It also calculates standard indices of codon usage.
+  It has both menu and command-line interfaces. It was written by <a
+  href="mailto:johnp@molbiol.ox.ac.uk">John Peden</a> in the lab of <a
+  href="http://www.nottingham.ac.uk/genetics/staff/paulsharp/index.html">Paul
+  Sharp, </a><span style="mso-spacerun: yes">&nbsp;</span><a
+  href="http://www.nottingham.ac.uk/genetics/indexflash.html">Dept of Genetics,</a>
+  <a href="http://www.nott.ac.uk/">University of Nottingham</a>. John is
+  currently employed as a group leader in Computational Biology at Oxagen Ltd (<a
+  href="http://www.oxagen.co.uk/">http://www.oxagen.co.uk</a>) </p>
+  <p>CodonW was written as part of my PhD thesis on Codon Usage and if you are
+  interested in reading in more depth around codon usage a copy of my thesis
+  can be downloaded from <a
+  href="http://www.molbiol.ox.ac.uk/cu/JohnPedenThesisPressOpt_water.pdf">here</a>
+  (1.72Mb).</p>
+  <p><b>NB: I have extensively tested it and believe it to be bug free. If you
+  find a bug or something confusing please email me at <a
+  href="mailto:john.peden@worf.molbiol.ox.ac.uk">John.Peden@molbiol.ox.ac.uk</a>
+  and let me know </b>(Don't forget to tell me the Operating System and to send
+  me the input file that generated the error). </p>
+  <ul type=disc>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><i><span
+       style='color:#008040'><a href="#Downloading and Installation">Downloading
+       and Installation</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><i><span
+       style='color:#008040'><a href="#Features:">Features</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#System and Hardware"></a><a
+       name="System and Hardware"></a><i><span style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#System and Hardware">System
+       and Hardware&nbsp;</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a name=CodonW></a><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#CodonW"></a><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#CodonW"><span
+       style='mso-bookmark:CodonW'><i>CodonW</i></span></a></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Introduction to Codon Usage"></a><a
+       name="Introduction to Codon Usage"></a><i><span style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Introduction to Codon Usage">Introduction
+       to Codon Usage&nbsp;</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Correspondence Analysis"></a><a
+       name="Correspondence Analysis"></a><i><span style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Correspondence Analysis">Correspondence
+       Analysis</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Input files"></a><a
+       name="Input files"></a><i><span style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Input files">Input
+       files</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#The Menu Interface"></a><a
+       name="The Menu Interface"></a><i><span style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#The Menu Interface">The
+       Menu Interface</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Correspondence analysis in CodonW."></a><a
+       name="Correspondence analysis in CodonW."></a><i><span style='color:
+       #008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Correspondence analysis in CodonW.">Correspondence
+       analysis in CodonW</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><i><span
+       style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#License">License</a></span></i></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><a name=References></a><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#References"></a><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#References"><span
+       style='mso-bookmark:References'><i>References</i></span></a></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt'><i><span
+       style='color:#008040'><a
+       href="http://www.molbiol.ox.ac.uk/cu/culong.html#Name">Contact</a></span></i></li>
+  </ul>
+  <p class=MsoNormal align=center style='text-align:center'><img border=0
+  width=439 height=15 id="_x0000_i1026"
+  src="http://www.molbiol.ox.ac.uk/cu/bar.gif"></p>
+  <p><span style='font-family:Helvetica;color:#804000'>Downloading and
+  Installation</span><a name="Downloading and Installation"></a> </p>
+  <p>Binaries are available for the following operating systems. Alternatively
+  you can download the source code in <a
+  href="ftp://molbiol.ox.ac.uk/cu/codonW.tar">tar</a>, <a
+  href="ftp://molbiol.ox.ac.uk/cu/codonW.tar.Z">compressed</a> or <a
+  href="ftp://molbiol.ox.ac.uk/cu/codonW.tar.gz">gzipped </a>format and compile
+  it yourself. See the <a href="http://molbiol.ox.ac.uk/cu/Readme.html">README</a>
+  file for more information. </p>
+  <p>1. <a href="ftp://worf.molbiol.ox.ac.uk/cu/DU4codonW.tar.Z">Compaq Tru64</a>
+  </p>
+  <p>2. <a href="ftp://molbiol.ox.ac.uk/cu/Irix64codonW.tar.Z">Irix 6.5</a> (64
+  bit) </p>
+  <p>3. <a href="ftp://molbiol.ox.ac.uk/cu/SolarisCodonW.tar.Z">Solaris 2.6 </a>(solaris)
+  </p>
+  <p>4. <a href="ftp://molbiol.ox.ac.uk/cu/Win32codonW.zip">Win 32bit
+  (NT/95/98/2000/XP)</a> (No GUI; runs within a DOS emulation window) </p>
+  <p>5.(Sorry no Mac version the source code should compile on CodeWarrior but
+  I don't have a MAC compiler, bewarned it doesn't have any GUI) </p>
+  <p>6. Web access via <a href="http://www-alt.pasteur.fr/~letondal/Pise/">PISE</a>
+  at the pasteur <a
+  href="http://bioweb.pasteur.fr/seqanal/interfaces/codonw.html">http://bioweb.pasteur.fr/seqanal/interfaces/codonw.html</a>
+  </p>
+  <p align=center style='text-align:center'><img border=0 width=439 height=15
+  id="_x0000_i1027" src="http://www.molbiol.ox.ac.uk/cu/bar.gif"></p>
+  <p><span style='font-family:Helvetica;color:#804000'>Features:</span><a
+  name="Features:"></a> </p>
+  <ol start=1 type=1>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo6;tab-stops:list 36.0pt'><b>Written in ANSI
+       compliant C</b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo6;tab-stops:list 36.0pt'><b>Menu driven</b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo6;tab-stops:list 36.0pt'><b>Extensive number
+       of command line options</b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo6;tab-stops:list 36.0pt'><b>Genetic code
+       independent</b><span style='font-size:13.5pt'>&nbsp;</span></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo6;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>No limits on</span></b><i><span
+       style='font-size:13.5pt'>&nbsp;</span></i></li>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo6;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>number of sequences&nbsp;</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo6;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>sequence length</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo6;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Calculates the codon usage indices</span></b></li>
+  </ol>
+  <p class=MsoNormal style='margin-left:72.0pt'>&nbsp; </p>
+  <ol start=6 type=1>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>CAI: Codon adaptation index</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Fop: Frequency of optimal codons</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Nc: Effective number of codons</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>CBI: Codon Bias Index&nbsp;</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Calculates amino acid indices</span></b></li>
+  </ol>
+  <p class=MsoNormal style='margin-left:72.0pt'>&nbsp; </p>
+  <ol start=7 type=1>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>GRAVY score</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Aromaticity</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Calculates correspondence analysis of&nbsp;</span></b></li>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Codon Usage</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>RSCU (Relative synonymous codon usage)</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Amino acid usage</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Correspondence analysis&nbsp;</span></b></li>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>can include/exclude codons/amino acids</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>can generate detailed reports of trends</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>attempts to identify optimal codons
+        automatically</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>can allow additional data sets to be
+        added&nbsp;</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>records any number of trends</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Calculates gene parameters</span></b></li>
+  </ol>
+  <p class=MsoNormal style='margin-left:72.0pt'>&nbsp; </p>
+  <ol start=10 type=1>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Gene length</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>GC, GC3s and codon position specific G+C&nbsp;</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Dinucleotide composition (in all three codon
+        frames)</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Amino acid usage</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Relative amino acid usage</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Codon usage</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Relative Synonymous codon usage</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Can conceptually translates sequences to
+       protein</span></b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Reformats sequence data</span></b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Human or machine readable output</span></b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Can concatenate genes (whilst preserving
+       reading frame) to calculate</span></b></li>
+  </ol>
+  <p class=MsoNormal style='margin-left:72.0pt'>&nbsp; </p>
+  <ol start=14 type=1>
+   <ol start=1 type=a>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>overall codon usage</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>GC content</span></i></li>
+    <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+        auto;mso-list:l0 level2 lfo8;tab-stops:list 72.0pt'><i><span
+        style='font-size:13.5pt'>Dinucleotide composition&nbsp;</span></i></li>
+   </ol>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Generates tables of codon, amino acid, or RSCU
+       usage</span></b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>Can even help you learn the Genetic code.</span></b></li>
+   <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
+       auto;mso-list:l0 level1 lfo8;tab-stops:list 36.0pt'><b><span
+       style='font-size:13.5pt'>and more</span></b></li>
+  </ol>
+  <p class=MsoNormal align=center style='text-align:center'><img border=0
+  width=439 height=15 id="_x0000_i1028"
+  src="http://www.molbiol.ox.ac.uk/cu/bar.gif"></p>
+  <p><span style='font-size:13.5pt'>For more information about codonW and codon
+  usage analysis click <a href="http://www.molbiol.ox.ac.uk/cu/culong.html">here</a>
+  or read the <a href="http://www.molbiol.ox.ac.uk/cu/Readme.html">documentation</a>
+  that comes with codonw.&nbsp;</span> </p>
+  <p align=center style='text-align:center'><img border=0 width=439 height=15
+  id="_x0000_i1029" src="http://www.molbiol.ox.ac.uk/cu/bar.gif"></p>
+  <p><span style='font-size:13.5pt'>Page maintained by&nbsp;<a name=Name></a><a
+  href="mailto:johnp@molbiol.ox.ac.uk"></a><a
+  href="mailto:johnp@molbiol.ox.ac.uk"><span style='mso-bookmark:Name'>John
+  Peden</span></a>, last updated 15/Feb/2003</span> </p>
+  <p align=center style='text-align:center'><img border=0 width=439 height=15
+  id="_x0000_i1031" src="http://www.molbiol.ox.ac.uk/cu/bar.gif"></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+</div>
+
+</body>
+
+</html>
