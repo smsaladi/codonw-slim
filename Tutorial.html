@@ -8,7 +8,7 @@
 <OL>
 <OL>
 
-<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+<CENTER><A HREF="http://codonw.sourceforge.net/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
 
 
 <CENTER><B><FONT FACE="Helvetica,Arial"><FONT SIZE=+2>Correspondence Analysis
@@ -19,15 +19,15 @@ of Codon Usage</FONT></FONT></B></CENTER>
 
 <P><B><I><FONT FACE="Arial">Codon usage analysis</FONT></I></B>
 
-<P>Included with this distribution of <A HREF="http://www.molbiol.ox.ac.uk/cu/">codonW</A>
-should be a test dataset of sequences (<A HREF="http://www.molbiol.ox.ac.uk/cu/input.dat">input.dat</A>).
+<P>Included with this distribution of <A HREF="http://codonw.sourceforge.net/">codonW</A>
+should be a test dataset of sequences (<A HREF="http://codonw.sourceforge.net/input.dat">input.dat</A>).
 We will use this set of sequences as a typical example of a codon usage
 analysis. This test dataset is derived from the open reading frames (ORFs)
 of <I>Saccharomyces cerevisiae</I> chromosome III as annotated in the EMBL
 feature table for the sequence entry <A HREF="http://worf.molbiol.ox.ac.uk/srs5bin/cgi-bin/wgetz?-e+[EMBL-ID:'SCCHRIII']">SCCHRIII</A>
 (accession number <A HREF="http://worf.molbiol.ox.ac.uk/srs5bin/cgi-bin/wgetz?-e+[EMBL-acc:'X59720']">X59720</A>).
 In the current EMBL (Release 51 June 1997) the number of annotated ORFs
-was 172. The file <A HREF="http://www.molbiol.ox.ac.uk/cu/input.dat">input.dat</A>
+was 172. The file <A HREF="http://codonw.sourceforge.net/input.dat">input.dat</A>
 contains 111 of these ORFs. The rationale and why some ORFs were removed
 is explained below.
 
@@ -193,7 +193,7 @@ command</A>
 the -all_indices indicates to codonw that you wish to calculate all the
 codon and amino acid usage indices. These indices areT3s, C3s, A3s, G3s,
 CAI, CBI, Fop, Nc, GC3s, GC, L_sym, L_aa, Gravy and Aromaticity. For a
-fuller explanation of what these indices are see <A HREF="http://www.molbiol.ox.ac.uk/cu/Indices.html"> indices</A>.
+fuller explanation of what these indices are see <A HREF="http://codonw.sourceforge.net/Indices.html"> indices</A>.
 These indices can also be used to check whether there are any identical
 or almost identical sequences in the input file. If we sort the result
 file "input.out" it is much easier to identify the sequences which are
@@ -252,7 +252,7 @@ indicating stronger bias. A useful feature of EN<SUB>c</SUB> is that the
 effect that GC biases have on the index can be estimated. This allows the
 comparison of GC<SUB>3s </SUB>and EN<SUB>c</SUB> against the theoretical
 values if codon bias was simply caused by GC mutational bias. A plot
-of EN<SUB>c</SUB> vs. GC<SUB>3s</SUB> can be seen at <A HREF="http://www.molbiol.ox.ac.uk/cu/ENcVsGC3s.gif">http://www.molbiol.ox.ac.uk/cu/ENcVsGC3s.gif</A>.
+of EN<SUB>c</SUB> vs. GC<SUB>3s</SUB> can be seen at <A HREF="http://codonw.sourceforge.net/ENcVsGC3s.gif">http://codonw.sourceforge.net/ENcVsGC3s.gif</A>.
 Although the majority of genes in this plot have a degree of codon bias
 that can be explained in terms of GC mutation, the cluster of genes (six
 genes with EN<SUB>c</SUB> &lt;40) have much stronger codon bias than
@@ -305,7 +305,7 @@ label                Axis1     Axis2    Axis3    Axis4
 
 <P>this information is best viewed graphically, an example
 of the location of the genes on the two principal axes can be seen here
-<A HREF="http://www.molbiol.ox.ac.uk/cu/axes.gif">http://www.molbiol.ox.ac.uk/cu/axes.gif</A>.
+<A HREF="http://codonw.sourceforge.net/axes.gif">http://codonw.sourceforge.net/axes.gif</A>.
 
 <P>
 
@@ -320,8 +320,8 @@ usage of groups of genes taken from each extreme of the principle trend
 effective number of codons index) and tests for significant differences
 in the codon usage between the higher bias set with a two way Chi-squared
 contingency test. The putative optimal codons are listed in 
-<A HREF="http://www.molbiol.ox.ac.uk/cu/summary.coa">summary.coa</A>
-and <A HREF="http://www.molbiol.ox.ac.uk/cu/hilo.coa">hilo.coa</A>. It
+<A HREF="http://codonw.sourceforge.net/summary.coa">summary.coa</A>
+and <A HREF="http://codonw.sourceforge.net/hilo.coa">hilo.coa</A>. It
 is the responsibility of the user to confirm that the major codon usage
 trend is due to selection for optimal translational, and not some 
 mutational pressure (<A HREF="#GC">see GC variation</A>). The number of
@@ -421,7 +421,7 @@ chromosomal location in a systematic fashion (Sharp and Lloyd 1993). When
 we examine correlation coefficients between the first 4 axes the correlation
 coefficient between axis2 and GC<SUB>3s</SUB> is highly significant (r=0.89).
 If we examine a
-<a href="http://www.molbiol.ox.ac.uk/cu/GC3sVsPosition.gif">
+<a href="http://codonw.sourceforge.net/GC3sVsPosition.gif">
  graph of GC<SUB>3s</SUB> vs EN<sub>c</sub> </a>we can clearly
 see the characteristic GC rich peaks of the two arms of chromosome three.
 Interestingly the bias is most strong among the U ending codons and it is possible
@@ -437,7 +437,7 @@ biases.
 <P>Last updated on July 14, 1997 by <a mailto="johnp@molbiol.ox.ac.uk">
 John Peden</a>
 
-<P>For the most up to date version see <a href="http://www.molbiol.ox.ac.uk/cu/Tutorial.html"> http://www.molbiol.ox.ac.uk/cu/Tutorial.html </a>
+<P>For the most up to date version see <a href="http://codonw.sourceforge.net/Tutorial.html"> http://codonw.sourceforge.net/Tutorial.html </a>
 
 <p>
 <CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
@@ -523,7 +523,7 @@ gene. Gene 87 : 23-29.
 <p>
 <CENTER><IMG SRC="bar.gif" HEIGHT=15 WIDTH=439></CENTER>
 
-<CENTER><A HREF="http://www.molbiol.ox.ac.uk/cu/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
+<CENTER><A HREF="http://codonw.sourceforge.net/codonW.html"><IMG SRC="back.gif" BORDER=0 HEIGHT=33 WIDTH=88></A></CENTER>
 
 </ol>
 </ol>
