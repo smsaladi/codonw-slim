@@ -1,12 +1,4 @@
 
-========================================
-
-CodonW was written by John Peden pdxjfp@evol.nott.ac.uk in the laboratory
-of Paul Sharp at the University of Nottingham. It is distributed under the
-terms of the GNU public license, see the file License included with the
-distribution. 
-
-========================================
 
 README.coa
 
@@ -162,7 +154,3 @@ expressed. If these assumptions are valid then the files “cbi.coa”,
 “cai.coa” and “fop.coa” can be used to calculate the indexes CBI, CAI and 
 Fop respectively. 
 
-
-Last updated on July 4, 1997 by John Peden 
-
-For the most up to date version see http://www.molbiol.ox.ac.uk/cu/Readme.coa

@@ -112,12 +112,6 @@ of codon usage. If total codon usage is analysed, a component of the
 variation will be due to differences in the amino acid composition of genes. 
 
 
-Last updated on July 4, 1997 by John Peden 
-
-For the most up to date  versions see 
-http://www.molbiol.ox.ac.uk/cu/ReadmeIndices.html
-
-
 
 Bennetzen, J. L., and B. D. Hall, (1982). Codon selection in yeast. Journal 
 of Biological Chemistry 257: 3026-3031.

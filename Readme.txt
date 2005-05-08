@@ -1,11 +1,4 @@
-========================================
 
-CodonW was written by John Peden pdxjfp@molbiol.ox.ac.uk in the laboratory
-of Paul Sharp at the University of Nottingham. It is distributed under the
-terms of the GNU public license, see the file License included with the
-distribution. 
-
-========================================
 
 CodonW is a package for codon usage analysis. It was designed to simplify
 Multivariate Analysis (MVA) of codon usage. The MVA method employed in
@@ -119,13 +112,4 @@ include an example of the input file (and outp ut files) and the options
 selected that generated the error, don't forget to tell me the make of
 computer and operating system it was running under.
 
-Updates 
-================= 
-
-If you are interested in hearing about updates to this program just send
-me an email and I'll stick you on a mailing list. 
-
-
-If you have any questions or comments, please contact:
-johnp@molbiol.ox.ac.uk
 

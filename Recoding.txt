@@ -78,10 +78,3 @@ Code	AA	One letter code	Code	AA	One letter code
 19	Trp	W	20	Arg	R
 21	Gly	G			
 
-
-
-
-Last updated on July 4, 1997 by John Peden 
-
-For the most up to date version see 
-http://www.molbiol.ox.ac.uk/cu/DataRecoding.html

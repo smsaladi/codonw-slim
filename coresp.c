@@ -1,6 +1,6 @@
 /**************************************************************************/
 /* CodonW codon usage analysis package                                    */
-/* Copyright (C) 1997            John F. Peden                            */
+/* Copyright (C) 2005            John F. Peden                            */
 /* This program is free software; you can redistribute                    */
 /* it and/or modify it under the terms of the GNU General Public License  */
 /* as published by the Free Software Foundation; version 2 of the         */
@@ -15,15 +15,11 @@
 /* 675 Mass Ave, Cambridge, MA 02139, USA.                                */
 /*                                                                        */
 /*                                                                        */
-/* The author can be contacted by email (pdxjfp@evol.nott.ac.uk)          */
-/* And is currently at                                                    */
-/* Oxford University Molecular Biology Data Centre                        */
-/* Sir William Dunn School of Pathology                                   */  
-/* South Parks Rd.                                                        */
-/* Oxford                                                                 */
-/* OX1 3RE                                                                */
+/* The author can be contacted by email (jfp#hanson-codonw@yahoo.com Anti-*/
+/* Spam please change the # in my email to an _)                          */
 /*                                                                        */
-/* For the latest version and information see http://molbiol.ox.ac.uk/cu  */
+/* For the latest version and information see                             */
+/* http://codonw.sourceforge.net 					  */
 /**************************************************************************/
 /* This file contains source code for                                     */
 /* the core functions involved in correspondence                          */
