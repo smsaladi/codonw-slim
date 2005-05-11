@@ -29,7 +29,7 @@
 /*  The size of each amino acid family                                    */
 /**************************************************************************/
 
-#define rand_num(z) (int)((((float)rand()/((long)RAND_MAX+1))*(float)##z)+1)
+#define rand_num(z) (int)((((float)rand()/((long)RAND_MAX))*(float)z)+1)
 
 #ifdef _WINDOWS
 #define beeep Beep(150,150)
@@ -83,7 +83,7 @@ void    tester ( void ) {
             i = rand_num(21);
             loop = TRUE;
             while ( loop ) {
-                printf("\nWhat is the three letter name of"
+                printf("\nWhat is the three letter equivalent for the AA"
                     " %s ", paa->aa1[i]);
                 gets( pm->junk ) ;
                 strcpy ( tmp_AA, paa->aa3[i] );
@@ -106,6 +106,7 @@ void    tester ( void ) {
                 if ( !strcmp (pm->junk, "?" ) ) {
                     printf( "Cheat %s", paa->aa3[i]);
                     num_cheats++;             /*     The user cheated     */
+                    continue; 
                 }
                 if ( !strcmp (pm->junk  , tmp_AA )) {
                     loop = FALSE;
@@ -119,7 +120,7 @@ void    tester ( void ) {
             i = rand_num(21);
             loop = TRUE;
             while ( loop ) {
-                printf("\nHow synonymous is Amino Acid %s ",
+                printf("\nHow many codons encode the Amino Acid %s ",
                         paa->aa1[i]);
                 gets( pm->junk ) ;
                 for ( x = 0 ; x < (int)strlen(pm->junk); x++) 
@@ -140,7 +141,9 @@ void    tester ( void ) {
                 if ( !strcmp (pm->junk, "?" ) ) {
                     printf( "Cheat %i\n", *(da + i) );
                     num_cheats++;
-                }
+                    continue;
+
+               }
                 
                
 
@@ -163,7 +166,7 @@ void    tester ( void ) {
             i = rand_num(64);
             loop = TRUE;
             while ( loop ) {
-                printf("\nName the Amino Acid %s ", paa->cod[i]);
+                printf("\nName the Amino Acid encoded by the codon %s ", paa->cod[i]);
                 gets( pm->junk );
                 for ( x = 0 ; x < (int)strlen(pm->junk ); x++) 
                     pm->junk[x] = (char) toupper( (int) pm->junk[x]);
@@ -227,7 +230,7 @@ void    asummary (void) {
     printf ( " \t %5i answers were wrong\n", num_wrong);
     printf ( " \t %5i times you had to ask for a hint\n", num_cheats);
     printf ( " \t  %3.0f%c accuracy \n", (float) ( (num_questions) ?                 
-        (float)100 * (num_questions - num_wrong - num_cheats) / 
+        (float)100 * (num_questions - num_wrong) / 
         (float)num_questions : 0 ),'%');
     pause;
     return;

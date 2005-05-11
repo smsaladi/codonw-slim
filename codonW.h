@@ -170,9 +170,9 @@ typedef struct {
 #endif
 
 #ifdef ORIG_DEFS                                 /* declare only once     */ 
-char Revision[] = "1.4.3";            /* version               */
+char Revision[] = "1.4.4";                       /* version               */
 char Update[]   = "$Date$";/* date                  */
-char Author[]   = "$Author$";            /* author                */
+char Author[]   = "$Author$";       /* author                */
 char  title[100];                                /* sequence description  */
 char  long_seq;                                  /* length of seq title   */ 
 char  last_base;
@@ -472,7 +472,7 @@ MENU_STRUCT Z_menu={  /* define all manner of default values              */
   NULL,               /* Null pointer caifile                             */ 
   NULL,               /* Null pointer cbifile                             */ 
   NULL,               /* Null pointer the logfile name                    */
-  stderr,             /* assign the pointer of stderr to my_err           */
+  NULL,               /* assign NULL pointer to my_err                    */
   NULL,               /* Null pointer fcoa_in                             */
   NULL                /* Null pointer fcoa_out                            */
 };

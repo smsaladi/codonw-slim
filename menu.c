@@ -1282,7 +1282,7 @@ int  printinfo(void) {
 # endif
 
   printf("\n\tAuthor   : John Peden\n");
-  printf("\tVersion  :%.*s\n", strlen(Revision) - 11, Revision + 10); 
+  printf("\tVersion  : %.*s\n", strlen(Revision) , Revision ); 
   printf("\tRevised  :%.*s %s %.*s\n",(int) strlen(Update) - 7, Update + 6,
 	 (*(Update + 7) ? "\n\t     by  :" : ""),
 	 (int) strlen(Author) - 10, Author + 9);
