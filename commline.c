@@ -79,7 +79,6 @@ int proc_comm_line(int *pargc, char ***pargv)
             "codonW [inputfile] [outputfile] [bulkoutfile] [options]\n"
             "General options and defaults:\n"
             " -h(elp)\tThis help message\n"
-            " -nomenu\tPrevent the menu interface being displayed\n"
             " -nowarn\tPrevent warnings about sequences being displayed\n"
             " -silent\tOverwrite files silently\n"
             " -totals\tConcatenate all genes in inputfile\n"
@@ -135,14 +134,11 @@ int proc_comm_line(int *pargc, char ***pargv)
         my_exit(0, ""); /* after writing out help quit         */
     }
 
-    /* These parameters are normally set in menu3 ie. the defaults menu        */
-    /* for a explanation of the various GARG_FLAGS see gargs                   */
-
     /* -silent stops warnings about file about to be overwritten               */
     if (garg(0, NULL, "-silent", GARG_THERE))
         pm->verbose = FALSE;
 
-    /* -total  causes sequences to be concatenated and treated as one sequence */
+    /* -total causes sequences to be concatenated and treated as one sequence */
     if (garg(0, NULL, "-total", GARG_THERE))
         pm->totals = TRUE;
 
@@ -414,21 +410,6 @@ int proc_comm_line(int *pargc, char ***pargv)
         }
     }
 
-    /* These options are commandline specific, ie. they do not have an        */
-    /* menu option                                                            */
-
-    /* prevents the menu system from being displayed, everything is           */
-    /* assumed to have been given on the command line                         */
-
-    if (p = garg(0, NULL, "-nomenu", GARG_EXACT))
-        pm->menu = FALSE;
-
-    /* prevents warnings about possible problems with the sequence data       */
-    /* being displayed, i.e. partial codons, stop codons, start codons        */
-
-    if (p = garg(0, NULL, "-nowarn", GARG_THERE))
-        pm->warn = FALSE;
-
     /* This section tries to identify the name used to call CodonW and it that*/
     /* name concurs with one of those tested for, certain commandline options */
     /* are assumed and the programme becomes much less interactive            */
@@ -464,49 +445,41 @@ int proc_comm_line(int *pargc, char ***pargv)
     else if (!strcmp(prog_name, "base3s"))
     {
         pm->prog = 's';
-        pm->menu = FALSE;
         pm->sil_base = TRUE;
     }
     else if (!strcmp(prog_name, "cai"))
     {
         pm->prog = 'c';
-        pm->menu = FALSE;
         pm->cai = TRUE;
     }
     else if (!strcmp(prog_name, "fop"))
     {
         pm->prog = 'f';
-        pm->menu = FALSE;
         pm->fop = TRUE;
     }
     else if (!strcmp(prog_name, "gc3s"))
     {
         pm->prog = '3';
-        pm->menu = FALSE;
         pm->gc3s = TRUE;
     }
     else if (!strcmp(prog_name, "gc"))
     {
         pm->prog = 'g';
-        pm->menu = FALSE;
         pm->gc = TRUE;
     }
     else if (!strcmp(prog_name, "enc"))
     {
         pm->prog = 'e';
-        pm->menu = FALSE;
         pm->enc = TRUE;
     }
     else if (!strcmp(prog_name, "cbi"))
     {
         pm->prog = 'i';
-        pm->menu = FALSE;
         pm->cbi = TRUE;
     }
     else if (!strcmp(prog_name, "cutot"))
     {
         pm->bulk = 'C';
-        pm->menu = FALSE;
         pm->totals = TRUE;
     }
     else
@@ -609,10 +582,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     while ((p = garg(0, NULL, "-", GARG_THERE)))
         if (strcmp(&p, "-"))
             continue;
-        else if (pm->menu)
-            printf("Unrecognised argument %s\n", p);
-        else
-        {
+        else {
             /* if we are running without a menu then abort this run         */
             sprintf(pm->junk, "Unrecognised argument %s", p);
             my_exit(99, pm->junk);
@@ -647,7 +617,6 @@ int proc_comm_line(int *pargc, char ***pargv)
     }
 
     /* The third which only occurs if the programme is running as CodonW      */
-
     if (pm->codonW && (p = garg(0, NULL, "", GARG_THERE)))
     {
         if ((pm->tidyoutfile = open_file("", p, "w",
@@ -668,101 +637,13 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* impersonating another programme or we decided not to use the menu      */
     /* we need to load an input file name                                     */
 
-    if ((!pm->codonW || !pm->menu) && !pm->inputfile)
-    {
-        if ((pm->inputfile = open_file("input filename", "input.dat",
-                                       "r", FALSE)) == NULL)
-        {
-            printf("Could not open input file - %s\n", p);
-            my_exit(1, "commline inputfile");
-        }
-        strncpy(pm->curr_infilename, pm->junk, MAX_FILENAME_LEN - 1);
-    }
+    if (!pm->inputfile)
+        my_exit(1, "Please provide inputfile as argument");
+    if (!pm->outputfile)
+        my_exit(1, "Please provide outputfile as argument");
+    if (!pm->tidyoutfile)
+        my_exit(1, "Please provide bulk file as argument");
 
-    /* If we have an input filename but no output then we must prompt for the */
-    /* output filename                                                        */
-
-    if (pm->inputfile && !pm->outputfile)
-    {
-        /* If we are trying to impersonate another programme use this method*/
-        /* but make sure that we know what this other programme is called   */
-        if (!pm->codonW && strlen(prog_name))
-        {
-            strcpy(pm->curr_outfilename, prog_name);
-            strcat(pm->curr_outfilename, ".def");
-        }
-        else
-        {
-
-            /* Use the input filename as a root filename                      */
-            strncpy(root, pm->curr_infilename, MAX_FILENAME_LEN - 5);
-            for (n = (int)strlen(root); n && root[n] != '.'; --n)
-                ;
-            if (n)
-                root[n] = '\0'; /* find root of filename  */
-
-            strcpy(pm->curr_outfilename, root);
-            strcat(pm->curr_outfilename, ".out");
-        } /* matchs else             */
-
-        /* now we know the suggested name for the output file lets open it  */
-        if (pm->verbose)
-        {
-            if ((pm->outputfile = open_file("indices output filename",
-                                            pm->curr_outfilename, "w", (int)pm->verbose)) == NULL)
-                my_exit(1, "commline");
-            strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
-        }
-        else
-        {
-            if ((pm->outputfile = open_file("",
-                                            pm->curr_outfilename, "w", (int)pm->verbose)) == NULL)
-                my_exit(1, "commline");
-            strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
-        }
-
-    } /* match if ( pm->inputfile */
-
-    /* we had a commandline inputfile name and output filename but none    */
-    /* for bulkoutput .. we prompt to save having to use menu 1            */
-    if (pm->inputfile && !pm->tidyoutfile)
-    {
-        if (pm->codonW)
-        {
-            /* Use the input filename as a root filename */
-            strncpy(root, pm->curr_infilename, MAX_FILENAME_LEN - 5);
-
-            for (n = (int)strlen(root); n && root[n] != '.'; --n)
-                ;
-            if (n)
-                root[n] = '\0'; /* find root of filename  */
-
-            strcpy(pm->curr_tidyoutname, root);
-            strcat(pm->curr_tidyoutname, ".blk");
-
-            /* now we know the suggested name for the output file lets open it     */
-            if (pm->verbose)
-            {
-                if ((pm->tidyoutfile = open_file("bulk output filename",
-                                                 pm->curr_tidyoutname, "w", (int)pm->verbose)) == NULL)
-                    my_exit(1, "commline");
-                strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
-            }
-            else
-            {
-                if ((pm->tidyoutfile = open_file("",
-                                                 pm->curr_tidyoutname, "w", (int)pm->verbose)) == NULL)
-                    my_exit(1, "commline");
-                strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
-            }
-        }
-        else
-        {
-            /* only use one output file when impersonating other programmes        */
-            /* just in case we make blkout and output the same file                */
-            pm->tidyoutfile = pm->outputfile;
-        }
-    }
     return 1;
 }
 /****************** Garg     ***********************************************/

@@ -1,6 +1,6 @@
 override cflags  = $(CFLAGS) -g
 
-objects  = codon_us.o codons.o open_fil.o commline.o menu.o tester.o coresp.o
+objects  = codon_us.o codons.o open_fil.o commline.o coresp.o
 linked   = rscu cu aau raau tidy reader cutab cutot transl bases base3s dinuc cai fop gc3s gc cbi enc
 
 CC=cc
@@ -25,9 +25,6 @@ realclean:
 codon_us.o: codon_us.c codonW.h
 	$(CC) -c $(CFLAGS) codon_us.c
 
-menu.o: menu.c codonW.h
-	$(CC) -c $(CFLAGS) menu.c
-
 codons.o: codons.c codonW.h
 	$(CC) -c $(CFLAGS) codons.c
 
@@ -39,9 +36,6 @@ open_fil.o:    open_fil.c codonW.h
 
 commline.o:    commline.c codonW.h
 	$(CC) -c $(CFLAGS) commline.c
-
-tester.o:      tester.c codonW.h
-	$(CC) -c $(CFLAGS) tester.c
 
 links: codonw
 		$(LN) codonw rscu

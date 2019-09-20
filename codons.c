@@ -31,7 +31,6 @@
 /* initilize_point    assigns genetic code dependent parameters to structs*/
 /* initilize_coa      selects the default codons to exclude from the      */
 /*                    Correspondence Analysis                             */
-/* main_menu          The interactive menu system                         */
 /* clean_up           Re-zeros various internal counters and arrays       */
 /* open_file          Open files, checks for existing files               */
 /* fileclose          Closes files and returns a NULL pointer or exits    */
@@ -131,205 +130,185 @@ int main(int argc, char *argv[])
   initilize_point(pm->code, pm->f_type, pm->c_type);
   initilize_coa(pm->code);
 
+  fprintf(stderr, "Welcome to CodonW %.*s for Help type h\n",
+        (int)strlen(Revision) - 11, Revision + 10);
+  
   proc_comm_line(&argc, &argv);
 
-  /******************** main loop ****************************/
+  pm->analysis_run = TRUE; /* codons has started an analysis this*/
+                            /* parameter is checked by my_exit    */
 
-  do
+  if (pm->inputfile != NULL) /* rewind various input files in case */
+    rewind(pm->inputfile);   /* this is a second analysis run      */
+  if (pm->fopfile != NULL)
+    rewind(pm->fopfile);
+  if (pm->cbifile != NULL)
+    rewind(pm->cbifile);
+  if (pm->caifile != NULL)
+    rewind(pm->caifile);
+
+  /* num_sequence                 number of sequences read              */
+  /* num_seq_int_stop             number with internal stop codons      */
+  /* valid_stops                  No.terminated with a stop codon       */
+  /* tot                          total number of codons read           */
+
+  num_sequence = num_seq_int_stop = valid_stops = tot = 0;
+
+  clean_up(ncod, naa); /*re-zero count of amino and codons   */
+  finput = pm->inputfile;
+  foutput = pm->outputfile;
+  fblkout = pm->tidyoutfile;
+
+  fileclose(&pm->fcoa_out);
+  if (pm->coa)
+    if ((pm->fcoa_out = open_file("", "coa_raw", "w", FALSE)) == NULL)
+      my_exit(1, "coa_raw"); /*controlled exit from CodonW     */
+  fcoaout = pm->fcoa_out;
+
+  /*  Tidy                                                                  */
+  /*  reads input data, returns the number of sequences read in             */
+  /*  num_sequence is global so I don't really have to assign it here       */
+  fprintf(stderr, "%s", finput);
+  num_sequence = tidy(finput, foutput, fblkout, fcoaout);
+
+  /* num_seq_int_stop  value is calculated in codon_usage_out               */
+  if (num_seq_int_stop > 0 && pm->warn)
   {
-    if (pm->codonW)
+    if (pm->totals && (num_seq_int_stop >= valid_stops))
+      fprintf(pm->my_err, "\tWARNING\t At least one sequence in your"
+                          " input file has\ninternal stop codons (found %i"
+                          " internal stops) \tWARNING\n",
+              num_seq_int_stop);
+    else
+      fprintf(pm->my_err, "\tWARNING\t %i sequences had internal "
+                          "stop codons \tWARNING\n",
+              num_seq_int_stop);
+  }
+
+  if (pm->coa && pm->totals) /* idiots error catch             */
+    my_exit(99, "A COA analysis of concatenated sequences is nonsensical\n"
+                "I have completed any other requests but not the COA");
+
+  /* if COA has been requested then open summary.coa and start the analysis  */
+  if (pm->coa)
+  {
+    if (fsummary == NULL)
+      if ((fsummary = open_file("", "summary.coa", "w", FALSE)) == NULL)
+        my_exit(1, "summary.coa");
+    /* set the number of genes in the analysis to the number read in by tidy   */
+    pcoa->rows = num_sequence;
+    fileclose(&fcoaout);
+    /* if COA has been selected then during the reading in phase raw codon usag*/
+    /* will have been written to the file coa_raw                              */
+    /* text bin converts this to binary data for the COA analysis program      */
+    textbin("coa_raw", "cbrawin");
+    printf("Generating correspondence analysis\n");
+    dot(0, 10);
+
+    fprintf(fsummary, "\t\tSummary of Correspondence Analysis \n\n"
+                      "The input file was %s it contained %i genes\n"
+                      "The number of axes generated was %i\n"
+                      "A COA was requested of %s%s usage\n\n\n"
+                      "Most of the output presented in this file "
+                      "has also been written to separate files\n"
+                      "genes.coa\tThe position of the genes on the "
+                      "first %i axis\n"
+                      "%s.coa\tThe position of the %i %s on the %i "
+                      "principle axes\n\n\n",
+            pm->curr_infilename,
+            pcoa->rows,
+            ((pcoa->rows < pcoa->colm) ? pcoa->rows : pcoa->colm) - 1,
+            (pm->coa == 'r') ? "relative synonymous " : "",
+            (pm->coa == 'a') ? "amino acid" : "codon",
+            pcoa->axis,
+            (pm->coa == 'a') ? "amino" : "codon",
+            pcoa->colm,
+            (pm->coa == 'a') ? "amino acids" : "codons",
+            pcoa->axis);
+    /* allocate memory for the rows and columns, scale both, and write out the*/
+    /* resulting matrix to the file cbrawin                                   */
+
+    PrepAFC("cbrawin");
+
+    /* Now do the analysis, calculate the data inertia and all the vectors    */
+
+    DiagoRC(fsummary);
+
+    /* colmout records the position of the columns on each of the factors/axes*/
+
+    if (pm->coa == 'a')
+      colmout("cbfcco", "amino.coa", paa, fsummary);
+    else
+      colmout("cbfcco", "codon.coa", paa, fsummary);
+
+    /* rowout records the position of the genes on each of the axis           */
+
+    rowout("cbfcli", "genes.coa", "coa_raw", fsummary);
+
+    /* pcoa->level == e for exhaustive analysis of inertia                    */
+    if (pcoa->level == 'e')
     {
-      /* If the program   chosen is codons    */
-      fprintf(stderr, "Welcome to CodonW %.*s for Help type h\n",
-              (int)strlen(Revision) - 11, Revision + 10);
-      /* Now Run the main menu interface      */
-      if (pm->menu)
-        main_menu(0);
+
+      fprintf(fsummary, "\n\n\nYou requested detailed output from the COA"
+                        "\n\nThe absolute and relative inertia "
+                        "of each gene and %s (see also inertia.coa)\n",
+              (pm->coa == 'a') ? "amino acids" : "codons");
+      /* inertialig must preceed inertiacol, records inertia of genes to file   */
+      /* it opens the raw codon usage file and loads the raw data to memory     */
+      inertialig("inertia.coa", "coa_raw", fsummary);
+      /* uses the preloaded raw codon usage, to calculate inertia and other data*/
+      /* such as contribution of each column to each factor and to the extent   */
+      /* each column is explained by each factor and what the residual variation*/
+      /* is                                                                     */
+      inertiacol("inertia.coa", fsummary);
     }
 
-    /* if users select human readable output they want nice tables  */
-    if (pm->bulk == 'C' && pm->seq_format == 'H')
-      pm->bulk = 'O';
-    if (pm->bulk == 'S' && pm->seq_format == 'H')
-      pm->bulk = 'O';
-
-    pm->analysis_run = TRUE; /* codons has started an analysis this*/
-                             /* parameter is checked by my_exit    */
-
-    if (pm->inputfile != NULL) /* rewind various input files in case */
-      rewind(pm->inputfile);   /* this is a second analysis run      */
-    if (pm->fopfile != NULL)
-      rewind(pm->fopfile);
-    if (pm->cbifile != NULL)
-      rewind(pm->cbifile);
-    if (pm->caifile != NULL)
-      rewind(pm->caifile);
-
-    /* num_sequence                 number of sequences read              */
-    /* num_seq_int_stop             number with internal stop codons      */
-    /* valid_stops                  No.terminated with a stop codon       */
-    /* tot                          total number of codons read           */
-
-    num_sequence = num_seq_int_stop = valid_stops = tot = 0;
-
-    clean_up(ncod, naa); /*re-zero count of amino and codons   */
-    finput = pm->inputfile;
-    foutput = pm->outputfile;
-    fblkout = pm->tidyoutfile;
-
-    fileclose(&pm->fcoa_out);
-    if (pm->coa)
-      if ((pm->fcoa_out = open_file("", "coa_raw", "w", FALSE)) == NULL)
-        my_exit(1, "coa_raw"); /*controlled exit from CodonW     */
-    fcoaout = pm->fcoa_out;
-
-    /*  Tidy                                                                  */
-    /*  reads input data, returns the number of sequences read in             */
-    /*  num_sequence is global so I don't really have to assign it here       */
-    num_sequence = tidy(finput, foutput, fblkout, fcoaout);
-
-    /* num_seq_int_stop  value is calculated in codon_usage_out               */
-    if (num_seq_int_stop > 0 && pm->warn)
+    /* if pcoa->add_row is real string, then it will be the name of the file  */
+    /* containing additional sequence data, that will be excluded from the COA*/
+    /* but factored in, using the original COA vectors and then all other     */
+    /* calculation can proceed as with the original data                      */
+    if (strlen(pcoa->add_row))
     {
-      if (pm->totals && (num_seq_int_stop >= valid_stops))
-        fprintf(pm->my_err, "\tWARNING\t At least one sequence in your"
-                            " input file has\ninternal stop codons (found %i"
-                            " internal stops) \tWARNING\n",
-                num_seq_int_stop);
-      else
-        fprintf(pm->my_err, "\tWARNING\t %i sequences had internal "
-                            "stop codons \tWARNING\n",
-                num_seq_int_stop);
-    }
-    /* don't wait for a pause if no_menu has been set                          */
-    if (pm->codonW && pm->menu)
-      pause;
+      if ((finput = open_file("", pcoa->add_row, "r", FALSE)) == NULL)
+        my_exit(6, "add_row");
+      if ((foutput = tmpfile()) == NULL)
+        my_exit(1, "temp file foutput");
+      if ((fblkout = tmpfile()) == NULL)
+        my_exit(1, "temp file fblkout");
 
-    if (pm->coa && pm->totals) /* idiots error catch             */
-      my_exit(99, "A COA analysis of concatenated sequences is nonsensical\n"
-                  "I have completed any other requests but not the COA");
+      if ((fcoaout = open_file("", "coa1_raw", "w", FALSE)) == NULL)
+        my_exit(1, "coa1_raw");
 
-    /* if COA has been requested then open summary.coa and start the analysis  */
-    if (pm->coa)
-    {
-      if (fsummary == NULL)
-        if ((fsummary = open_file("", "summary.coa", "w", FALSE)) == NULL)
-          my_exit(1, "summary.coa");
-      /* set the number of genes in the analysis to the number read in by tidy   */
-      pcoa->rows = num_sequence;
+      clean_up(ncod, naa);
+      num_sequence = num_seq_int_stop = valid_stops = tot = 0;
+      /* load the additional data file and process as normal                    */
+      /* but don't calculate any indices or write the data to the normal output */
+      /* files, rather write them to tmp files which will be deleted at end of  */
+      /* program execution                                                      */
+      num_seq = tidy(finput, foutput, fblkout, fcoaout);
+
+      /* close the files now we are finished                                    */
       fileclose(&fcoaout);
-      /* if COA has been selected then during the reading in phase raw codon usag*/
-      /* will have been written to the file coa_raw                              */
-      /* text bin converts this to binary data for the COA analysis program      */
-      textbin("coa_raw", "cbrawin");
-      printf("Generating correspondence analysis\n");
-      dot(0, 10);
+      fileclose(&foutput);
+      fileclose(&fblkout);
+      fileclose(&finput);
 
-      fprintf(fsummary, "\t\tSummary of Correspondence Analysis \n\n"
-                        "The input file was %s it contained %i genes\n"
-                        "The number of axes generated was %i\n"
-                        "A COA was requested of %s%s usage\n\n\n"
-                        "Most of the output presented in this file "
-                        "has also been written to separate files\n"
-                        "genes.coa\tThe position of the genes on the "
-                        "first %i axis\n"
-                        "%s.coa\tThe position of the %i %s on the %i "
-                        "principle axes\n\n\n",
-              pm->curr_infilename,
-              pcoa->rows,
-              ((pcoa->rows < pcoa->colm) ? pcoa->rows : pcoa->colm) - 1,
-              (pm->coa == 'r') ? "relative synonymous " : "",
-              (pm->coa == 'a') ? "amino acid" : "codon",
-              pcoa->axis,
-              (pm->coa == 'a') ? "amino" : "codon",
-              pcoa->colm,
-              (pm->coa == 'a') ? "amino acids" : "codons",
-              pcoa->axis);
-      /* allocate memory for the rows and columns, scale both, and write out the*/
-      /* resulting matrix to the file cbrawin                                   */
+      /* covert to binary, use additional raw data file, note not coa_raw this  */
+      textbin("coa1_raw", "cb1raw");
+      /* now call the routine suprow and add these additional genes, we will    */
+      /* process this data for inertia and append the gene and col. coordinates */
+      /* to the original gene.coa and codon.coa (or amino.coa)                  */
+      suprow(num_seq, "cbfcvp", "cb1raw", "genes.coa", "coa1_raw", fsummary);
 
-      PrepAFC("cbrawin");
+      /* close these files now that we have finished with them and the COA      */
 
-      /* Now do the analysis, calculate the data inertia and all the vectors    */
-
-      DiagoRC(fsummary);
-
-      /* colmout records the position of the columns on each of the factors/axes*/
-
-      if (pm->coa == 'a')
-        colmout("cbfcco", "amino.coa", paa, fsummary);
-      else
-        colmout("cbfcco", "codon.coa", paa, fsummary);
-
-      /* rowout records the position of the genes on each of the axis           */
-
-      rowout("cbfcli", "genes.coa", "coa_raw", fsummary);
-
-      /* pcoa->level == e for exhaustive analysis of inertia                    */
-      if (pcoa->level == 'e')
-      {
-
-        fprintf(fsummary, "\n\n\nYou requested detailed output from the COA"
-                          "\n\nThe absolute and relative inertia "
-                          "of each gene and %s (see also inertia.coa)\n",
-                (pm->coa == 'a') ? "amino acids" : "codons");
-        /* inertialig must preceed inertiacol, records inertia of genes to file   */
-        /* it opens the raw codon usage file and loads the raw data to memory     */
-        inertialig("inertia.coa", "coa_raw", fsummary);
-        /* uses the preloaded raw codon usage, to calculate inertia and other data*/
-        /* such as contribution of each column to each factor and to the extent   */
-        /* each column is explained by each factor and what the residual variation*/
-        /* is                                                                     */
-        inertiacol("inertia.coa", fsummary);
-      }
-
-      /* if pcoa->add_row is real string, then it will be the name of the file  */
-      /* containing additional sequence data, that will be excluded from the COA*/
-      /* but factored in, using the original COA vectors and then all other     */
-      /* calculation can proceed as with the original data                      */
-      if (strlen(pcoa->add_row))
-      {
-        if ((finput = open_file("", pcoa->add_row, "r", FALSE)) == NULL)
-          my_exit(6, "add_row");
-        if ((foutput = tmpfile()) == NULL)
-          my_exit(1, "temp file foutput");
-        if ((fblkout = tmpfile()) == NULL)
-          my_exit(1, "temp file fblkout");
-
-        if ((fcoaout = open_file("", "coa1_raw", "w", FALSE)) == NULL)
-          my_exit(1, "coa1_raw");
-
-        clean_up(ncod, naa);
-        num_sequence = num_seq_int_stop = valid_stops = tot = 0;
-        /* load the additional data file and process as normal                    */
-        /* but don't calculate any indices or write the data to the normal output */
-        /* files, rather write them to tmp files which will be deleted at end of  */
-        /* program execution                                                      */
-        num_seq = tidy(finput, foutput, fblkout, fcoaout);
-
-        /* close the files now we are finished                                    */
-        fileclose(&fcoaout);
-        fileclose(&foutput);
-        fileclose(&fblkout);
-        fileclose(&finput);
-
-        /* covert to binary, use additional raw data file, note not coa_raw this  */
-        textbin("coa1_raw", "cb1raw");
-        /* now call the routine suprow and add these additional genes, we will    */
-        /* process this data for inertia and append the gene and col. coordinates */
-        /* to the original gene.coa and codon.coa (or amino.coa)                  */
-        suprow(num_seq, "cbfcvp", "cb1raw", "genes.coa", "coa1_raw", fsummary);
-
-        /* close these files now that we have finished with them and the COA      */
-
-        fileclose(&foutput);
-        fileclose(&fblkout);
-        fileclose(&fcoaout);
-      }
+      fileclose(&foutput);
+      fileclose(&fblkout);
+      fileclose(&fcoaout);
     }
-  } while (pm->codonW && pm->menu); /* OK now we loop back to main_menu  */
-                                    /* though only if we are in interactive mode and running as CodonW        */
-  my_exit(0, "");                   /* last call to my_exit              */
+  }
+
+  my_exit(0, "");
   return 0;                         /* dummy return to keep pedantic but */
                                     /* brain dead compilers happy        */
 }
@@ -999,7 +978,7 @@ int my_exit(int error_num, char *message)
     exit(0);
     break;
   case 1:
-    printf("failed to open file for output <%s>\n", message);
+    fprintf(stderr, "failed to open file for input/output <%s>\n", message);
     exit(1);
     break;
   case 2:
@@ -1066,95 +1045,6 @@ int fileclose(FILE **file_pointer)
 
 int chelp(char *help_keyword)
 {
-  char helplib[MAX_FILENAME_LEN] = "";
-  char *p = NULL, inhelp = FALSE;
-  char QueryString[120]; /* limit for help phrase is 120 chars  */
-  char HelpMessage[121];
-  int line_counter = 2; /* assume 2 blank lines to start with  */
-  FILE *hfp = NULL;
-  /* Inital steps is to locate help file                                    */
-  /* First check if CODONW_H has been set as an environment variable        */
-  /* If not then assume that the help file is in the current directory      */
-
-  p = getenv("CODONW_H");
-  if (p != NULL)
-    strcpy(helplib, p);
-  else
-  {
-    strcpy(helplib, "codonW.hlp");
-  }
-
-  hfp = open_file("", helplib, "r", FALSE);
-
-  /* if we can't open the help file then explain what we where trying to do  */
-
-  if (hfp == NULL)
-  {
-    fprintf(stderr,
-            "Could not open help file codonw.hlp\n"
-            "Expected to find this file in %s\n"
-            "This can be overridden by setting the"
-            "environmental variable\n"
-            "CODONW_H to the help file location\n",
-            helplib);
-    pause;    /* make sure they Ack. the error mesg  */
-    return 0; /* abort                               */
-  }
-  /* Now that we have opened the help file, assemble the help keyword string */
-
-  strcpy(QueryString, "#");
-  strcat(QueryString, help_keyword);
-  strcat(QueryString, "#");
-  fprintf(stderr, "\n\n");
-
-  /* now scan the help file looking for this keyword                         */
-
-  while (fgets(HelpMessage, 120, hfp))
-  {
-
-    if (strstr(HelpMessage, QueryString) != NULL)
-      inhelp = TRUE; /* we found it  */
-
-    else if (inhelp && strstr(HelpMessage, "//"))
-    { /* found the end*/
-      fileclose(&hfp);
-      if (line_counter)
-        pause;
-      return 1;
-    }
-    /* if inhelp is true we have found the help keyword but not reached EOF   */
-    else if (inhelp)
-    {
-      if (strchr(HelpMessage, '\n'))
-        fprintf(stderr, "%s", HelpMessage);
-      /*stderr,it must be interactive */
-      else
-        fprintf(stderr, "%s\n", HelpMessage);
-      /*make sure there are line feeds*/
-
-      /* count how many lines I have printed to the terminal and compare it    */
-      /* with the length of the terminal screen as defined by pm->term_length  */
-
-      if (line_counter++ >= pm->term_length - 3 && line_counter)
-      {
-        line_counter = 0;
-        pause;
-        fprintf(stderr, "%s", HelpMessage);
-      }
-    }
-  }
-
-  /* Error catches for problems with help file                              */
-  if (HelpMessage == NULL && inhelp == FALSE)
-  {
-    fprintf(stderr, " Error in help file, %s not found ", QueryString);
-    pause;
-  }
-  else
-  {
-    fprintf(stderr, "Premature end of help file ...  \n");
-    pause;
-  }
   return 0; /* failed for some reason             */
 }
 
@@ -1164,14 +1054,6 @@ int chelp(char *help_keyword)
 
 char WasHelpCalled(char *input)
 {
-  char ans = FALSE;
 
-  if (strlen(input) == 1 && (char)toupper((int)input[0]) == 'H')
-    ans = TRUE;
-  else if (!strcmp(input, "help"))
-    ans = TRUE;
-  else if (!strcmp(input, "HELP"))
-    ans = TRUE;
-
-  return ans;
+  return FALSE;
 }

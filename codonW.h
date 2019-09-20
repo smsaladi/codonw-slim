@@ -33,12 +33,6 @@
 /*                                                debugging code          */
 #define debug_ printf("Got to %i\n", debugger++);
 #define debug(x) printf(#x " = %d", x);
-/*                                                defile the macro pause  */
-#define pause                                                   \
-  {                                                             \
-    fprintf(stderr, "\nPress return or enter to continue -> "); \
-    gets(pm->junk);                                             \
-  }
 #define MAX_FILENAME_LEN 90 /* max filename             */
 
 /* define the structures used within codonW                               */
@@ -95,7 +89,6 @@ typedef struct
   char bulk;    /* used to ident blk output */
   char verbose; /* don't overwrite files    */
   char totals;  /* concatenate genes ?      */
-  char menu;    /* show a menu       ?      */
   char warn;    /* show sequence warning    */
 
   char codonW;   /* am I codonW              */
@@ -436,7 +429,6 @@ MENU_STRUCT Z_menu = {
     'X',   /*This default is set in proc_commline to CU        */
     TRUE,  /*verbose                                      */
     FALSE, /*totals                                            */
-    TRUE,  /*menu interface                                    */
     TRUE,  /*warnings about sequence data are to be displayed  */
     FALSE, /*codons                                            */
     FALSE, /*fop                                               */
@@ -600,17 +592,6 @@ char WasHelpCalled(char *input);
 
 void sorted_by_axis1(double *ax1, int *sortax1, int lig);
 void highlow(long int *low, long int *high, FILE *summ);
-void menu_1(void);
-void menu_2(void);
-void menu_3(void);
-void menu_4(void);
-void menu_5(void);
-void menu_6(void);
-void menu_7(void);
-void menu_8(void);
-void menu_coa(void);
-void welcome(void);
-void menu_initial(void);
 
 void asummary(void);
 void tester(void);
@@ -655,4 +636,3 @@ void dot(int y, long int period);
 void DiagoComp(int n0, double **w, double *d, int *rang);
 void suprow(int num_seq, char *nficvp, char *nfictasup,
             char *nficlisup, char *option, FILE *summary);
-void main_menu(int c);

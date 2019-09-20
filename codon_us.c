@@ -364,7 +364,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
    {
       error_lines = 0; /* count lines of errors               */
       dot(0, 10);
-      pause;
    }
    return loc_cod_tot; /* Number of codons counted            */
 }
@@ -661,29 +660,6 @@ int cai_out(FILE *foutput, long int *nncod)
       user_cai.des = description; /* assign an array to a pointer  */
       user_cai.ref = reference;   /* as above                      */
 
-      if (pm->caifile == NULL && pm->verbose == TRUE && pm->menu == TRUE && (pcai == cai))
-      {
-         /* this is false                                                 */
-         /* if personal caifile is on commandline or                      */
-         /* in non-interactive mode or -silent option                     */
-         /* or cai values are not the default values                      */
-
-         printf("\nDo you wish to input a personal choice of CAI"
-                " values (y/n) [n] ");
-         gets(pm->junk);
-
-         /* This allows a user defined choice of CAI values to be selected    */
-         if ('Y' == (char)toupper((int)pm->junk[0]))
-         {
-            /* tell the user a little about what we are looking for          */
-            printf("\nInput file must contain 64 CAI values\n"
-                   "ranging from 0.00 to 1.00\n"
-                   "values must be separated by spaces\n");
-            /* open the CAI adaptiveness values file                          */
-            if (!(pm->caifile = open_file("file with CAI values", "cai.coa", "r", 0)))
-               my_exit(6, "cai_out");
-         }
-      } /* matched if pm->caifile=*/
       if (pm->caifile)
       {
          rewind(pm->caifile); /* unlikely unless fopfile = caifile   */
@@ -773,29 +749,6 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa)
 
       user_cbi.des = description; /* assign a pointer to array     */
       user_cbi.ref = reference;
-
-      if (pm->cbifile == NULL && pm->verbose == TRUE && pm->menu == TRUE && (pcbi == fop))
-      {
-         /* this is false                                                 */
-         /* if personal fopfile is on commandline or                      */
-         /* in non-interactive mode or -silent option                     */
-         /* or fop values are not the default values                      */
-
-         printf("\nDo you wish to input a personal choice of CBI"
-                " values (y/n) [n] ");
-
-         gets(pm->junk);
-
-         if ('Y' == (char)toupper((int)pm->junk[0]))
-         {
-
-            printf("\nInput file must contain 64 CBI values\n"
-                   " 1= rare codon\n 2= common codon\n 3= optimal codon\n");
-
-            if (!(pm->cbifile = open_file("file with CBI values", "cbi.coa", "r", 0)))
-               my_exit(6, "cai_out");
-         } /* matches if Y==                     */
-      }    /* matches if pm->cbifile==NULL       */
 
       if (pm->cbifile)
       {
@@ -920,26 +873,6 @@ int fop_out(FILE *foutput, long int *nncod)
    { /* have I been called previously      */
       user_fop.des = description;
       user_fop.ref = reference;
-      if (pm->fopfile == NULL && pm->verbose == TRUE && pm->menu == TRUE && (pfop == fop))
-      {
-         /* this is false                                                 */
-         /* if personal fopfile is on commandline or                      */
-         /* in non-interactive mode or -silent option                     */
-         /* or fop values are not the default values                      */
-
-         printf("\nDo you wish to input a personal choice of Fop"
-                " values (y/n) [n] ");
-         gets(pm->junk);
-         if ('Y' == (char)toupper((int)pm->junk[0]))
-         {
-            printf("\nInput file must contain 64 Fop values\n"
-                   " 1= rare codon\n 2= common codon\n 3= optimal codon\n");
-
-            if (!(pm->fopfile = open_file("file with Fop values", "fop.coa", "r", 0)))
-               my_exit(6, "fop_out");
-
-         } /*                         if 'Y' == */
-      }    /* if (pm->fopfile == NULL........ ) */
 
       if (pm->fopfile)
       {
