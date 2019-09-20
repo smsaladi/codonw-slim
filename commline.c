@@ -99,10 +99,6 @@ int proc_comm_line(int *pargc, char ***pargv)
             " -gcs3\t\tGC of synonymous codons 3rd positions\n"
             " -sil_base\tBase composition at synonymous third codon "
             "positions\n"
-
-        );
-        pause;
-        printf(
             " -L_sym\t\tNumber of synonymous codons\n"
             " -L_aa\t\tTotal number of synonymous and non-synonymous codons\n"
             " -all_indices\t\tAll the above indices\n"
@@ -123,9 +119,7 @@ int proc_comm_line(int *pargc, char ***pargv)
             "\nBulk output options | only one can be selected per analysis\n"
             " -aau\t\tAmino Acid Usage (AAU)\n"
             " -raau\t\tRelative Amino Acid Usage (RAAU)\n"
-            " -cu\t\tCodon Usage (CU) (default)\n");
-        pause;
-        printf(
+            " -cu\t\tCodon Usage (CU) (default)\n"
             " -cutab\t\tTabulation of codon usage\n"
             " -cutot\t\tTabulation of dataset's codon usage\n"
             " -rscu\t\tRelative Synonymous Codon Usage (RSCU)\n"
@@ -137,9 +131,8 @@ int proc_comm_line(int *pargc, char ***pargv)
             " -dinuc\t\tDinucleotide usage of the three codon pos.\n"
             " -noblk\t\tNo bulk output to be written to file\n"
             "\nWhere {file} represents an input filename, and N an integer"
-            " value");
-        pause;
-        my_exit(99, ""); /* after writing out help quit         */
+            " value\n");
+        my_exit(0, ""); /* after writing out help quit         */
     }
 
     /* These parameters are normally set in menu3 ie. the defaults menu        */
