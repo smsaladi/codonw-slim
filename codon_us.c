@@ -453,23 +453,14 @@ int raau_usage_out(FILE *fblkout, long *nnaa)
    int i, x;
    char sp;
 
-   if (pm->seq_format == 'M') /*  if machine readable  */
-      sp = pm->seperator;
-   else
-      sp = '\t';
+   sp = '\t';
 
    if (first_line)
    { /* if true write a header*/
-      if (pm->seq_format == 'M')
-         fprintf(fblkout, "%s", "Gene_name");
-      else
-         fprintf(fblkout, "%-20.20s", "Gene name");
+      fprintf(fblkout, "%s", "Gene_name");
 
       for (i = 0; i < 22; i++)
-         if (pm->seq_format == 'M')
-            fprintf(fblkout, "%c%s", sp, paa->aa3[i]); /* three letter AA names*/
-         else
-            fprintf(fblkout, "%c %-6.6s", sp, paa->aa3[i]);
+         fprintf(fblkout, "%c%s", sp, paa->aa3[i]); /* three letter AA names*/
       fprintf(fblkout, "\n");
       first_line = FALSE;
    }
@@ -477,26 +468,15 @@ int raau_usage_out(FILE *fblkout, long *nnaa)
       if (i != 11)
          aa_tot += nnaa[i]; /* total No. of AAs      */
 
-   if (pm->seq_format == 'M')
-      fprintf(fblkout, "%.30s", title);
-   else
-      fprintf(fblkout, "%-20.20s", title); /* don't waste spaces    */
+   fprintf(fblkout, "%.30s", title);
 
    for (x = 0; x < 22; x++)
       if (x == 11)
          fprintf(fblkout, "%c0.0000", sp); /* report 0 for stops    */
       else if (aa_tot)
-         if (pm->seq_format == 'M')
-            fprintf(fblkout, "%c%.4f", sp,
-                    (double)nnaa[x] / (double)aa_tot);
-         else
-            fprintf(fblkout, "%c%7.4f", sp,
-                    (double)nnaa[x] / (double)aa_tot);
+         fprintf(fblkout, "%c%.4f", sp, (double)nnaa[x] / (double)aa_tot);
       else /*What no AminoAcids!!!! */
-          if (pm->seq_format == 'M')
          fprintf(fblkout, "%c%c", sp, sp);
-      else
-         fprintf(fblkout, "%c ***** ", sp);
 
    fprintf(fblkout, "\n", sp);
    return 1;
@@ -512,20 +492,18 @@ int aa_usage_out(FILE *fblkout, long *nnaa)
 
    if (first_line)
    {
-      (pm->seq_format == 'M') ? fprintf(fblkout, "%s", "Gene_name") : fprintf(fblkout, "%-20.20s ", "Gene name");
+      fprintf(fblkout, "%s", "Gene_name");
 
       for (i = 0; i < 22; i++)
-         (pm->seq_format == 'M') ? fprintf(fblkout, "%c%s", sp, paa->aa3[i]) : /* 3 letter AA code     */
-             fprintf(fblkout, "%-5.5s", paa->aa3[i]);
+         fprintf(fblkout, "%c%s", sp, paa->aa3[i]); /* 3 letter AA code     */
+
       fprintf(fblkout, "\n");
       first_line = FALSE;
    }
-   (pm->seq_format == 'M') ? fprintf(fblkout, "%.20s", title) : fprintf(fblkout, "%-20.20s ", title);
+   fprintf(fblkout, "%.20s", title);
 
    for (i = 0; i < 22; i++)
-   {
-      (pm->seq_format == 'M') ? fprintf(fblkout, "%c%li", sp, nnaa[i]) : fprintf(fblkout, "%-5li", nnaa[i]);
-   }
+      fprintf(fblkout, "%c%li", sp, nnaa[i]);
 
    fprintf(fblkout, "\n");
    return 1;
@@ -545,7 +523,7 @@ void base_sil_us_out(FILE *foutput, long *nncod, long *nnaa)
 
    long cb[4]; /* codons that could have been GCAT    */
    int done[4];
-   char sp = (char)(pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    for (x = 0; x < 4; x++)
    {
@@ -648,7 +626,7 @@ int cai_out(FILE *foutput, long int *nncod)
    double sigma;
    float ftemp;
    int x;
-   char sp = (char)(pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
    static char cai_ttt = FALSE;
    static char description[61];
    static char reference[61];
@@ -736,7 +714,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa)
    float fcbi;
    int c, x;
    char str[2];
-   char sp = (pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    static char description[61];
    static char reference[61];
@@ -859,7 +837,7 @@ int fop_out(FILE *foutput, long int *nncod)
 
    char str[2];
 
-   char sp = (pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    static char first_call = TRUE;
    static char description[61];
@@ -1001,7 +979,7 @@ float enc_out(FILE *foutput, long int *nncod, long int *nnaa)
    double totb[9];
    double averb = 0, bb = 0, k2 = 0, s2 = 0;
    float enc_tot = 0.0F;
-   char sp = (pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    /* don't assume that 6 is the largest possible amino acid family assume 9*/
    for (i = 0; i < 9; i++)
@@ -1110,7 +1088,7 @@ void gc_out(FILE *foutput, FILE *fblkout, int which)
    long int totalaa = 0;
    static char header = FALSE;
    int x, y, z;
-   char sp = (pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    typedef double lf;
 
@@ -1157,95 +1135,40 @@ void gc_out(FILE *foutput, FILE *fblkout, int which)
    switch ((int)which)
    {
    case 1: /* exhaustive output for analysis     */
-      if (pm->seq_format == 'M')
-      { /* machine readable format            */
-         if (!header)
-         { /* print a first line                 */
-            fprintf(fblkout,
-                    "Gene_description%cLen_aa%cLen_sym%cGC%cGC3s%cGCn3s%cGC1%cGC2"
-                    "%cGC3%cT1%cT2%cT3%cC1%cC2%cC3%cA1%cA2%cA3%cG1%cG2%cG3\n",
-                    sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp);
-            header = TRUE;
-         }
-         /* now print the information          */
-         fprintf(fblkout, "%-.20s%c", title, sp);
+      if (!header)
+      { /* print a first line                 */
          fprintf(fblkout,
-                 "%ld%c%ld%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
-                 "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
-                 "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f\n",
-                 totalaa, sp,
-                 tot_s, sp,
-                 (lf)(base_tot[2] + base_tot[4]) / (lf)(totalaa * 3), sp,
-                 (lf)(bases[2] + bases[4]) / (lf)tot_s, sp,
-                 (lf)(base_tot[2] + base_tot[4] - bases[2] - bases[4]) / (lf)(totalaa * 3 - tot_s), sp,
-                 (lf)(base_1[2] + base_1[4]) / (lf)(totalaa), sp,
-                 (lf)(base_2[2] + base_2[4]) / (lf)(totalaa), sp,
-                 (lf)(base_3[2] + base_3[4]) / (lf)(totalaa), sp,
-                 (lf)base_1[1] / (lf)totalaa, sp,
-                 (lf)base_2[1] / (lf)totalaa, sp,
-                 (lf)base_3[1] / (lf)totalaa, sp,
-                 (lf)base_1[2] / (lf)totalaa, sp,
-                 (lf)base_2[2] / (lf)totalaa, sp,
-                 (lf)base_3[2] / (lf)totalaa, sp,
-                 (lf)base_1[3] / (lf)totalaa, sp,
-                 (lf)base_2[3] / (lf)totalaa, sp,
-                 (lf)base_3[3] / (lf)totalaa, sp,
-                 (lf)base_1[4] / (lf)totalaa, sp,
-                 (lf)base_2[4] / (lf)totalaa, sp,
-                 (lf)base_3[4] / (lf)totalaa);
+                  "Gene_description%cLen_aa%cLen_sym%cGC%cGC3s%cGCn3s%cGC1%cGC2"
+                  "%cGC3%cT1%cT2%cT3%cC1%cC2%cC3%cA1%cA2%cA3%cG1%cG2%cG3\n",
+                  sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp);
+         header = TRUE;
       }
-      else
-      {                   /* must be human formatted output then*/
-         fprintf(fblkout, /* tabulated output                   */
-                 "Gene Name: %-69.69s\nLength   : %-ld aa"
-                 " \tNon_synonymous/synonymous codons (%3ld/%5ld)\n"
-                 " GC=%5.3f\tGC3s=%5.3f\tGC_not_GC3s=%5.3f\n"
-                 "base\t1\t2\t3\ttotal\t\t1\t2\t3 \ttotal\n"
-                 "  T\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t"
-                 "W\t%5.3f\t%5.3f\t%5.3f\t%5.3f\n"
-                 "  C\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t"
-                 "S\t%5.3f\t%5.3f\t%5.3f\t%5.3f\n"
-                 "  A\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t"
-                 "R\t%5.3f\t%5.3f\t%5.3f\t%5.3f\n"
-                 "  G\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t"
-                 "Y\t%5.3f\t%5.3f\t%5.3f\t%5.3f\n\n",
-                 title,
-                 totalaa,
-                 totalaa - tot_s,
-                 tot_s,
-                 (lf)(base_tot[2] + base_tot[4]) / (lf)(totalaa * 3),
-                 (lf)(bases[2] + bases[4]) / (lf)tot_s,
-                 (lf)(base_tot[2] + base_tot[4] - bases[2] - bases[4]) / (lf)(totalaa * 3 - tot_s),
-                 (lf)base_1[1] / (lf)totalaa, (lf)base_2[1] / (lf)totalaa,
-                 (lf)base_3[1] / (lf)totalaa,
-                 (lf)base_tot[1] / (lf)(totalaa * 3),
-                 (lf)(base_1[1] + base_1[3]) / (lf)totalaa,
-                 (lf)(base_2[1] + base_2[3]) / (lf)totalaa,
-                 (lf)(base_3[1] + base_3[3]) / (lf)totalaa,
-                 (lf)(base_tot[1] + base_tot[3]) / (lf)(totalaa * 3),
-                 (lf)base_1[2] / (lf)totalaa, (lf)base_2[2] / (lf)totalaa,
-                 (lf)base_3[2] / (lf)totalaa,
-                 (lf)base_tot[2] / (lf)(totalaa * 3),
-                 (lf)(base_1[2] + base_1[4]) / (lf)totalaa,
-                 (lf)(base_2[2] + base_2[4]) / (lf)totalaa,
-                 (lf)(base_3[2] + base_3[4]) / (lf)totalaa,
-                 (lf)(base_tot[2] + base_tot[4]) / (lf)(totalaa * 3),
-                 (lf)base_1[3] / (lf)totalaa, (lf)base_2[3] / (lf)totalaa,
-                 (lf)base_3[3] / (lf)totalaa,
-                 (lf)base_tot[3] / (lf)(totalaa * 3),
-                 (lf)(base_1[3] + base_1[4]) / (lf)totalaa,
-                 (lf)(base_2[3] + base_2[4]) / (lf)totalaa,
-                 (lf)(base_3[3] + base_3[4]) / (lf)totalaa,
-                 (lf)(base_tot[3] + base_tot[4]) / (lf)(totalaa * 3),
-                 (lf)base_1[4] / (lf)totalaa, (lf)base_2[4] / (lf)totalaa,
-                 (lf)base_3[4] / (lf)totalaa,
-                 (lf)base_tot[4] / (lf)(totalaa * 3),
-                 (lf)(base_1[1] + base_1[2]) / (lf)totalaa,
-                 (lf)(base_2[1] + base_2[2]) / (lf)totalaa,
-                 (lf)(base_3[1] + base_3[2]) / (lf)totalaa,
-                 (lf)(base_tot[1] + base_tot[2]) / (lf)(totalaa * 3));
-         /* What hit me, did anyone see a bus  */
-      }
+      /* now print the information          */
+      fprintf(fblkout, "%-.20s%c", title, sp);
+      fprintf(fblkout,
+               "%ld%c%ld%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
+               "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
+               "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f\n",
+               totalaa, sp,
+               tot_s, sp,
+               (lf)(base_tot[2] + base_tot[4]) / (lf)(totalaa * 3), sp,
+               (lf)(bases[2] + bases[4]) / (lf)tot_s, sp,
+               (lf)(base_tot[2] + base_tot[4] - bases[2] - bases[4]) / (lf)(totalaa * 3 - tot_s), sp,
+               (lf)(base_1[2] + base_1[4]) / (lf)(totalaa), sp,
+               (lf)(base_2[2] + base_2[4]) / (lf)(totalaa), sp,
+               (lf)(base_3[2] + base_3[4]) / (lf)(totalaa), sp,
+               (lf)base_1[1] / (lf)totalaa, sp,
+               (lf)base_2[1] / (lf)totalaa, sp,
+               (lf)base_3[1] / (lf)totalaa, sp,
+               (lf)base_1[2] / (lf)totalaa, sp,
+               (lf)base_2[2] / (lf)totalaa, sp,
+               (lf)base_3[2] / (lf)totalaa, sp,
+               (lf)base_1[3] / (lf)totalaa, sp,
+               (lf)base_2[3] / (lf)totalaa, sp,
+               (lf)base_3[3] / (lf)totalaa, sp,
+               (lf)base_1[4] / (lf)totalaa, sp,
+               (lf)base_2[4] / (lf)totalaa, sp,
+               (lf)base_3[4] / (lf)totalaa);
       break;
    case 2: /* a bit more simple ... GC content   */
       fprintf(foutput, "%5.3f%c", (lf)((base_tot[2] + base_tot[4]) / (lf)(totalaa * 3)), sp);
@@ -1331,11 +1254,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa)
    int last_row[4];
    int x;
    char sp;
-
-   if (pm->seq_format == 'M')
-      sp = pm->seperator;
-   else
-      sp = '\t';
+   sp = pm->seperator;
 
    for (x = 0; x < 4; x++)
       last_row[x] = 0;
@@ -1345,26 +1264,18 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa)
    for (x = 1; x < 65; x++)
    {
       if (last_row[x % 4] != pcu->ca[x])
-      {
-         (pm->seq_format == 'M') ? fprintf(fblkout, "%s%c%s%c", paa->aa3[pcu->ca[x]], sp, paa->cod[x], sp) : fprintf(fblkout, "%s %s", paa->aa3[pcu->ca[x]], paa->cod[x]);
-      }
+         fprintf(fblkout, "%s%c%s%c", paa->aa3[pcu->ca[x]], sp, paa->cod[x], sp);
       else
-      {
-         (pm->seq_format == 'M') ? fprintf(fblkout, "%c%s%c", sp, paa->cod[x], sp) : fprintf(fblkout, "    %s", paa->cod[x]);
-      }
+         fprintf(fblkout, "%c%s%c", sp, paa->cod[x], sp);
       /* Sample of output *******************************************************/
       /*Phe UUU    0 0.00 Ser UCU    1 0.24 Tyr UAU    1 0.11 Cys UGU    1 0.67 */
       /*    UUC   22 2.00     UCC   10 2.40     UAC   17 1.89     UGC    2 1.33 */
       /*Leu UUA    0 0.00     UCA    1 0.24 TER UAA    0 0.00 TER UGA    1 3.00 */
       /*    UUG    1 0.12     UCG    6 1.44     UAG    0 0.00 Trp UGG    4 1.00 */
       /**************************************************************************/
-      (pm->seq_format == 'M') ? fprintf(fblkout, "%i%c%.2f%c",
-                                        (int)nncod[x],
-                                        sp, (nncod[x]) ? ((float)nncod[x] / (float)nnaa[pcu->ca[x]]) * (float)(*(ds + x)) : 0, sp)
-                              : /* end of fprintf        */
-          fprintf(fblkout, "%5i%5.2f ",
-                  (int)nncod[x],
-                  (nncod[x]) ? ((float)nncod[x] / (float)nnaa[pcu->ca[x]]) * (float)(*(ds + x)) : 0); /* end of fprintf        */
+      fprintf(fblkout, "%i%c%.2f%c",
+               (int)nncod[x],
+               sp, (nncod[x]) ? ((float)nncod[x] / (float)nnaa[pcu->ca[x]]) * (float)(*(ds + x)) : 0, sp);
 
       last_row[x % 4] = pcu->ca[x];
 
@@ -1450,31 +1361,19 @@ int dinuc_out(FILE *fblkout, char *ttitle)
          dinuc_tot[3] += din[x][i]; /* and total dinuc usage,            */
       }
 
-   if (pm->seq_format == 'H')
-      sp = ' ';
-
    if (!called)
    { /* write out the first row as a header*/
       called = TRUE;
 
-      if (pm->seq_format == 'H')
+      fprintf(fblkout, "%s", "title");
+      for (y = 0; y < 4; y++)
       {
-         fprintf(fblkout, "%-13.13s%cframe%c", "title", sp, sp);
+         fprintf(fblkout, "%c%s", sp, "frame");
          for (x = 0; x < 4; x++)
             for (i = 0; i < 4; i++)
-               fprintf(fblkout, "%c%c%4.4c", bases[x], bases[i], sp);
+               fprintf(fblkout, "%c%c%c", sp, bases[x], bases[i]);
       }
-      else
-      {
-         fprintf(fblkout, "%s", "title");
-         for (y = 0; y < 4; y++)
-         {
-            fprintf(fblkout, "%c%s", sp, "frame");
-            for (x = 0; x < 4; x++)
-               for (i = 0; i < 4; i++)
-                  fprintf(fblkout, "%c%c%c", sp, bases[x], bases[i]);
-         }
-      }
+
       fprintf(fblkout, "\n");
    } /* matches if (!called)               */
 
@@ -1488,8 +1387,8 @@ int dinuc_out(FILE *fblkout, char *ttitle)
    /**************************************************************************/
    for (x = 0; x < 4; x++)
    {
-      if (pm->seq_format == 'H' || x == 0)
-         fprintf(fblkout, (pm->seq_format == 'H') ? "%-15.15s%c" : "%-.15s%c", ttitle, sp);
+      if (x == 0)
+         fprintf(fblkout, "%-.15s%c", ttitle, sp);
 
       switch (x)
       {
@@ -1528,7 +1427,7 @@ int dinuc_out(FILE *fblkout, char *ttitle)
                fprintf(fblkout, "%5.3f%c", 0.00, sp);
       }
 
-      if (pm->seq_format == 'H' || x == 3)
+      if (x == 3)
          fprintf(fblkout, "\n");
    }
    return 1;
@@ -1792,10 +1691,7 @@ void highlow(long int *low, long int *high, FILE *ssummary)
    if ((last_row = (int *)calloc(65, sizeof(int))) == NULL)
       my_exit(3, "last_row");
 
-   if (pm->seq_format == 'M')
-      sp = pm->seperator;
-   else
-      sp = '\t';
+   sp = '\t';
 
    /* initialize the various arrays                                       */
    for (x = 0; x < 4; x++)
@@ -2138,7 +2034,7 @@ int hydro_out(FILE *foutput, long int *nnaa)
    long int a2_tot = 0;
    float hydro = (float)0.0;
    int i;
-   char sp = (pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)
@@ -2171,7 +2067,7 @@ int aromo_out(FILE *foutput, long int *nnaa)
    long int a1_tot = 0;
    float aromo = (float)0.0;
    int i;
-   char sp = (pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+   char sp = (char)pm->seperator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)

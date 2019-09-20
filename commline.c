@@ -82,8 +82,6 @@ int proc_comm_line(int *pargc, char ***pargv)
             " -nowarn\tPrevent warnings about sequences being displayed\n"
             " -silent\tOverwrite files silently\n"
             " -totals\tConcatenate all genes in inputfile\n"
-            " -machine\tMachine readable output\n"
-            " -human\t\tHuman readable output\n"
             " -code N\tGenetic code as defined under menu 3 option 5\n"
             " -f_type N\tFop/CBI codons as defined by menu 3 option 6\n"
             " -c_type N\tCai fitness values as defined by menu 3 option 7\n"
@@ -141,12 +139,6 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* -total causes sequences to be concatenated and treated as one sequence */
     if (garg(0, NULL, "-total", GARG_THERE))
         pm->totals = TRUE;
-
-    /* -machine or -human determines for whom the output should be formatted   */
-    if (p = garg(0, NULL, "-human", GARG_THERE))
-        pm->seq_format = 'H';
-    if (p = garg(0, NULL, "-mach", GARG_THERE))
-        pm->seq_format = 'M';
 
     /* -code determines the genetic code                                       */
     if (p = garg(0, NULL, "-code", GARG_NEXT | GARG_EXACT))

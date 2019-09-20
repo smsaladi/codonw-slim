@@ -753,7 +753,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
   char sp;
 
   /* set the column delimiter to something shorter than pm->seperator     */
-  sp = (char)(pm->seq_format == 'H') ? (char)'\t' : (char)pm->seperator;
+  sp = (char)pm->seperator;
 
   if (tot)
   { /* still data in array seq..           */
@@ -770,7 +770,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 
   /* if we are concatenating sequences then change the title to avger_of  */
   if (pm->totals)
-    (pm->seq_format == 'M') ? strcpy(title, "Average_of_genes") : strcpy(title, "Average of genes");
+    strcpy(title, "Average_of_genes");
 
   if (strchr("RNT", (int)pm->bulk) != NULL)
   {
@@ -833,7 +833,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
     if (num_sequence == 1 || pm->totals)
     {
 
-      fprintf(foutput, (pm->seq_format == 'H') ? "%-25.25s%c" : "%-.25s%c", "title", sp);
+      fprintf(foutput, "%-.25s%c", "title", sp);
       if (pm->sil_base)
         fprintf(foutput, "%s%c%s%c%s%c%s%c", "T3s", sp, "C3s", sp, "A3s", sp,
                 "G3s", sp);
@@ -863,7 +863,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 
     /* if output format is human readable print the fixed width sequence  */
     /* name, else print only the name of the sequence                     */
-    fprintf(foutput, (pm->seq_format == 'H') ? "%-25.25s%c" : "%-.25s%c", title, sp);
+    fprintf(foutput, "%-.25s%c", title, sp);
 
     /*Need to use if statements as we allow more than one index to be calc*/
     /* per sequence read in                                               */

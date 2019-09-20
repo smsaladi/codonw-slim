@@ -113,7 +113,6 @@ typedef struct
   char c_type; /* which predefined CAI val */
 
   char seq_type;                           /* DNA or Protein or CU     */
-  char seq_format;                         /* Human or machine readable*/
   char curr_infilename[MAX_FILENAME_LEN];  /* input filename           */
   char curr_outfilename[MAX_FILENAME_LEN]; /* .out filename            */
   char curr_tidyoutname[MAX_FILENAME_LEN]; /* .blk filename            */
@@ -453,7 +452,6 @@ MENU_STRUCT Z_menu = {
     0, /* type of cai_species                              */
 
     FALSE, /* sequence type                                    */
-    'H',   /* Sequence format                                  */
     "",    /* current input file name                          */
     "",    /* current output file name                         */
     "",    /* current tidy outfile name                        */
