@@ -8,7 +8,7 @@ CFLAGS= -O -DBSD
 LN=ln -f
 
 
-all: codonw links   
+all: codonw links
 
 codonw: $(objects)
 	$(CC) $(CFLAGS)  $(objects) -o codonw -lm
@@ -22,22 +22,22 @@ cleanall:
 realclean:
 	\rm -f $(objects) codonw Makefile $(linked)
 
-codon_us.o: codon_us.c codonW.h 
-	$(CC) -c $(CFLAGS) codon_us.c  
+codon_us.o: codon_us.c codonW.h
+	$(CC) -c $(CFLAGS) codon_us.c
 
-menu.o: menu.c codonW.h 
+menu.o: menu.c codonW.h
 	$(CC) -c $(CFLAGS) menu.c
 
-codons.o: codons.c codonW.h 
+codons.o: codons.c codonW.h
 	$(CC) -c $(CFLAGS) codons.c
 
-coresp.o: coresp.c codonW.h 
+coresp.o: coresp.c codonW.h
 	$(CC) -c $(CFLAGS) coresp.c
 
 open_fil.o:    open_fil.c codonW.h
 	$(CC) -c $(CFLAGS) open_fil.c
 
-commline.o:    commline.c codonW.h 
+commline.o:    commline.c codonW.h
 	$(CC) -c $(CFLAGS) commline.c
 
 tester.o:      tester.c codonW.h

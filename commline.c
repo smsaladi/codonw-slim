@@ -35,16 +35,16 @@
 /* reported to the user, arguments not preceded by a dash are assumed to  */
 /* be filenames. The input, output and bulk output files to be precise    */
 /**************************************************************************/
-int proc_comm_line( int *pargc , char ***pargv)     
+int proc_comm_line( int *pargc , char ***pargv)
 {
     char    *p;
     char    c;
     int     n;
     char    prog_name[64];
     char    root[MAX_FILENAME_LEN];
-    
+
 /* decide how to process argc[0] which will be the name of the programme  */
-#if defined (_WINDOWS) || defined (_DOS) || defined ( WIN32 ) 
+#if defined (_WINDOWS) || defined (_DOS) || defined ( WIN32 )
     if ( (p = strrchr(**pargv, '\\')) != NULL )
         strncpy(prog_name, p+1 , 63);
     else
@@ -53,26 +53,26 @@ int proc_comm_line( int *pargc , char ***pargv)
     if ( (p = strrchr(**pargv, '/')) != NULL )
         strncpy(prog_name, p+1, 63);
     else
-        strncpy(prog_name, **pargv, 10);  
+        strncpy(prog_name, **pargv, 10);
 #elif defined(VMS) || defined (OPENVMS)          /* maybe VMS or OPENVMS  */
     if ( (p = strrchr(**pargv, ']')) != NULL )
         strncpy(prog_name, p+1, 63);
     else
-        strncpy(prog_name, **pargv, 10);        
+        strncpy(prog_name, **pargv, 10);
 #else
     printf("UNRECOGNISED SYSTEM type won't be able to impersonate other programmes\n");
     strcpy(prog_name, "codon");	               /* OK I give up          */
 #endif
 
-  if ( (p = strrchr(prog_name, '.')) != NULL )  /* remove file extension  */        
+  if ( (p = strrchr(prog_name, '.')) != NULL )  /* remove file extension  */
       *p = '\0';                                /* tidy.exe -> tidy       */
 
      /* first call to garg initialises the function  with the command line*/
      /* parameters and the number of arguments, subsequent calls strip    */
      /* these off one by one                                              */
- 
+
      /* has the user asked for help               ????????????            */
-  if ((p = garg(*pargc, *pargv, "-h", GARG_EXACT)) || 
+  if ((p = garg(*pargc, *pargv, "-h", GARG_EXACT)) ||
       (p = garg(0, NULL, "-help", GARG_EXACT))){
       printf(
 	       "codonW [inputfile] [outputfile] [bulkoutfile] [options]\n"
@@ -80,7 +80,7 @@ int proc_comm_line( int *pargc , char ***pargv)
 	       " -h(elp)\tThis help message\n"
 	       " -nomenu\tPrevent the menu interface being displayed\n"
                " -nowarn\tPrevent warnings about sequences being displayed\n"
-	       " -silent\tOverwrite files silently\n"     
+	       " -silent\tOverwrite files silently\n"
 	       " -totals\tConcatenate all genes in inputfile\n"
 	       " -machine\tMachine readable output\n"
 	       " -human\t\tHuman readable output\n"
@@ -142,35 +142,35 @@ int proc_comm_line( int *pargc , char ***pargv)
         pause;
         my_exit(99,"");             /* after writing out help quit         */
     }
-    
 
-/* These parameters are normally set in menu3 ie. the defaults menu        */ 
+
+/* These parameters are normally set in menu3 ie. the defaults menu        */
 /* for a explanation of the various GARG_FLAGS see gargs                   */
 
 /* -silent stops warnings about file about to be overwritten               */
-    if (garg(0, NULL, "-silent", GARG_THERE))    
+    if (garg(0, NULL, "-silent", GARG_THERE))
         pm->verbose = FALSE;
 
-    
+
 /* -total  causes sequences to be concatenated and treated as one sequence */
     if (  garg(0, NULL, "-total" ,  GARG_THERE))
-        pm->totals = TRUE;          
+        pm->totals = TRUE;
 
 /* -machine or -human determines for whom the output should be formatted   */
-    if (p = garg(0, NULL, "-human", GARG_THERE)) 
+    if (p = garg(0, NULL, "-human", GARG_THERE))
         pm->seq_format = 'H';
     if (p = garg(0, NULL, "-mach",  GARG_THERE))
         pm->seq_format = 'M';
 
-/* -code determines the genetic code                                       */   
+/* -code determines the genetic code                                       */
     if (p = garg(0, NULL, "-code", GARG_NEXT | GARG_EXACT)) {
         strcpy(pm->junk, p);
         n=0;
-        while ( isdigit( (int) pm->junk[n]) && pm->junk[n] != '\0') 
+        while ( isdigit( (int) pm->junk[n]) && pm->junk[n] != '\0')
             n++;
         if ( n != (int)strlen(pm->junk)
-             || atoi(pm->junk) < 0 || atoi(pm->junk) > NumGeneticCodes ) {  
-            printf( "FATAL: The value for genetic code %s is invalid\n", 
+             || atoi(pm->junk) < 0 || atoi(pm->junk) > NumGeneticCodes ) {
+            printf( "FATAL: The value for genetic code %s is invalid\n",
 			         pm->junk);
             my_exit(99,"Fatal error in genetic code value");
         } else {
@@ -187,14 +187,14 @@ int proc_comm_line( int *pargc , char ***pargv)
   if (p = garg(0, NULL, "-f_type", GARG_NEXT | GARG_EXACT))  {
         strcpy(pm->junk, p);
         n = 0;
-        while ( isdigit( (int) pm->junk[n])  && pm->junk[n] != '\0') 
+        while ( isdigit( (int) pm->junk[n])  && pm->junk[n] != '\0')
             n++;
-        if ( n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 || 
+        if ( n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 ||
 		atoi(pm->junk) >= NumFopSpecies ) {
-            printf("FATAL: The value for fop_type %s is not valid\n", 
+            printf("FATAL: The value for fop_type %s is not valid\n",
 			        pm->junk);
             my_exit(99,"Fatal error in Fop value");
-        } else { 
+        } else {
             pm->f_type = (char) atoi(p);  /* define organism type for Fop  */
 	    initilize_point(pm->code, pm->f_type, pm->c_type);
         }
@@ -206,11 +206,11 @@ int proc_comm_line( int *pargc , char ***pargv)
     if (p = garg(0, NULL, "-c_type", GARG_NEXT | GARG_EXACT))  {
         strcpy(pm->junk,p);
         n = 0;
-        while ( isdigit( (int) pm->junk[n])  && pm->junk[n] != '\0') 
+        while ( isdigit( (int) pm->junk[n])  && pm->junk[n] != '\0')
             n++;
-        if ( n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 || 
+        if ( n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 ||
 		atoi(pm->junk) >= NumCaiSpecies) {
-            printf("FATAL: The value for cai_type %s is not valid\n", 
+            printf("FATAL: The value for cai_type %s is not valid\n",
 			       pm->junk);
             my_exit(99,"Fatal error in CAI type value");
 
@@ -247,7 +247,7 @@ int proc_comm_line( int *pargc , char ***pargv)
     if (p = garg(0, NULL, "-hyd" ,  GARG_EXACT))
         pm->hyd = TRUE;
     if (p = garg(0, NULL, "-aro" ,  GARG_EXACT))
-        pm->aro = TRUE; 
+        pm->aro = TRUE;
 /* Turns on all the above indices                                         */
     if (p = garg(0, NULL, "-all_indices" ,  GARG_EXACT)){
         pm->cai = TRUE;
@@ -260,23 +260,23 @@ int proc_comm_line( int *pargc , char ***pargv)
         pm->L_sym = TRUE;
         pm->L_aa = TRUE;
         pm->hyd = TRUE;
-        pm->aro = TRUE; 
+        pm->aro = TRUE;
     }
 
 /* This section in used to input the filenames for personal choices of Fop */
 /* CBI or CAI values. The name is tested to make sure the file is readable */
 /* the pointer to the file is then assign to the relevant pointer in the   */
 /* struct Z_menu and then processed properly in codon_us.c                 */
- 
-/* Fop                                                                     */    
+
+/* Fop                                                                     */
     if (p = garg(0, NULL, "-fop_file", GARG_NEXT | GARG_EXACT)) {
         if ( (pm->fopfile = open_file( "", p, "r", FALSE)) == NULL ) {
             printf("Could not open Fop file - %s\n", p);
             my_exit(1,"commline open fop file");
         } else
-            strncpy(pm->fop_filen, pm->junk, MAX_FILENAME_LEN - 1);  
+            strncpy(pm->fop_filen, pm->junk, MAX_FILENAME_LEN - 1);
  /* idiot catch, if you load personal fop values you want to calculate fop */
-	pm->fop=TRUE;                 
+	pm->fop=TRUE;
     }
 
 /* CAI                                                                     */
@@ -310,15 +310,15 @@ int proc_comm_line( int *pargc , char ***pargv)
         pm->coa = 'a';
     if (p = garg(0, NULL, "-coa_expert",  GARG_EXACT)) /* detailed inertia */
         (coa.level='e');                               /* analysis         */
-    
- 
+
+
 /* These are options selectable under the advanced COA menu                */
-/* This first option -coa_axes changes the number of axis recorded to file */    
+/* This first option -coa_axes changes the number of axis recorded to file */
     if (p = garg(0, NULL, "-coa_axes", GARG_NEXT | GARG_EXACT)){
-      if ( isdigit( (int) *p) ){ 
-      n = (char)atoi(p);                      
-      /* just check that correspondence analysis has been selected         */     
-      if ( pm->coa == 'a' && (n > 20 || n<0)  || ( n<0 || n>59 )) { 
+      if ( isdigit( (int) *p) ){
+      n = (char)atoi(p);
+      /* just check that correspondence analysis has been selected         */
+      if ( pm->coa == 'a' && (n > 20 || n<0)  || ( n<0 || n>59 )) {
         fprintf(pm->my_err,"Value %d is out of range for Number COA Axis "
             "adjusting to max value\n",n);
         if ( pm->coa == 'a' ) pcoa->axis = 20; else  pcoa->axis = 59;
@@ -327,7 +327,7 @@ int proc_comm_line( int *pargc , char ***pargv)
            }
       }
       }
-            
+
 /* Select the size of dataset to use to identify optimal codons            */
     if (p = garg(0, NULL, "-coa_num",  GARG_NEXT|GARG_EXACT))  {
         strcpy (pm->junk,p) ;
@@ -336,8 +336,8 @@ int proc_comm_line( int *pargc , char ***pargv)
               pcoa->fop_gene=atoi(pm->junk)*-1;
         }else {
                pcoa->fop_gene=atoi(pm->junk);
-        }        
-    }        
+        }
+    }
 
 
 /* These option are mutually exclusive and are normally selected using the */
@@ -352,7 +352,7 @@ int proc_comm_line( int *pargc , char ***pargv)
     if ( p = garg(0, NULL, "-cutot", GARG_THERE)){
        pm->bulk   = 'C';
        pm->totals =TRUE;
-    }      
+    }
     if ( p = garg(0, NULL, "-reader", GARG_EXACT))
         pm->bulk = 'R';
     if ( p = garg(0, NULL, "-rscu", GARG_EXACT))
@@ -365,16 +365,16 @@ int proc_comm_line( int *pargc , char ***pargv)
         pm->bulk = 'A';
     if ( p = garg(0, NULL, "-transl", GARG_THERE))
         pm->bulk = 'N';
-    if ( p = garg(0, NULL, "-base", GARG_THERE)) 
+    if ( p = garg(0, NULL, "-base", GARG_THERE))
         pm->bulk = 'B';
     if (p = garg(0, NULL,  "-dinuc", GARG_THERE))
         pm->bulk = 'D';
     if (p = garg(0, NULL,  "-noblk", GARG_EXACT))
         pm->bulk = 'X';
- 
+
 /* -t is used to change the column separator used in the output files     */
 /* at present it must be a space, tab or comma                            */
-/* Must occur after -transl or it misreads transl as a seperator          */ 
+/* Must occur after -transl or it misreads transl as a seperator          */
     if (p = garg(0, NULL, "-t"   , GARG_NEXT | GARG_SUBSQ)) {
         strcpy(pm->junk, p);
         n = 0;
@@ -385,11 +385,11 @@ int proc_comm_line( int *pargc , char ***pargv)
             printf( "WARNING: The chosen separator %s is unsuitable use"
                     "comma, tab or space\n", pm->junk);
         } else {
-            pm->seperator = c; 
+            pm->seperator = c;
         }
     }
-  
-    
+
+
 /* These options are commandline specific, ie. they do not have an        */
 /* menu option                                                            */
 
@@ -438,8 +438,8 @@ int proc_comm_line( int *pargc , char ***pargv)
         pm->bulk = 'D';
     else if ( !strcmp(prog_name, "transl")   )
         pm->bulk = 'N';
-    else if ( !strcmp(prog_name, "bases" )   ) 
-        pm->bulk = 'B';        
+    else if ( !strcmp(prog_name, "bases" )   )
+        pm->bulk = 'B';
     else if ( !strcmp(prog_name, "base3s")   ) {
         pm->prog     = 's' ;
         pm->menu     = FALSE;
@@ -475,12 +475,12 @@ int proc_comm_line( int *pargc , char ***pargv)
     } else {
        pm->codonW=TRUE;       /* if argc[0] is not recognised assume codons*/
                               /* if blk output is still X then assume cu   */
-       if (pm->bulk=='X') pm->bulk='C'; 
+       if (pm->bulk=='X') pm->bulk='C';
        }
 
 
     if (!pm->codonW ) {       /* we appear to be impersonating another prog*/
-                              /* now we switch to the correct greeting     */ 
+                              /* now we switch to the correct greeting     */
         if (pm->bulk && pm->bulk!='X'){
 	    pm->seperator='\000';     /* stop chars being converted by tidy*/
             switch (pm->bulk) {
@@ -567,7 +567,7 @@ int proc_comm_line( int *pargc , char ***pargv)
 /* so now we test for any remaining, these are unrecognised               */
 
     while (p = garg(0, NULL, "-", GARG_THERE))
-      if ( pm->menu )           
+      if ( pm->menu )
         printf("Unrecognised argument %s\n", p);
       else {
           /* if we are running without a menu then abort this run         */
@@ -587,24 +587,24 @@ int proc_comm_line( int *pargc , char ***pargv)
     }
 /* The second should be the output filename                               */
     if ( p = garg(0, NULL, "", GARG_THERE)) {
-        if ( (pm->outputfile = open_file( "", p, "w", 
+        if ( (pm->outputfile = open_file( "", p, "w",
             (int) pm->verbose)) == NULL ) {
             printf("Could not open output file - %s\n", p );
             my_exit(1,"commline out file");
         } else
             strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
-    } 
+    }
 
 /* The third which only occurs if the programme is running as CodonW      */
 
     if ( pm->codonW && (p = garg(0, NULL, "", GARG_THERE)) ) {
-        if ( (pm->tidyoutfile = open_file( "", p, "w", 
+        if ( (pm->tidyoutfile = open_file( "", p, "w",
             (int) pm->verbose)) == NULL ) {
             printf("Could not open blkoutput file - %s\n", p );
             my_exit(1,"commline blk outfile");
         } else
             strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
-    } 
+    }
 
 /* Now check the command line is empty ... it should be at this point     */
     while (p = garg(0, NULL, "", GARG_THERE))
@@ -615,25 +615,25 @@ int proc_comm_line( int *pargc , char ***pargv)
 /* we need to load an input file name                                     */
 
     if ( (!pm->codonW || !pm->menu) && !pm->inputfile ){
-      if ( (pm->inputfile = open_file( "input filename", "input.dat", 
+      if ( (pm->inputfile = open_file( "input filename", "input.dat",
           "r", FALSE)) == NULL )  {
 	   printf("Could not open input file - %s\n", p );
 	   my_exit(1,"commline inputfile");
-      } 
+      }
      strncpy(pm->curr_infilename, pm->junk, MAX_FILENAME_LEN - 1);
     }
-    
+
 /* If we have an input filename but no output then we must prompt for the */
 /* output filename                                                        */
 
-    if ( pm->inputfile  && !pm->outputfile ) {    
+    if ( pm->inputfile  && !pm->outputfile ) {
       /* If we are trying to impersonate another programme use this method*/
       /* but make sure that we know what this other programme is called   */
       if ( !pm->codonW && strlen (prog_name) ){
         strcpy(pm->curr_outfilename, prog_name);
         strcat(pm->curr_outfilename, ".def");
       } else {
- 
+
 	/* Use the input filename as a root filename                      */
 	strncpy(root, pm->curr_infilename, MAX_FILENAME_LEN - 5);
 	for (n = (int) strlen(root); n && root[n]!='.'  ; --n);
@@ -641,23 +641,23 @@ int proc_comm_line( int *pargc , char ***pargv)
 
 	strcpy(pm->curr_outfilename, root);
         strcat(pm->curr_outfilename, ".out");
-      }                                        /* matchs else             */  
+      }                                        /* matchs else             */
 
-      /* now we know the suggested name for the output file lets open it  */   
+      /* now we know the suggested name for the output file lets open it  */
       if ( pm->verbose ) {
 	if ( (pm->outputfile = open_file( "indices output filename",
-	 pm->curr_outfilename, "w",(int) pm->verbose)) == NULL )     
+	 pm->curr_outfilename, "w",(int) pm->verbose)) == NULL )
 	                  my_exit(1,"commline");
 	strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
       }else{
 	if ( (pm->outputfile = open_file( "",
-	 pm->curr_outfilename, "w",(int) pm->verbose)) == NULL )     
+	 pm->curr_outfilename, "w",(int) pm->verbose)) == NULL )
 	                  my_exit(1,"commline");
 	strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
       }
 
     }                                          /* match if ( pm->inputfile */
-    
+
 
 
     /* we had a commandline inputfile name and output filename but none    */
@@ -673,22 +673,22 @@ int proc_comm_line( int *pargc , char ***pargv)
 	strcpy(pm->curr_tidyoutname, root);
         strcat(pm->curr_tidyoutname, ".blk");
 
-    /* now we know the suggested name for the output file lets open it     */      
+    /* now we know the suggested name for the output file lets open it     */
 	if( pm->verbose) {
 	  if ( (pm->tidyoutfile = open_file( "bulk output filename",
-		 pm->curr_tidyoutname, "w",(int) pm->verbose)) == NULL ) 
+		 pm->curr_tidyoutname, "w",(int) pm->verbose)) == NULL )
 	    my_exit(1,"commline");
 	strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
 	}else{
 	  if ( (pm->tidyoutfile = open_file( "",
-	      pm->curr_tidyoutname, "w",(int) pm->verbose)) == NULL ) 
+	      pm->curr_tidyoutname, "w",(int) pm->verbose)) == NULL )
 	    my_exit(1,"commline");
 	strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
 	}
-      }else{ 
+      }else{
 	/* only use one output file when impersonating other programmes        */
-    /* just in case we make blkout and output the same file                */      
-	pm->tidyoutfile = pm->outputfile; 
+    /* just in case we make blkout and output the same file                */
+	pm->tidyoutfile = pm->outputfile;
       }
     }
 return 1;
@@ -702,8 +702,8 @@ return 1;
 /* This subroutine was developed as a collaboration with Colin McFarlane   */
 /* GARG_EXACT           The argument must match targ exactly               */
 /* GARG_THERE           The targ may be sub-string of the argument         */
-/* GARG_SUBSQ           The string immediate after targ is returned        */ 
-/* GARG_NEXT            The next argument after targ is returned           */ 
+/* GARG_SUBSQ           The string immediate after targ is returned        */
+/* GARG_NEXT            The next argument after targ is returned           */
 /* else                 return NULL                                        */
 /***************************************************************************/
 char           *garg(int argc, char *argv[], const char *targ, int mode)

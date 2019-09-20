@@ -42,7 +42,7 @@ if [ "$option" = 'usage' ]; then
   clean      removes all object files
   cleanall   removes all the object files, codonW, linked files and Makefile
   realclean  removes all the object files, codonW, linked files and Makefile
-  
+
 END
   exit 1
 fi
@@ -54,7 +54,7 @@ if [ "$option" = 'all' ]; then
 fi
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# put correct "make" and "cc" commands 
+# put correct "make" and "cc" commands
 #
 
 OS=`uname`
@@ -110,7 +110,7 @@ if [ ! -f "Makefile" ]; then
   if [ "$OS" = "SunOS" -o "$OS" = "Solaris" ]; then
     ccComDef='gcc'
   else
-    ccComDef='cc'    
+    ccComDef='cc'
   fi
 
   $ECHON "enter the cc command [${ccComDef}]: $ECHONEND"
@@ -167,7 +167,7 @@ if [ ! -f "Makefile" ]; then
     lncmd="$ccLn -s";
   fi
 
- link_prog="rscu cu aau raau tidy reader cutab cutot transl bases base3s dinuc cai fop gc3s gc cbi enc" 
+ link_prog="rscu cu aau raau tidy reader cutab cutot transl bases base3s dinuc cai fop gc3s gc cbi enc"
 
 cat <<EOF >> Makefile
 
@@ -179,7 +179,7 @@ CFLAGS= $cflags -DBSD
 LN=$lncmd
 
 
-all: codonw links   
+all: codonw links
 
 codonw: $(objects)
 	$(CC) $(CFLAGS)  $(objects) -o codonw -lm
@@ -193,22 +193,22 @@ cleanall:
 realclean:
 	\rm -f $(objects) codonw Makefile $(linked)
 
-codon_us.o: codon_us.c codonW.h 
-	$(CC) -c $(CFLAGS) codon_us.c  
+codon_us.o: codon_us.c codonW.h
+	$(CC) -c $(CFLAGS) codon_us.c
 
-menu.o: menu.c codonW.h 
+menu.o: menu.c codonW.h
 	$(CC) -c $(CFLAGS) menu.c
 
-codons.o: codons.c codonW.h 
+codons.o: codons.c codonW.h
 	$(CC) -c $(CFLAGS) codons.c
 
-coresp.o: coresp.c codonW.h 
+coresp.o: coresp.c codonW.h
 	$(CC) -c $(CFLAGS) coresp.c
 
 open_fil.o:    open_fil.c codonW.h
 	$(CC) -c $(CFLAGS) open_fil.c
 
-commline.o:    commline.c codonW.h 
+commline.o:    commline.c codonW.h
 	$(CC) -c $(CFLAGS) commline.c
 
 tester.o:      tester.c codonW.h
@@ -218,7 +218,7 @@ links: codonw
 EOF
 
 
-for file in $link_prog 
+for file in $link_prog
 do
  echo "\t\t$(LN) codonw $file"  >> Makefile
 done

@@ -21,14 +21,14 @@
 /* For the latest version and information see                             */
 /* http://codonw.sourceforge.net 					  */
 /**************************************************************************/
-#include <stdlib.h> 
+#include <stdlib.h>
 #ifdef _WINDOWS
 #include <process.h>
 #endif
-#include <stdio.h>    
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "codonW.h" 
+#include "codonW.h"
 
 /************** Main menu   **********************************************/
 /* Drives the menu system                                                */
@@ -68,7 +68,7 @@ void    main_menu ( int menu )
         welcome();
         pause;
         clearscr(pm->term_length);
-        break;                     
+        break;
     default:
         fprintf ( stderr,"ERROR: Unrecognised menu in main_menu\n");
         break;
@@ -76,17 +76,17 @@ void    main_menu ( int menu )
 }
 
 
-/* This is the first menu presented when running CodonW                   */ 
+/* This is the first menu presented when running CodonW                   */
 
 void menu_initial (void)
 {
     int loop = TRUE;
     int c;
-    
+
     while (loop) {                                             /* loop    */
         printf (" Initial Menu \n");
-        printf (" Option\n\t (1) Load sequence file\n"); 
-        
+        printf (" Option\n\t (1) Load sequence file\n");
+
 /*      printf ("\t (2) Check sequence file for redundancy\n");           */
         printf ("\t ( )\n");
         printf ("\t (3) Change defaults\n");
@@ -104,39 +104,39 @@ void menu_initial (void)
         printf (" Select a menu choice, (Q)uit or (H)elp -> ");
 
         gets(pm->junk);
-        
+
         if (isalpha((int)pm->junk[0])) {
             c = toupper( (int) pm->junk[0]);
 
             switch  (c) {
-            case 'Q':       
+            case 'Q':
                 my_exit(2,"main menu");
-                break;                
-            case 'R':    
+                break;
+            case 'R':
                 /* test that all the required files are opened             */
                 if ( pm->inputfile && pm->outputfile && pm->tidyoutfile)
                     loop = FALSE;
-                else {                  
+                else {
                     printf("Not all required files are open\n");
 		            printf("About to open input and output files\n");
 		            pause;
-		            main_menu(1);   
+		            main_menu(1);
 		            loop = FALSE;
-                 } 
+                 }
 		    break;
-            case 'H':                                              /* help */     
-                 chelp ( "main_menu" );       
-                 break;   
+            case 'H':                                              /* help */
+                 chelp ( "main_menu" );
+                 break;
             default:
                 fprintf( stderr, "The answer %s is not valid\n", pm->junk);
                 pause;
                 break;
-           }                                            /* end of switch c */     
+           }                                            /* end of switch c */
         } else if (isdigit((int) pm->junk[0])) {
             c =    atoi( pm->junk);
-            if (c > 0 && c <= 9 )  
+            if (c > 0 && c <= 9 )
                 main_menu( (int) c );
-            else 
+            else
                 fprintf( stderr, "The answer %s is not valid\n", pm->junk);
         }
         clearscr(pm->term_length);
@@ -155,7 +155,7 @@ void    menu_1 (void)
 {
     char    root[MAX_FILENAME_LEN];
     int n;
-    
+
     clearscr(pm->term_length);
     printf (" Loading sequence menu (type h for help)\n");
 
@@ -184,10 +184,10 @@ void    menu_1 (void)
     if (n)        root[n] = '\0';           /* define root of the filename */
 
     if ( strlen(pm->curr_outfilename)) {
-        printf( "\nThe previous  output file was \"%s\"\n", 
+        printf( "\nThe previous  output file was \"%s\"\n",
             pm->curr_outfilename );
         fclose( pm->outputfile);
-    } 
+    }
         if (!(pm->outputfile = open_file("output sequence file\t",
             strcat(root, ".out"), "w", (int)pm->verbose)))
             my_exit(1,"output menu1");
@@ -196,19 +196,19 @@ void    menu_1 (void)
 
     strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
     strncpy(root, pm->curr_infilename     , MAX_FILENAME_LEN - 5);
- 
+
     for (n = (int) strlen(root); n && root[n]!='.'  ; --n);
     if ( n  ) root[n] = '\0';                   /* find root of filename  */
 
     if ( strlen(pm->curr_tidyoutname)) {
-        printf( "\nThe previous bulk output file was \"%s\"\n", 
+        printf( "\nThe previous bulk output file was \"%s\"\n",
             pm->curr_tidyoutname );
         fclose( pm->tidyoutfile);
    }
         if (!(pm->tidyoutfile = open_file("bulk output file\t",
             strcat(root, ".blk"), "w", (int) pm->verbose)))
             my_exit(1,"tidyout menu1");
-   
+
     strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
 
     clearscr(pm->term_length);
@@ -222,7 +222,7 @@ void    menu_2 (void)
 {
     int loop = TRUE;
     int  c;
-    
+
     clearscr(pm->term_length);
     while ( loop ) {
         printf (" Menu 2 \n");
@@ -250,7 +250,7 @@ void    menu_2 (void)
                 pause;
                 break;
             }
-        } 
+        }
     }
     return;
 }
@@ -265,22 +265,22 @@ void    menu_3 (void)
     int loop = TRUE;
     int i;
     int c;
-    
+
     clearscr(pm->term_length);
     while (loop) {
         printf (" Changing defaults\n");
         printf (" Options\n");
         printf (" %-40.40s", "(1) Change the ASCII delimiter in output");
-        printf ("{%s}\n", 
-            (pm->seperator == ' ' ) ? "space" : 
-            (pm->seperator == '\t') ? "tab" : 
-            (pm->seperator == ',' ) ? "," : 
+        printf ("{%s}\n",
+            (pm->seperator == ' ' ) ? "space" :
+            (pm->seperator == '\t') ? "tab" :
+            (pm->seperator == ',' ) ? "," :
             "ERROR" );
 
         printf (" %-40.40s", "(2) Run silently, No Warnings");
         printf ("{%s}\n", (pm->verbose) ? "FALSE" : "TRUE");
         printf (" %-40.40s", "(3) Log warnings/information to a file");
-        printf ("{%s}\n", (strlen(pm->curr_logfilename) > 1) ? "TRUE" : 
+        printf ("{%s}\n", (strlen(pm->curr_logfilename) > 1) ? "TRUE" :
                 "FALSE");
         printf (" %-40.40s", "(4) Number of lines on screen");
         printf ("{%d}\n", pm->term_length);
@@ -291,13 +291,13 @@ void    menu_3 (void)
         printf (" %-40.40s", "(7) Change the CAI values");
         printf ("{%s}\n", cai[pm->c_type].des);
         printf (" %-40.40s", "(8) Output Human or Computer readable");
-        printf ("{%s readable}\n", (pm->seq_format == 'M') ? "Computer" : 
-                "Human"); 
+        printf ("{%s readable}\n", (pm->seq_format == 'M') ? "Computer" :
+                "Human");
         printf (" %-40.40s", "(9) Concatenate or individual genes");
         printf ("{%s genes}\n", (pm->totals == TRUE ? "concatenate":
-                "individual"));      
+                "individual"));
         printf (" %s", "(10) Correspondence analysis defaults\n");
-    
+
         printf (" (X) Return to previous menu\n");
         printf ("Choices enclosed with curly brackets are the current "
                 "defaults\n");
@@ -307,7 +307,7 @@ void    menu_3 (void)
 
         if (isalpha((int) pm->junk[0])|| pm->junk[0]=='\0') {
             switch (c = toupper((int) pm->junk[0])){
-              case 'Q': 
+              case 'Q':
                 my_exit(2,"menu 3");           /* decided to quit program  */
                 break;
               case 'H':
@@ -336,10 +336,10 @@ void    menu_3 (void)
         switch ((int) c) {
         case 1:
             clearscr(pm->term_length);
-            printf (" The current separator is  \"%s\"\n",  
-                (pm->seperator == ' ' ) ? "space" : 
-                (pm->seperator == '\t') ? "tab" : 
-                (pm->seperator == ',' ) ? "," : 
+            printf (" The current separator is  \"%s\"\n",
+                (pm->seperator == ' ' ) ? "space" :
+                (pm->seperator == '\t') ? "tab" :
+                (pm->seperator == ',' ) ? "," :
                 "ERROR" );
             printf (" Please select a new separator \t:");
             gets(pm->junk);
@@ -347,7 +347,7 @@ void    menu_3 (void)
 
             if ( strchr ("\t, ", (int)c) == NULL || c == '\0' ) {
                                      /* remember the \0 is in every string */
-                printf( "WARNING: The chosen separator %s is unsuitable\n", 
+                printf( "WARNING: The chosen separator %s is unsuitable\n",
                         pm->junk);
                 printf( "\tSeparator is unchanged try comma,tab "
                         "or space\n\n");
@@ -365,7 +365,7 @@ void    menu_3 (void)
                 strcpy(pm->curr_logfilename , "" );   /* blank logfilename */
                 pm->my_err = stderr;                  /* redirects errors  */
                                                       /* to stderr         */
-                fclose(pm->logfile);                  /* close logfile     */ 
+                fclose(pm->logfile);                  /* close logfile     */
             } else {
                                        /* open logfile and redirect stderr */
                 if (!(pm->logfile = open_file("log filename        \t",
@@ -377,7 +377,7 @@ void    menu_3 (void)
             break;
 
         case 4:                                       /* No of line on term*/
-            printf("Please give the new height of the screen [%i] ", 
+            printf("Please give the new height of the screen [%i] ",
                     pm->term_length);
             gets(pm->junk);
             if ( isdigit( (int) pm->junk[0]))
@@ -389,9 +389,9 @@ void    menu_3 (void)
             printf(" Genetic codes currently supported are\n");
            /* NumGeneticCodes is given in codonW.h                         */
            for ( i = 0 ; i < NumGeneticCodes ; i++) {
-                (pm->code == i) ? printf ( " (%i) {%-45.45s %-17.17s}", i, 
-                    cu[i].des, cu[i].typ) : 
-                    printf ( " (%i)  %-45.45s %-17.17s ", i, cu[i].des, 
+                (pm->code == i) ? printf ( " (%i) {%-45.45s %-17.17s}", i,
+                    cu[i].des, cu[i].typ) :
+                    printf ( " (%i)  %-45.45s %-17.17s ", i, cu[i].des,
                         cu[i].typ) ;
                 printf("\n");
             }
@@ -401,9 +401,9 @@ void    menu_3 (void)
             gets(pm->junk);
             if ( isdigit( (int) pm->junk[0]) ) {
                 c = (char)atoi(pm->junk);
-                if ( c > 0 && c < NumGeneticCodes && pm->code!= (char) c ){ 
+                if ( c > 0 && c < NumGeneticCodes && pm->code!= (char) c ){
                     pm->code = (char) c;
-                    initilize_point(pm->code,pm->f_type, pm->c_type);  
+                    initilize_point(pm->code,pm->f_type, pm->c_type);
                     }
             }
             break;
@@ -413,9 +413,9 @@ void    menu_3 (void)
             printf(" Fop values pre-loaded are\n");
             /* NumFopSpecies  defined with the Fop_struct in codonW.h      */
             for ( i = 0 ; i < NumFopSpecies ; i++) {
-                (pm->f_type == i) ? printf (" (%i) {%-25.25s %-40.40s}", 
-                    i, fop[i].des, fop[i].ref) : 
-                    printf (" (%i)  %-25.25s %-40.40s ", i, fop[i].des, 
+                (pm->f_type == i) ? printf (" (%i) {%-25.25s %-40.40s}",
+                    i, fop[i].des, fop[i].ref) :
+                    printf (" (%i)  %-25.25s %-40.40s ", i, fop[i].des,
                         fop[i].ref) ;
                 printf("\n");
             }
@@ -426,7 +426,7 @@ void    menu_3 (void)
             if ( isdigit( (int) pm->junk[0]) ) {
                 c = (char)atoi(pm->junk);
                 if ( c > 0 && c < NumFopSpecies && pm->f_type!=(char) c) {
-                        pm->f_type = (char) c;  
+                        pm->f_type = (char) c;
                         initilize_point(pm->code,pm->f_type, pm->c_type);
                 }
             }
@@ -438,9 +438,9 @@ void    menu_3 (void)
 
             /*  NumCaiSpecies currently defined in codonW.h                */
             for ( i = 0 ; i < NumCaiSpecies ; i++) {
-                (pm->c_type == i) ? printf (" (%i) {%-25.25s %-40.40s}", 
-                    i, cai[i].des, cai[i].ref) : 
-                    printf (" (%i)  %-25.25s %-40.40s ", i, cai[i].des, 
+                (pm->c_type == i) ? printf (" (%i) {%-25.25s %-40.40s}",
+                    i, cai[i].des, cai[i].ref) :
+                    printf (" (%i)  %-25.25s %-40.40s ", i, cai[i].des,
                         cai[i].ref) ;
                 printf("\n");
             }
@@ -460,19 +460,19 @@ void    menu_3 (void)
             break;
        case 8:                       /* machine or human readable format  */
              clearscr(pm->term_length);
-             pm->seq_format = 
+             pm->seq_format =
                 (char) (  pm->seq_format == 'M' ? 'H' : 'M'); /*toggle    */
              break;
       case 9:                        /* concatenate genes?                */
             clearscr(pm->term_length);
-            pm->totals    = (char) (pm->totals == TRUE ? FALSE : TRUE); 
+            pm->totals    = (char) (pm->totals == TRUE ? FALSE : TRUE);
             break;
      case 10:                       /* change COA default then go to menu5*/
            clearscr(pm->term_length);
-           if( !pm->coa ) 
+           if( !pm->coa )
                 menu_5();
-           else 
-                menu_coa();           
+           else
+                menu_coa();
            break;
      default:
             fprintf( stderr, "The answer %s is not a valid\n", pm->junk);
@@ -491,22 +491,22 @@ void    menu_4 (void)
     char    *choices[] = {
         " ",
         "Codon Adaptation Index       (CAI)",
-        "Frequency of OPtimal codons  (Fop)", 
+        "Frequency of OPtimal codons  (Fop)",
         "Codon bias index             (CBI)",
         "Effective Number of Codons   (ENc)",
         "GC content of gene           (G+C)",
         "GC of silent 3rd codon posit.(GC3s)",
-        "Silent base composition",    
+        "Silent base composition",
         "Number of synonymous codons  (L_sym)",
         "Total number of amino acids  (L_aa )",
         "Hydrophobicity of protein    (Hydro)",
         "Aromaticity of protein       (Aromo)",
         "Select all"
-    }; 
+    };
     int i,NumChoices;
     int c;
-    
-    
+
+
     NumChoices = (char) 12;                      /* size of choices array */
 
     clearscr(pm->term_length);
@@ -518,52 +518,52 @@ void    menu_4 (void)
             printf(" (%2i) ", i);
             switch ((int) i) {
             case 1:
-                (pm->cai) ? printf ("{%-45.45s}", choices[i]) : 
+                (pm->cai) ? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 2:
-                (pm->fop) ? printf ("{%-45.45s}", choices[i]) : 
+                (pm->fop) ? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 3:
-                (pm->cbi) ? printf ("{%-45.45s}", choices[i]) : 
+                (pm->cbi) ? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
-                break;         
+                break;
             case 4:
-                (pm->enc) ? printf ("{%-45.45s}", choices[i]) : 
+                (pm->enc) ? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 5:
-                (pm->gc)  ? printf ("{%-45.45s}", choices[i]) : 
+                (pm->gc)  ? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 6:
-                (pm->gc3s)? printf ("{%-45.45s}", choices[i]) : 
+                (pm->gc3s)? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 7:
-                (pm->sil_base) ?  printf ("{%-45.45s}", choices[i]) : 
+                (pm->sil_base) ?  printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 8:
-                (pm->L_sym) ?  printf ("{%-45.45s}", choices[i]) : 
+                (pm->L_sym) ?  printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 9:
-                (pm->L_aa)?  printf ("{%-45.45s}", choices[i]) : 
+                (pm->L_aa)?  printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
             case 10:
-                (pm->hyd ) ? printf ("{%-45.45s}", choices[i]) : 
+                (pm->hyd ) ? printf ("{%-45.45s}", choices[i]) :
                 printf (" %s ", choices[i]);
                 break;
-            case 11:    
-                (pm->aro ) ? printf ("{%-45.45s}", choices[i]): 
+            case 11:
+                (pm->aro ) ? printf ("{%-45.45s}", choices[i]):
                 printf (" %s ", choices[i]);
                 break;
             case 12:
                 printf (" %s ", choices[i]);
-                break;                      
+                break;
             default:
                 fprintf(stderr, "programming error \n");
                 my_exit(99, "menu 4");
@@ -581,7 +581,7 @@ void    menu_4 (void)
 
         if (isalpha( (int) pm->junk[0]) || pm->junk[0]=='\0') {
             switch (c = toupper( (int) pm->junk[0])){
-                case 'Q': 
+                case 'Q':
                  my_exit(2,"menu 4");     /* User decides to quit programme*/
                  break;
                 case 'X':
@@ -603,107 +603,107 @@ void    menu_4 (void)
             switch ((int) c) {
             /* User wants to calculate CAI then we explain that it is     */
             /* dependent on the choice of CAI adaptiveness values         */
-            case 1: 
-                pm->cai = (char) ((pm->cai)   ? FALSE : TRUE);    
+            case 1:
+                pm->cai = (char) ((pm->cai)   ? FALSE : TRUE);
                 if( pm->cai){
                 clearscr(pm->term_length);
                 printf("\nTo calculate CAI a reference set of highly ");
                 printf("expressed genes \nmust be selected\n\n");
                 printf("The reference set currently selected is that of "
-                    "%s\n\n",cai[pm->c_type].des);  
+                    "%s\n\n",cai[pm->c_type].des);
                 printf("See the menu 'Change defaults' to change this "
-                       "selection\n\n");  
+                       "selection\n\n");
                 printf("If you wish to use a personal choice of CAI "
                        "vaules\n");
                 printf("\tplease continue and you will be prompted for"
-                       " input\n\n");  
+                       " input\n\n");
                 pause;
                 }
                 break ;
-            case 2: 
+            case 2:
             /* User wants to calculate Fop then we explain that it is     */
             /* dependent on the choice of optimal codons                  */
-                pm->fop = (char) ((pm->fop)   ? FALSE : TRUE); 
-                if(pm->fop){   
-                clearscr(pm->term_length);              
+                pm->fop = (char) ((pm->fop)   ? FALSE : TRUE);
+                if(pm->fop){
+                clearscr(pm->term_length);
                 printf("\n\nYou have chosen to calculate Fop\n\n");
                 printf("To calculate Fop a set of optimal "
                        "codons must be selected\n");
                 printf("The optimal codons of %s are the current selection"
-                       "\n\n",fop[pm->f_type].des);  
+                       "\n\n",fop[pm->f_type].des);
                 printf("See the menu 'Change defaults' to change Fop "
                        "selection\n\n");
                 printf("If you wish to use a personal choice of Fop "
                        "vaules\n");
                 printf("\tplease continue and you will be prompted for "
-                       "input\n\n");            
+                       "input\n\n");
                 pause;
                 }
-                break ; 
-           case 3: 
+                break ;
+           case 3:
             /* User wants to calculate CBI then we remind then that it is */
             /* dependent on the choice of optimal codons                  */
-                pm->cbi = (char) ((pm->cbi)   ? FALSE : TRUE); 
-                if(pm->cbi){   
-                clearscr(pm->term_length);              
+                pm->cbi = (char) ((pm->cbi)   ? FALSE : TRUE);
+                if(pm->cbi){
+                clearscr(pm->term_length);
                 printf("\n\nYou have chosen to calculate CBI\n\n");
                 printf("To calculate CBI a set of optimal "
                        "codons must be selected\n");
                 printf("The optimal codons of %s are the current selection"
-                       "\n\n",fop[pm->f_type].des);  
+                       "\n\n",fop[pm->f_type].des);
                 printf("See the menu 'Change defaults' to change CBI "
                        "selection\n\n");
                 printf("If you wish to use a personal choice of CBI "
                        "vaules\n");
                 printf("\tplease continue and you will be prompted for "
-                       "input\n\n");               
+                       "input\n\n");
                 pause;
                 }
-                break ;                
+                break ;
             case 4:                                      /* calc Nc       */
-                pm->enc = (char) ( (pm->enc)   ? FALSE : TRUE);    
+                pm->enc = (char) ( (pm->enc)   ? FALSE : TRUE);
                 break ;
             case 5:                                      /* calc GC       */
-                pm->gc =  (char) ((pm->gc )   ? FALSE : TRUE);    
+                pm->gc =  (char) ((pm->gc )   ? FALSE : TRUE);
                 break ;
-            case 6:                                      /* calc GC3s     */   
-                pm->gc3s =(char) ( (pm->gc3s) ? FALSE : TRUE);    
+            case 6:                                      /* calc GC3s     */
+                pm->gc3s =(char) ( (pm->gc3s) ? FALSE : TRUE);
                 break ;
-            case 7:                                      /* calc sil base */   
-                pm->sil_base = (char) ((pm->sil_base) ? FALSE : TRUE); 
-                break ; 
+            case 7:                                      /* calc sil base */
+                pm->sil_base = (char) ((pm->sil_base) ? FALSE : TRUE);
+                break ;
             case 8:                                      /* No. synonyms  */
-                pm->L_sym = (char) ((pm->L_sym) ? FALSE : TRUE); 
-                break ; 
-            case 9:                                      /* No. AminoAcids*/   
-                pm->L_aa  = (char) ((pm->L_aa)  ? FALSE : TRUE); 
-                break ; 
+                pm->L_sym = (char) ((pm->L_sym) ? FALSE : TRUE);
+                break ;
+            case 9:                                      /* No. AminoAcids*/
+                pm->L_aa  = (char) ((pm->L_aa)  ? FALSE : TRUE);
+                break ;
             case 10:                                     /* hydropathicity*/
                 pm->hyd   =(char) ( (pm->hyd )  ? FALSE : TRUE);
                 break;
             case 11:                                     /* aromatic      */
-                pm->aro   = (char) ((pm->aro )  ? FALSE : TRUE);                                         
+                pm->aro   = (char) ((pm->aro )  ? FALSE : TRUE);
                 break;
             case 12:                                     /* all the above */
-                pm->cai   = (char)  TRUE;    
+                pm->cai   = (char)  TRUE;
                 pm->fop   = (char)  TRUE;
-                pm->cbi   = (char)  TRUE;    
-                pm->enc   = (char)  TRUE;    
-                pm->gc    = (char)  TRUE;    
-                pm->gc3s  = (char)  TRUE;    
-                pm->sil_base 
-                          = (char)  TRUE; 
-                pm->L_sym = (char)  TRUE; 
+                pm->cbi   = (char)  TRUE;
+                pm->enc   = (char)  TRUE;
+                pm->gc    = (char)  TRUE;
+                pm->gc3s  = (char)  TRUE;
+                pm->sil_base
+                          = (char)  TRUE;
+                pm->L_sym = (char)  TRUE;
                 pm->L_aa  = (char)  TRUE;
                 pm->hyd   = (char)  TRUE;
-                pm->aro   = (char)  TRUE;          
-                break ;             
+                pm->aro   = (char)  TRUE;
+                break ;
             default:
                 fprintf( stderr, "The answer %s is not a valid\n", pm->junk);
                 break;
             }
         } else
-            fprintf( stderr, "The answer %s is not a valid choice\n", 
+            fprintf( stderr, "The answer %s is not a valid choice\n",
             pm->junk);
     }
     return;
@@ -713,7 +713,7 @@ void    menu_4 (void)
 /* Select what type of COA                                                 */
 /***************************************************************************/
 void    menu_5 (void)
-{ 
+{
     char    *choices[] = {
         "",
         "COA on codon usage",
@@ -751,7 +751,7 @@ void    menu_5 (void)
             case 4:
                 (pm->coa== 0 ) ? printf ("{%-45.45s}", choices[4]):
                 printf (" %s ", choices[4]);
-                break;                  
+                break;
             default:
                 fprintf(stderr, "programming error \n");
                 my_exit(99,"menu 5");
@@ -761,7 +761,7 @@ void    menu_5 (void)
         }
         printf (" (X) Exit this menu\n");
         printf (" Select a menu choice, (Q)uit or (H)elp -> ");
-        gets(pm->junk);                                              
+        gets(pm->junk);
         clearscr(pm->term_length);
 
         if (isalpha( (int) pm->junk[0]) ||   pm->junk[0]=='\0') {
@@ -786,40 +786,40 @@ void    menu_5 (void)
             c =  atoi(pm->junk);
             if ( c > 0 && c <= 4 ) {
             switch ((int) c){
-            case 1: 
+            case 1:
                 pm->coa = 'c';                              /* COA of CU  */
                 break ;
-            case 2: 
+            case 2:
                 pm->coa = 'r';                              /* COA of RSCU*/
                 break ;
-            case 3: 
+            case 3:
                 pm->coa = 'a';                              /* COA of AA  */
                 break ;
-            case 4: 
-                pm->coa = FALSE;        
+            case 4:
+                pm->coa = FALSE;
                 break;
 #ifdef DEBUG
             default:
                 fprintf(pm->my_err,"Error in switch in coa_raw_out\n");
-#endif          
+#endif
               }
             } else {
                 fprintf(stderr,"The answer %s is not a valid\n", pm->junk);
                 break;
             }
         }
- 
-     if ( pm->coa ) {  
+
+     if ( pm->coa ) {
          printf( " Do you wish to see the advanced COA menu (Y/N) [N] ");
          gets( pm->junk );
 
         /* Select the default codon/AAs to analyse, based on genetic code */
          initilize_coa  (pm->code);
-         
-         if ( (char) toupper( (int) pm->junk[0]) == 'Y' ) menu_coa(); 
+
+         if ( (char) toupper( (int) pm->junk[0]) == 'Y' ) menu_coa();
          }
-        
-    } /* while loop */ 
+
+    } /* while loop */
     return;
 }
 
@@ -833,7 +833,7 @@ void    menu_6 (void)
 {
     int loop = TRUE;
     int c;
-    
+
     clearscr(pm->term_length);
     while ( loop ) {
         printf (" Menu 6-Basic Stats\n");
@@ -850,7 +850,7 @@ void    menu_6 (void)
             case 'Q':
                 my_exit(2,"menu 6");
                 break;
-            case 'X': 
+            case 'X':
             case '\0':
                 return;
             case 'H':
@@ -882,7 +882,7 @@ void    menu_7 (void)
 {
     int loop = TRUE;
     int c;
-    
+
     clearscr(pm->term_length);
     while ( loop ) {
         printf (" Menu 7 A Bit of fun \n");
@@ -956,15 +956,15 @@ void    menu_8 (void)
     "Dinucleotide frequencies"           , 'D',
     "Exhaustive base compostion analysis", 'B',
     "No output written to file"          , 'X' };
-  
+
   NumChoices = 10;                            /* Number of choices in Menu */
-  
+
             /* if there is already an output file available the user may   */
             /* select to change it                                         */
 
   clearscr(pm->term_length);
 
-  /* because only one type of bulk option is permitted each time 
+  /* because only one type of bulk option is permitted each time
      codonw runs, it may be necessary to rerun with the same data
      file but changing the blk output options, if so the user
      is prompted with the choice of changing the blk filename             */
@@ -973,25 +973,25 @@ void    menu_8 (void)
     printf (" The current bulk output file is %s do you "
             "wish to change this (y/n) [n] ", pm->curr_tidyoutname);
     gets(pm->junk);
-   
+
     if ( toupper( (int) pm->junk[0]) == 'Y') {
       fileclose(&pm->tidyoutfile);
-    
+
       if (!(pm->tidyoutfile = open_file("codon usage output file",
                pm->curr_tidyoutname, "w",(int)pm->verbose)))
                my_exit(1, "menu 8");
       strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
     }        /* matches  if ( !strlen (pm->junk) || toupper= ............. */
-  
-  } else {   /* matches  if( strlen( pm->curr_cufilename)  )               */    
+
+  } else {   /* matches  if( strlen( pm->curr_cufilename)  )               */
     printf("Note: No output file has been selected !\n");
   }
-  
+
 
   while ( loop ) {
     printf (" Menu 8\n");
     printf (" This output will be saved to %s\n\n", pm->curr_tidyoutname);
-    
+
     for ( ans1 = 1; ans1 <= NumChoices; ans1++) {
       if (aii[ans1].prog != (char) pm->bulk)
          printf("\n\t (%2d) %s", ans1, aii[ans1].string);
@@ -1000,21 +1000,21 @@ void    menu_8 (void)
     }
 
     printf ("\n\t ( X) To return to previous menu\n");
-    
+
     printf ("Values enclosed with curly{} brackets are the current "
             "selection\n");
     printf (" Select a menu choice, (Q)uit or (H)elp -> ");
     gets(pm->junk);
     clearscr(pm->term_length);
-    
+
     if (isalpha( (int) pm->junk[0]) || pm->junk[0]=='\0') {
       switch (c =  toupper( (int) pm->junk[0])){
-        case 'Q':  
+        case 'Q':
             my_exit(2,"menu 8");         /* User decides to quit          */
             break;
         case 'X':
         case '\0':
-            return;                      /* <-back to previous menu->     */      
+            return;                      /* <-back to previous menu->     */
         case 'H':
             chelp("menu_8_blk");
             continue;
@@ -1047,18 +1047,18 @@ void menu_coa (void)
   char *p;
   int c;
   int i;
-  
+
   clearscr(pm->term_length);
   while ( loop ) {
-    printf ("Advanced Correspondence Analysis\n");         
-    printf (" (1) (Un)Select %s\n", (pm->coa=='a')? "amino acids": "codons");         
+    printf ("Advanced Correspondence Analysis\n");
+    printf (" (1) (Un)Select %s\n", (pm->coa=='a')? "amino acids": "codons");
     printf (" (2) Change the number of axis (factors) recorded to file\n");
-    printf (" (3) Add additional genes after COA\n");       
+    printf (" (3) Add additional genes after COA\n");
     printf (" (4) Toggle level of COA output  [%s]\n",
                   (pcoa->level=='e')? "Exhaustive":"Normal");
 
     if(pm->coa != 'a' )
-    printf (" (5) No. genes used to identify optimal codons [%i%s]\n", 
+    printf (" (5) No. genes used to identify optimal codons [%i%s]\n",
         (pcoa->fop_gene <0)? (pcoa->fop_gene*-1): pcoa->fop_gene,
             (pcoa->fop_gene <0)? "%"                : " genes");
 
@@ -1066,7 +1066,7 @@ void menu_coa (void)
     printf (" Select a menu choice, (Q)uit or (H)elp -> ");
     gets(pm->junk);
     clearscr(pm->term_length);
-    
+
     if (isalpha( (int) pm->junk[0]) || pm->junk[0]=='\0' ) {
       c =        toupper( (int) pm->junk[0]);
       switch ( c ) {
@@ -1092,19 +1092,19 @@ void menu_coa (void)
     select_coa( pm->coa );                /*  select what to analysis     */
     break;
       case 2:                             /* Num of axis to record        */
-    printf ( "Changing the number of axis generated from %i " 
+    printf ( "Changing the number of axis generated from %i "
         "Please input new value [%i]", (int)pcoa->axis,(int)pcoa->axis);
     gets(pm->junk);
-    if ( !strlen(pm->junk)   ) break;   
+    if ( !strlen(pm->junk)   ) break;
     if ( isalpha( (int) pm->junk[0])) break;
     i = (char)atoi(pm->junk);
-    if ( pm->coa == 'a' && (i > 20 || i<0)  || ( i<0 || i>59 )) { 
+    if ( pm->coa == 'a' && (i > 20 || i<0)  || ( i<0 || i>59 )) {
       fprintf(pm->my_err,"Value is out of range adjusting to max value\n");
       if ( pm->coa == 'a' ) pcoa->axis = 20;
       else                  pcoa->axis = 59;
-    } else {  
+    } else {
       pcoa->axis = i;
-    } 
+    }
     break;
       case 3:                              /* Add additional genes          */
     printf("You have elected to add genes after the initial COA is complete\n"
@@ -1119,13 +1119,13 @@ void menu_coa (void)
     strncpy(pcoa->add_row,pm->junk,MAX_FILENAME_LEN-1);
     break;
       case 4:                             /* report analysis of inertia     */
-	pcoa->level = (char) ( (pcoa->level=='n')? 'e':'n'); 
+	pcoa->level = (char) ( (pcoa->level=='n')? 'e':'n');
 	break;
       case 5:                             /* how to identify optimal codons */
         printf ("You have elected to alter the number of genes used \n"
                 "to identify the optimal codons\n"
                 "You can input either an absolute number of genes or a\n"
-                "percentage (example 10%%)\n "  
+                "percentage (example 10%%)\n "
                 "\tPlease input your choice []");
     gets ( pm->junk);
     if( !strlen(pm->junk) ) continue;
@@ -1142,9 +1142,9 @@ void menu_coa (void)
     break;
       default :
     fprintf(pm->my_err,"Answer out of range\n");
-    break;  
-      }              
-    }    
+    break;
+      }
+    }
   }
   return;
 }
@@ -1153,25 +1153,25 @@ void menu_coa (void)
 /* This menu is called if the user wants to change the default codons/AA   */
 /* to be analysised in the COA. It is called from menu_coa                 */
 /***************************************************************************/
-void select_coa ( char choice ) 
+void select_coa ( char choice )
 {
  int   loop = TRUE;
  int   last_row[4];
  int   toggle;
  int   x;
- 
+
  char  *startpoint, *endpoint;
- 
+
  clearscr(pm->term_length);
 
- while ( loop ) { 
+ while ( loop ) {
    if ( choice == 'a' ) {                   /* if AA analysis then         */
-     for ( x = 1 ; x < 22 ; x++ ) {     
-       if (!pcoa->amino[x] ) 
+     for ( x = 1 ; x < 22 ; x++ ) {
+       if (!pcoa->amino[x] )
      printf("[(%2i)_%s_%s] ", x, paa->aa3[x],paa->aa1[x] );
        else
      printf(" (%2i)_%s_%s  ", x, paa->aa3[x],paa->aa1[x] );
-       
+
        if ( !(x % 4) ) printf( "\n");
      }
      printf( "\n");
@@ -1185,29 +1185,29 @@ void select_coa ( char choice )
 /* (21)_Gly_G                                                             */
 
    }else {
-     printf ( "Using %s \n", pcu->des ); 
-     for ( x = 1 ; x < 65 ; x++ ) { 
-       
+     printf ( "Using %s \n", pcu->des );
+     for ( x = 1 ; x < 65 ; x++ ) {
+
        if ( !pcoa->codons[x] )          printf("[");
        else                         printf(" ");
-       
+
        if (last_row[x%4] != pcu->ca[x] )
      printf( "(%2i) %s\t%s", x,paa->aa3[pcu->ca[x]],paa->cod[x]);
        else
      printf( "(%2i)    \t%s", x,paa->cod[x]);
-       
+
        if ( !pcoa->codons[x] )         printf("]");
-       else                            printf(" ");    
-       
+       else                            printf(" ");
+
        last_row[x%4] = pcu->ca[x];
-       
-       if ( !(x % 4) ) 
+
+       if ( !(x % 4) )
      printf( "\n");
-       if ( !(x % 16)) 
+       if ( !(x % 16))
      printf( "\n");
      }
    }
-      
+
 /*************** Sample of codon choice output      ***********************/
 /*   Using Universal Genetic code                                         */
 /* ( 1) Phe       UUU  ( 2) Ser   UCU  ( 3) Tyr   UAU  ( 4) Cys   UGU     */
@@ -1215,19 +1215,19 @@ void select_coa ( char choice )
 /* ( 9) Leu       UUA  (10)       UCA [(11) TER   UAA][(12) TER   UGA]    */
 /* (13)           UUG  (14)       UCG [(15)       UAG][(16) Trp   UGG]    */
 
-   printf("%s bracketed will be excluded from the COA. ", 
+   printf("%s bracketed will be excluded from the COA. ",
       (pm->coa == 'a')? "Amino Acids": "Codons" );
    printf("Select number(s) that\nidentify the %s you wish to toggle "
           "(X to exit, H for help) [X] ",
       (pm->coa == 'a')? "Amino Acids": "Codons" );
-   
+
    gets(pm->junk);
-   
+
    if ( !strlen(pm->junk) || toupper( (int) pm->junk[0]) == 'X' ) {
-     loop=FALSE;  
+     loop=FALSE;
      continue;
    }
-    
+
    if ( toupper( (int) pm->junk[0]) == 'H' ) {
        chelp("select");
        continue;
@@ -1236,21 +1236,21 @@ void select_coa ( char choice )
 
    endpoint   = pm->junk;
    startpoint = pm->junk;
-   
+
    /* now toggle the codons and amino acids to be analysed                */
 
    while ( toggle = (int) strtol(startpoint,&endpoint,10) ) {
      if(endpoint == startpoint )    break;
      startpoint = endpoint;
-     
+
      if (pm->coa == 'a' )  {
-       if ( toggle>21 || toggle<1 ) continue;      /* check value is valid */    
+       if ( toggle>21 || toggle<1 ) continue;      /* check value is valid */
        pcoa->amino [toggle]= (char)((pcoa->amino [toggle])?FALSE:TRUE);
      }else{
-       if ( toggle>64 || toggle<1 ) continue;      /* check value is valid */       
+       if ( toggle>64 || toggle<1 ) continue;      /* check value is valid */
        pcoa->codons[toggle]= (char)((pcoa->codons[toggle])?FALSE:TRUE);
      }
-   } 
+   }
  }
  return;
 }
@@ -1273,26 +1273,26 @@ void    welcome ( void )
 /* Prints a summary about this programme, date, version and author of code */
 /* whether a debug version                                                 */
 /***************************************************************************/
-int  printinfo(void) {  
+int  printinfo(void) {
 # if defined (__FILE__ )
   printf("\n\tSource   : %s", __FILE__);
-# endif 
+# endif
 # if defined  (DEBUG)
   printf("(Debug version)");
 # endif
 
   printf("\n\tAuthor   : John Peden\n");
-  printf("\tVersion  : %.*s\n", strlen(Revision) , Revision ); 
+  printf("\tVersion  : %.*s\n", strlen(Revision) , Revision );
   printf("\tRevised  :%.*s %s %.*s\n",(int) strlen(Update) - 7, Update + 6,
 	 (*(Update + 7) ? "\n\t     by  :" : ""),
 	 (int) strlen(Author) - 10, Author + 9);
-  
+
 #if defined(__DATE__ ) && defined(__TIME__)
   printf("\n\tCompiled : %s %s\n", __DATE__, __TIME__);
 #endif
-  
+
   printf("\n\t-------------------------------\n\n");
-  
+
   printf(" All sequences must be in a single file separated by title "
       " lines whose\n first character is either ; or > \n\t any number"
       " or length of genes is acceptable\n\n");

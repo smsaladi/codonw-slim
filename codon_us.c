@@ -97,8 +97,8 @@ int initilize_point(char code, char fop_species, char cai_species)
    pfop = &fop[fop_species];
    pcbi = &fop[fop_species];
    pcu = &cu[code];
-   ds = how_synon();                          
-   da = how_synon_aa();                                     
+   ds = how_synon();
+   da = how_synon_aa();
    pcoa = &coa;
 
    if (pm->codonW)
@@ -109,13 +109,13 @@ int initilize_point(char code, char fop_species, char cai_species)
 /*******************How Synonymous is this codon  *************************/
 /* This function discovers at run time how synonymous a codon is by check-*/
 /* ing all other codons to see if they encode the same AA                 */
-/* This saves a lot of time when new genetic codes are added              */ 
+/* This saves a lot of time when new genetic codes are added              */
 /**************************************************************************/
 int *how_synon(void)
 {
    static int      dds[65];
    int x,i;
-   
+
    for (x = 0; x < 65; x++)
       dds[x] = 0;
 
@@ -128,13 +128,13 @@ int *how_synon(void)
 /*******************How Synonymous is this AA     *************************/
 /* This function discovers at run time how synonymous an amino acid is by */
 /* checking all codons to see if they encode this same AA                 */
-/* This saves a lot of time when new genetic codes are added              */ 
+/* This saves a lot of time when new genetic codes are added              */
 /**************************************************************************/
 int *how_synon_aa(void)
 {
    static int      dda[22];
    int x;
-   
+
    for (x = 0; x < 22; x++)
       dda[x] = 0;
 
@@ -156,7 +156,7 @@ int initilize_coa(char code)
    static char     initilized;
    static char     oldcode;
    int i;
-    
+
    /* if called a second time return unless the genetic code has changed  */
    if (initilized && (oldcode == code)) return 1;
 
@@ -167,7 +167,7 @@ int initilize_coa(char code)
      pcoa->amino[i] = TRUE;
 
    for (i = 0; i < 65; i++)         /* for each codon                     */
-      if (*(ds + i) == 1 || pcu->ca[i] == 11 || i == 0) 
+      if (*(ds + i) == 1 || pcu->ca[i] == 11 || i == 0)
      pcoa->codons[i] = FALSE;
       else
      pcoa->codons[i] = TRUE;
@@ -186,18 +186,18 @@ int codon_usage_tot(char *seq, long int how_many)
    char            codon[4];
    int             icode;
    int             i;
-   
+
    for (i = 0; i < how_many - 2; i += 3) {
       strncpy(codon, (seq + i), 3);
       icode = ident_codon(codon);
-      ncod[icode]++;                          /*increment the codon count */  
-      naa[pcu->ca[icode]]++;                  /*increment the AA count    */ 
+      ncod[icode]++;                          /*increment the codon count */
+      naa[pcu->ca[icode]]++;                  /*increment the AA count    */
       codon_tot++;                            /*increment the codon total */
    }
 
    if (how_many % 3) {                        /*if last codon was partial */
       icode = 0;                              /*set icode to zero and     */
-      ncod[0]++;                              /*increment untranslated    */ 
+      ncod[0]++;                              /*increment untranslated    */
    }                                          /*codons                    */
    return icode;                              /*return the last codon     */
 }
@@ -212,7 +212,7 @@ int ident_codon(char *codon)
 {
    int             icode = 0;
    int x;
-   
+
    for (x = 0; x < 3; x++) {
       switch (codon[x]) {
       case 'T':
@@ -270,11 +270,11 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 
    switch (error_level) {
      case 1:                                    /*internal stop codons    */
-       ns = ns - valid_stops;           
+       ns = ns - valid_stops;
        /* a stop was a valid_stop if it was the last codon of a sequence  */
 
        if ( ! valid_start && pm->warn ) {
-           dot(0,10);   
+           dot(0,10);
            fprintf(pm->my_err, "\nWarning: Sequence %3li \"%-20.20s\" does "
                "not begin with a recognised start codon\n"
 		     ,num_sequence,ttitle);
@@ -282,7 +282,7 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
        }
 
        if (ns && pm->warn ) {
-	        dot(0,10);  
+	        dot(0,10);
 	        if (pm->totals && pm->warn)
 	         fprintf(pm->my_err,"\nWarning: some sequences had internal stop"
 		     " codons (found %li such codons)\n", ns);
@@ -293,43 +293,43 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 	        error_lines++;
        }
        break;
-   case 2:                                
-     dot(0,10);  
+   case 2:
+     dot(0,10);
      if (ncod[0] == 1 && pcu->ca[x] != 11 && pm->warn){ /*  last codon was partial */
-       fprintf(pm->my_err, 
+       fprintf(pm->my_err,
 	       "\nWarning: Sequence %3li \"%-20.20s\" last codon was partial\n"
 	       ,num_sequence, ttitle);
        error_lines++;
      }else {
        if (ncod[0] && pm->warn){                        /* non translatable codons */
 	    if (pm->totals)
-	      fprintf(pm->my_err, 
+	      fprintf(pm->my_err,
 		   "\nWarning: some sequences had non translatable"
 		   " codons (found %li such codons)\n",  ncod[0]);
 	    else
-	      fprintf(pm->my_err, 
+	      fprintf(pm->my_err,
 		   "\nWarning: sequence %3li \"%-20.20s\" has %li non translatable"
 		   " codon(s)\n", num_sequence, ttitle, ncod[0]);
-	    error_lines++; 
+	    error_lines++;
        }
        if (pcu->ca[x] != 11 && pm->warn ) {
 	    if (!pm->totals){
-	       fprintf(pm->my_err, 
+	       fprintf(pm->my_err,
 		   "\nWarning: Sequence %3li \"%-20.20s\" is not terminated by"
 		   " a stop codon\n", num_sequence, ttitle);
 	       error_lines++;
             }
        }
-     }  
+     }
      break;
-   case 3: 
+   case 3:
                                    /* Nc error routines see codon_us      */
      dot(0,10);                    /* dot resetting internal counter      */
-     if (x==3) x=4;                /* if x=3 there are no 3 or 4 fold AA  */ 
+     if (x==3) x=4;                /* if x=3 there are no 3 or 4 fold AA  */
      if (pm->warn) {
-       fprintf(pm->my_err, 
+       fprintf(pm->my_err,
 	       "\nSequence %li \"%-20.20s\" contains ",num_sequence, ttitle);
-       (y) ? fprintf(pm->my_err, "only %i ", (int) y) : 
+       (y) ? fprintf(pm->my_err, "only %i ", (int) y) :
        fprintf(pm->my_err, "no ");
        fprintf(pm->my_err, "amino acids with %i synonymous codons\n", x);
        fprintf(pm->my_err, "\t--Nc was not calculated \n");
@@ -341,12 +341,12 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
    default:
       my_exit(99,"Programme error in codon_error\n");
    }
-   if ((((error_lines + 2) * 2) > pm->term_length) && pm->verbose 
+   if ((((error_lines + 2) * 2) > pm->term_length) && pm->verbose
        && pm->my_err == stderr ) {
      error_lines = 0;              /* count lines of errors               */
-     dot(0,10);                     
+     dot(0,10);
      pause;
-   }       
+   }
    return loc_cod_tot;             /* Number of codons counted            */
 }
 
@@ -354,25 +354,25 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 /* Writes codon usage output to file. Note this subroutine is only called */
 /* when machine readable output is selected, otherwise cutab_out is used  */
 /**************************************************************************/
-int codon_usage_out(FILE * fblkout, long int *nncod, int last_aa, 
+int codon_usage_out(FILE * fblkout, long int *nncod, int last_aa,
                     int vvalid_stops, char *ttitle)
 {
   long int ccodon_tot = 0;
   int x;
   char sp=pm->seperator;
-  
+
   ccodon_tot = codon_error(last_aa, vvalid_stops, ""   , (char) 4); /*dummy*/
 
-  /*example of output                                                     */ 
+  /*example of output                                                     */
   /*0,0,0,0,3,2,2,0,0,0,0,0,0,3,0,0,                                      */
-  /*0,0,0,4,3,4,1,7,0,0,0,0,3,1,3,1,Codons=100                              */       
+  /*0,0,0,4,3,4,1,7,0,0,0,0,3,1,3,1,Codons=100                              */
   /*0,0,0,0,10,6,3,0,0,0,0,0,1,1,12,0,Universal Genetic code              */
   /*0,0,0,3,7,5,7,9,0,1,1,1,8,4,5,0,MLSPCOPER.PE1                         */
 
   for (x = 1; x < 65; x++) {
-    
+
     fprintf(fblkout, "%i%c",nncod[x],sp);
-    
+
     switch (x) {
     case 16:
       fprintf(fblkout, "\n");
@@ -400,7 +400,7 @@ int codon_usage_out(FILE * fblkout, long int *nncod, int last_aa,
 /* RSCU values are genetic codon dependent                                */
 /**************************************************************************/
 int rscu_usage_out(FILE * fblkout, long *nncod, long *nnaa)
-{  
+{
  int x;
  char sp=pm->seperator;
 
@@ -436,7 +436,7 @@ int raau_usage_out(FILE * fblkout, long *nnaa)
    if (pm->seq_format=='M')                     /*  if machine readable  */
       sp = pm->seperator;
    else
-      sp = '\t';   
+      sp = '\t';
 
    if (first_line) {                            /* if true write a header*/
      if ( pm->seq_format=='M')
@@ -455,12 +455,12 @@ int raau_usage_out(FILE * fblkout, long *nnaa)
    for (i = 1; i < 22; i++)
      if (i != 11)
        aa_tot += nnaa[i];                       /* total No. of AAs      */
-   
+
    if ( pm->seq_format=='M')
      fprintf(fblkout, "%.30s", title);
    else
      fprintf(fblkout, "%-20.20s", title);       /* don't waste spaces    */
-   
+
    for (x = 0; x < 22; x++)
      if (x == 11)
        fprintf(fblkout, "%c0.0000",sp);         /* report 0 for stops    */
@@ -473,9 +473,9 @@ int raau_usage_out(FILE * fblkout, long *nnaa)
 		   (double) nnaa[x] / (double) aa_tot);
      else                                       /*What no AminoAcids!!!! */
        if (  pm->seq_format=='M')
-	 fprintf(fblkout, "%c%c",sp,sp);            
+	 fprintf(fblkout, "%c%c",sp,sp);
 	 else
-	   fprintf(fblkout, "%c ***** ",sp);        
+	   fprintf(fblkout, "%c ***** ",sp);
 
    fprintf(fblkout, "\n",sp);
    return 1;
@@ -493,7 +493,7 @@ int aa_usage_out(FILE * fblkout, long *nnaa)
     (pm->seq_format=='M')?
       fprintf(fblkout, "%s", "Gene_name"):
       fprintf(fblkout, "%-20.20s ", "Gene name");
-    
+
     for (i = 0; i < 22; i++)
       (pm->seq_format=='M')?
 	fprintf(fblkout, "%c%s", sp,paa->aa3[i]):    /* 3 letter AA code     */
@@ -504,7 +504,7 @@ int aa_usage_out(FILE * fblkout, long *nnaa)
   (pm->seq_format=='M')?
     fprintf(fblkout, "%.20s", title):
     fprintf(fblkout, "%-20.20s ", title);
-  
+
   for (i = 0; i < 22; i++){
     (pm->seq_format=='M')?
       fprintf(fblkout, "%c%li", sp,nnaa[i]):
@@ -526,7 +526,7 @@ void base_sil_us_out(FILE * foutput, long *nncod, long *nnaa)
 {
    int             id,i,x,y,z;
    long            bases_s[4];     /* synonymous GCAT bases               */
-                                      
+
    long            cb[4];          /* codons that could have been GCAT    */
    int             done[4];
    char sp=  (char) (pm->seq_format=='H')? (char) '\t': (char) pm->seperator;
@@ -544,11 +544,11 @@ void base_sil_us_out(FILE * foutput, long *nncod, long *nnaa)
 	 if (*(ds + id) == 1 || pcu->ca[id] == 11)
            continue;              /* if no synon skip to next       codon */
 	 bases_s[z - 1] += nncod[id]; /* count No. codon ending in base X     */
-       }     
-			
+       }
+
    for (i = 1; i < 22; i++) {
      for (x = 0; x < 4; x++)      /* don't want to count bases in 6 fold  */
-         done[x] = FALSE;         /* sites twice do we so we remember     */   
+         done[x] = FALSE;         /* sites twice do we so we remember     */
 
      if (i == 11 || *(da + i) == 1)
        continue;                  /* if stop codon skip, or AA not synony */
@@ -556,19 +556,19 @@ void base_sil_us_out(FILE * foutput, long *nncod, long *nnaa)
       for (x = 1; x < 5; x++)    /* else add aa to could have ended count */
      for (y = 1; y < 5; y++)
         for (z = 1; z < 5; z++) {
-           id = (x - 1) * 16 + y + (z - 1) * 4; 
+           id = (x - 1) * 16 + y + (z - 1) * 4;
            /* assign codon values in range 1-64                           */
            if (pcu->ca[id] == i && done[z - 1] == FALSE) {
 	   /* encode AA i which we know to be synon so add could_be_x ending*/
          /* by the Number of that amino acid                              */
-	     cb[z - 1] += nnaa[i];    
+	     cb[z - 1] += nnaa[i];
 	     done[z - 1] = TRUE;     /* don't look for any more or we might   */
                                  /* process leu+arg+ser twice             */
-           }                       
+           }
         }
    }
 
-   /* Now the easy bit ... just output the results to file                */      
+   /* Now the easy bit ... just output the results to file                */
    for (i = 0; i < 4; i++) {
       if (cb[i] > 0)
      fprintf(foutput, "%6.4f%c", (double) bases_s[i]/(double)cb[i], sp);
@@ -586,12 +586,12 @@ int clean_up(long int *nncod, long int *nnaa)
 {
    int x;
    int i;
-   
+
    for (x = 0; x < 65; x++)
       nncod[x] = 0;
    for (x = 0; x < 23; x++)
       nnaa[x] = 0;
-                                    /* dinucleotide count remembers the   */                                     
+                                    /* dinucleotide count remembers the   */
    dinuc_count(" ", 1);             /* last_base from the last fragment   */
                                     /* this causes the last base to be "" */
    for (x = 0; x < 3; x++)
@@ -599,10 +599,10 @@ int clean_up(long int *nncod, long int *nnaa)
          din[x][i] = 0;
 
    dinuc_count(" ", 1);
-   master_ic = tot = 
-   non_std_char = AT_TOT = GC_TOT = AA_TOT = GAP_TOT = IUBC_TOT = 0; 
+   master_ic = tot =
+   non_std_char = AT_TOT = GC_TOT = AA_TOT = GAP_TOT = IUBC_TOT = 0;
    long_seq = FALSE;
-   valid_stops = valid_start = codon_tot = tot = fram = 0;                   
+   valid_stops = valid_start = codon_tot = tot = fram = 0;
    return 1;
 }
 /*****************Codon Adaptation Index output   *************************/
@@ -626,33 +626,33 @@ int cai_out(FILE * foutput, long int *nncod)
    double          sigma;
    float           ftemp;
    int x;
-   char sp=  (char) (pm->seq_format=='H')? 
-       (char) '\t': 
+   char sp=  (char) (pm->seq_format=='H')?
+       (char) '\t':
        (char) pm->seperator;
    static char       cai_ttt = FALSE;
    static char       description[61];
    static char       reference[61];
-  
+
    static CAI_STRUCT user_cai;
 
 
-   if (!cai_ttt ) {                       /* have we been called already   */     
+   if (!cai_ttt ) {                       /* have we been called already   */
       user_cai.des = description;         /* assign an array to a pointer  */
       user_cai.ref = reference;           /* as above                      */
-      
-      if ( pm->caifile==NULL && pm->verbose==TRUE 
+
+      if ( pm->caifile==NULL && pm->verbose==TRUE
 	   && pm->menu==TRUE && (pcai == cai )){
           /* this is false                                                 */
 	  /* if personal caifile is on commandline or                      */
           /* in non-interactive mode or -silent option                     */
           /* or cai values are not the default values                      */
-	  
+
 
 	  printf("\nDo you wish to input a personal choice of CAI"
           " values (y/n) [n] ");
       gets(pm->junk);
 
-      /* This allows a user defined choice of CAI values to be selected    */ 
+      /* This allows a user defined choice of CAI values to be selected    */
       if ('Y' == (char) toupper( (int) pm->junk[0])) {
           /* tell the user a little about what we are looking for          */
           printf("\nInput file must contain 64 CAI values\n"
@@ -661,10 +661,10 @@ int cai_out(FILE * foutput, long int *nncod)
          /* open the CAI adaptiveness values file                          */
            if (!(pm->caifile = open_file("file with CAI values"
                        ,"cai.coa", "r", 0))) my_exit(6,"cai_out");
-      
+
       }
       }                                          /* matched if pm->caifile=*/
-     if (pm->caifile){  
+     if (pm->caifile){
        rewind (pm->caifile);        /* unlikely unless fopfile = caifile   */
        x = 0;
        strcpy(user_cai.des,"User supplied CAI adaptation values ");
@@ -676,7 +676,7 @@ int cai_out(FILE * foutput, long int *nncod)
          if (ftemp < 0 || ftemp > 1.0) {
            printf("\nError CAI %f value out of range\nEXITING",ftemp);
            my_exit(99,"cai_out");
-        }                                        
+        }
         user_cai.cai_val[x++] = ftemp;                    /* assign value */
      }                                                    /* end of while */
      if (x != 65) {                 /*             wrong number of codons */
@@ -687,13 +687,13 @@ int cai_out(FILE * foutput, long int *nncod)
      pcai = &user_cai;              /* assigns pointer to user CAI values */
       }                             /*        matches if( pm->caifile...  */
 
-    
+
      fprintf(stderr, "Using %s (%s) w values to calculate "
 	        		      "CAI \n",pcai->des,pcai->ref);
      cai_ttt = TRUE;                /*stops this "if" from being entered  */
 
     }                              /* matches if (!cai_ttt )             */
-   
+
    for (x = 1, sigma = 0; x < 65; x++) {
       if (pcu->ca[x] == 11 || *(ds + x) == 1) continue;
       if (pcai->cai_val[x] < 0.0001)/* if value is effectively zero       */
@@ -726,12 +726,12 @@ int cai_out(FILE * foutput, long int *nncod)
 int cbi_out(FILE * foutput, long int *nncod, long int *nnaa )
 {
    long int        tot_cod  = 0;
-   long int        opt      = 0; 
-   float           exp_cod  = (float) 0.0; 
+   long int        opt      = 0;
+   float           exp_cod  = (float) 0.0;
    float           fcbi;
    int             c,x;
    char            str[2];
-   char sp=  (pm->seq_format=='H')? 
+   char sp=  (pm->seq_format=='H')?
        (char) '\t':
        (char) pm->seperator;
 
@@ -745,10 +745,10 @@ int cbi_out(FILE * foutput, long int *nncod, long int *nnaa )
    if (first_call_cbi) {                 /* have we been called already   */
 
      user_cbi.des = description;         /* assign a pointer to array     */
-     user_cbi.ref = reference;    
-      
-      if ( pm->cbifile == NULL && pm->verbose==TRUE 
-	  && pm->menu==TRUE && ( pcbi == fop )){ 
+     user_cbi.ref = reference;
+
+      if ( pm->cbifile == NULL && pm->verbose==TRUE
+	  && pm->menu==TRUE && ( pcbi == fop )){
           /* this is false                                                 */
 	  /* if personal fopfile is on commandline or                      */
           /* in non-interactive mode or -silent option                     */
@@ -774,16 +774,16 @@ int cbi_out(FILE * foutput, long int *nncod, long int *nnaa )
      if ( pm->cbifile ){
        rewind (pm->cbifile);        /* fopfile can be the same as cbifile */
        strcpy(user_cbi.des,"User supplied choice");
-       strcpy(user_cbi.ref,"No reference");    
+       strcpy(user_cbi.ref,"No reference");
        x = 0;
        user_cbi.fop_cod[x++] = 0;
 
        while ((c = fgetc(pm->cbifile)) != EOF && x <=66) {
-       sprintf (str,"%c",c);	
-	 if (isdigit(c) && atoi(str) >= 0 
+       sprintf (str,"%c",c);
+	 if (isdigit(c) && atoi(str) >= 0
 	     && atoi(str) <= 3) {
            user_cbi.fop_cod[x++] = (char) atoi(str);
-	   
+
 	 }                          /*                             isdigit */
        }                            /*                        end of while */
 
@@ -791,24 +791,24 @@ int cbi_out(FILE * foutput, long int *nncod, long int *nnaa )
         sprintf(pm->messages, "\nError in CBI file %i digits found,  "
             "expected 64 EXITING\n", x - 1);
         my_exit(99,pm->messages);
-     }                        
+     }
        pcbi = (&user_cbi);
     }                              /*             matches if(pm->cbifile)  */
 
-    
+
      printf ("Using %s (%s) \noptimal codons to calculate "
 	        		      "CBI\n",pcbi->des,pcbi->ref);
 
 
-				   /* initilise has_opt_info             */			      
+				   /* initilise has_opt_info             */
      for (x = 1; x < 22; x++) has_opt_info[x]=0;
-     
+
      for (x = 1; x < 65; x++)     {
-        if (pcu->ca[x] == 11 || *(ds + x) == 1) 
-		continue;			      			      
-        if (pcbi->fop_cod[x] == 3 ) 
-		has_opt_info[pcu->ca[x]]++;        
-     }  
+        if (pcu->ca[x] == 11 || *(ds + x) == 1)
+		continue;			      
+        if (pcbi->fop_cod[x] == 3 )
+		has_opt_info[pcu->ca[x]]++;
+     }
 
 
 
@@ -822,7 +822,7 @@ int cbi_out(FILE * foutput, long int *nncod, long int *nnaa )
       case 3:
         opt     += nncod[x];
         tot_cod += nncod[x];
-        exp_cod += (float) nnaa[pcu->ca[x]]/ (float) da[pcu->ca[x]]; 
+        exp_cod += (float) nnaa[pcu->ca[x]]/ (float) da[pcu->ca[x]];
       break;
       case 2:
       case 1:
@@ -835,17 +835,17 @@ int cbi_out(FILE * foutput, long int *nncod, long int *nnaa )
           " codons\n 2 for common codons\n"
           " 3 for optimal codons\n" " EXITING ",
           pcbi->fop_cod[x], x);
-	 
+
           my_exit(99,pm->messages);
           break;
       }                             /*                   end of switch     */
-   }                                /*                   for (    )        */                     
+   }                                /*                   for (    )        */
 
    if( tot_cod - exp_cod)
-     fcbi= (opt - exp_cod) / (tot_cod - exp_cod);     
-   else  
-     fcbi= (float) 0.0; 
-    
+     fcbi= (opt - exp_cod) / (tot_cod - exp_cod);
+   else
+     fcbi= (float) 0.0;
+
    fprintf(foutput, "%5.3f%c", fcbi,sp);                /* CBI     QED     */
 
    return 1;
@@ -871,7 +871,7 @@ int fop_out(FILE * foutput, long int *nncod)
    float           ffop;
    int             c,x;
    char            nonopt_codons = FALSE;
-    
+
    char            str[2];
 
 
@@ -888,7 +888,7 @@ int fop_out(FILE * foutput, long int *nncod)
    if (first_call) {                /* have I been called previously      */
      user_fop.des = description;
      user_fop.ref = reference;
-     if ( pm->fopfile == NULL && pm->verbose==TRUE 
+     if ( pm->fopfile == NULL && pm->verbose==TRUE
 	  && pm->menu == TRUE && (pfop == fop )) {
           /* this is false                                                 */
 	  /* if personal fopfile is on commandline or                      */
@@ -907,21 +907,21 @@ int fop_out(FILE * foutput, long int *nncod)
 
          }                           /*                         if 'Y' == */
       }                              /* if (pm->fopfile == NULL........ ) */
-  
- 
+
+
     if ( pm->fopfile ) {
       rewind (pm->fopfile);          /*    possible for fopfile = cbifile */
       strcpy(user_fop.des,"User supplied choice");
       strcpy(user_fop.ref,"No reference");
       x = 0;
       user_fop.fop_cod[x++] = 0;
-      
+
       while ((c = fgetc(pm->fopfile)) != EOF && x <=66) {
         sprintf (str,"%c",c);
-      
-        if (isdigit(c) && atoi(str) >= 0 
+
+        if (isdigit(c) && atoi(str) >= 0
             && atoi(str) <= 3) {
-	        user_fop.fop_cod[x++] = (char) atoi(str);	
+	        user_fop.fop_cod[x++] = (char) atoi(str);
         }                           /*                       test isdigit */
      }                              /*                       end of while */
 
@@ -932,21 +932,21 @@ int fop_out(FILE * foutput, long int *nncod)
      }
      pfop = &user_fop;              /*  assigns pointer to user fop values*/
     }
-     
+
 
      printf ("Using %s (%s)\noptimal codons to calculate "
 	        		      "Fop\n",pfop->des,pfop->ref);
-	
-	
-				   /* initilise has_opt_info             */			      
+
+
+				   /* initilise has_opt_info             */
      for (x = 1; x < 22; x++) has_opt_info[x]=0;
-        
+
      for (x = 1; x < 65; x++)     {
-        if (pcu->ca[x] == 11 || *(ds + x) == 1) 
-		continue;			      			      
-        if (pfop->fop_cod[x] == 3 ) 
+        if (pcu->ca[x] == 11 || *(ds + x) == 1)
+		continue;			      
+        if (pfop->fop_cod[x] == 3 )
 		has_opt_info[pcu->ca[x]]++;
-	
+
 	if (pfop->fop_cod[x] == 1 ){
 	   if (!asked_about_fop && pm->verbose) {
              printf("\nIn the set of optimal codons you have selected,\n"
@@ -960,20 +960,20 @@ int fop_out(FILE * foutput, long int *nncod)
 	       factor_in_rare = TRUE;
 	     asked_about_fop = TRUE;
            }
-	   
+
 	   if ( factor_in_rare == TRUE )
 	            has_opt_info[pcu->ca[x]]++;
-        }  
+        }
     }                                 /*    matches for (x=1           */
    first_call = FALSE;
    }                                  /*    matches if ( !first_call ) */
-   
-   
-   
+
+
+
    for (x = 1; x < 65; x++) {
-      if (!has_opt_info[pcu->ca[x]] ) 
+      if (!has_opt_info[pcu->ca[x]] )
        continue;
-      
+
       switch ((int) pfop->fop_cod[x]) {
       case 3:
      opt += *(nncod + x);
@@ -985,14 +985,14 @@ int fop_out(FILE * foutput, long int *nncod)
      nonopt_codons = TRUE;
      nonopt += *(nncod + x);
      break;
-      default:                      
+      default:
      sprintf(pm->messages, " Serious error in fop information found"
          " an illegal fop value of %f for codon %l"
          " permissible values are \n 1 for non-optimal"
          " codons\n 2 for common codons\n"
          " 3 for optimal codons\n" " EXITING ",
          pfop->fop_cod[x], x);
-	 printf ("opt %l, std %l, nonopt %l\n",opt,std,nonopt); 
+	 printf ("opt %l, std %l, nonopt %l\n",opt,std,nonopt);
      my_exit(99,pm->messages);
      break;
       }
@@ -1004,7 +1004,7 @@ int fop_out(FILE * foutput, long int *nncod)
       ffop = (float) (opt - nonopt) / (float) (opt + nonopt + std);
    else if ((opt + nonopt + std))
       ffop = (float) opt / (float) (opt + nonopt + std);
-   else   
+   else
       ffop=0.0;
 
 
@@ -1032,7 +1032,7 @@ float enc_out(FILE * foutput, long int *nncod, long int *nnaa) {
    char sp=  (pm->seq_format=='H')? (char) '\t': (char) pm->seperator;
 
 /* don't assume that 6 is the largest possible amino acid family assume 9*/
-   for (i = 0; i < 9; i++) {            
+   for (i = 0; i < 9; i++) {
       fold[i] = 0;              /* initialise arrays to zero             */
       totb[i] = 0.0;
       numaa[i] = 0;
@@ -1045,7 +1045,7 @@ float enc_out(FILE * foutput, long int *nncod, long int *nnaa) {
       if (*(nnaa + i) <= 1)     /* if this aa occurs once then skip     */
      bb = 0;
       else {
-     for (x = 1, s2 = 0; x < 65; x++) { 
+     for (x = 1, s2 = 0; x < 65; x++) {
          /* Try all codons but we are only looking for those that encode*/
          /* amino amid i, saves having to hard wire in any assumptions  */
         if (pcu->ca[x] != i) continue;           /* skip is not i       */
@@ -1074,20 +1074,20 @@ float enc_out(FILE * foutput, long int *nncod, long int *nnaa) {
                                     /* gene therefore numaa[z] may be 0 */
    enc_tot = (float) fold[1];
 
-   for (z = 2, averb = 0, error_t = FALSE; z <= 8; z++) {   
+   for (z = 2, averb = 0, error_t = FALSE; z <= 8; z++) {
                                    /* look at all values of z if there  */
       if (fold[z]) {               /* are amino acids that are z fold   */
      if (numaa[z] && totb[z] > 0)
         averb = totb[z] / numaa[z];
-     else if (z==3 && numaa[2] && numaa[4] && fold[z]==1 )   
+     else if (z==3 && numaa[2] && numaa[4] && fold[z]==1 )
                                    /* special case                      */
         averb = (totb[2] / numaa[2] + totb[4] / numaa[4]) * 0.5;
      else {                        /* write error to stderr             */
-        codon_error( z, numaa[z], title, 3 );  
+        codon_error( z, numaa[z], title, 3 );
         error_t = TRUE;            /* error catch for strange genes     */
         break;
         }
-     enc_tot += (float) fold[z] / (float) averb;    
+     enc_tot += (float) fold[z] / (float) averb;
                                    /* the calculation                   */
       }
    }
@@ -1129,8 +1129,8 @@ void gc_out(FILE * foutput, FILE * fblkout, int which){
    long int        totalaa = 0;
    static char     header = FALSE;
    int x,y,z;
-   char sp=  (pm->seq_format=='H')? 
-       (char) '\t': 
+   char sp=  (pm->seq_format=='H')?
+       (char) '\t':
        (char) pm->seperator;
 
    typedef double lf;
@@ -1163,9 +1163,9 @@ void gc_out(FILE * foutput, FILE * fblkout, int which){
            continue;                /* if not synon  skip codon           */
 
         bases[z] += ncod[id];       /* count no of codons ending in Z     */
-                     
+
         tot_s += ncod[id];          /* count tot no of silent codons      */
-                      
+
      }
 
 
@@ -1185,8 +1185,8 @@ void gc_out(FILE * foutput, FILE * fblkout, int which){
         header = TRUE;
      }
                                     /* now print the information          */
-     fprintf(fblkout, "%-.20s%c", title,sp); 
-     fprintf(fblkout, 
+     fprintf(fblkout, "%-.20s%c", title,sp);
+     fprintf(fblkout,
 	     "%ld%c%ld%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
          "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
          "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f\n",
@@ -1199,20 +1199,20 @@ void gc_out(FILE * foutput, FILE * fblkout, int which){
 	     (lf) (base_1[2] + base_1[4]) / (lf) (totalaa),sp,
 	     (lf) (base_2[2] + base_2[4]) / (lf) (totalaa),sp,
 	     (lf) (base_3[2] + base_3[4]) / (lf) (totalaa),sp,
-	     (lf) base_1[1] / (lf) totalaa,sp, 
-	     (lf) base_2[1] / (lf) totalaa,sp, 
+	     (lf) base_1[1] / (lf) totalaa,sp,
+	     (lf) base_2[1] / (lf) totalaa,sp,
 	     (lf) base_3[1] / (lf) totalaa,sp,
-	     (lf) base_1[2] / (lf) totalaa,sp, 
-	     (lf) base_2[2] / (lf) totalaa,sp, 
+	     (lf) base_1[2] / (lf) totalaa,sp,
+	     (lf) base_2[2] / (lf) totalaa,sp,
 	     (lf) base_3[2] / (lf) totalaa,sp,
-	     (lf) base_1[3] / (lf) totalaa,sp, 
-	     (lf) base_2[3] / (lf) totalaa,sp, 
+	     (lf) base_1[3] / (lf) totalaa,sp,
+	     (lf) base_2[3] / (lf) totalaa,sp,
 	     (lf) base_3[3] / (lf) totalaa,sp,
-	     (lf) base_1[4] / (lf) totalaa,sp, 
-	     (lf) base_2[4] / (lf) totalaa,sp, 
+	     (lf) base_1[4] / (lf) totalaa,sp,
+	     (lf) base_2[4] / (lf) totalaa,sp,
 	     (lf) base_3[4] / (lf) totalaa);
       } else {                      /* must be human formatted output then*/
-     fprintf(fblkout,               /* tabulated output                   */ 
+     fprintf(fblkout,               /* tabulated output                   */
          "Gene Name: %-69.69s\nLength   : %-ld aa"
          " \tNon_synonymous/synonymous codons (%3ld/%5ld)\n"
          " GC=%5.3f\tGC3s=%5.3f\tGC_not_GC3s=%5.3f\n"
@@ -1233,28 +1233,28 @@ void gc_out(FILE * foutput, FILE * fblkout, int which){
          (lf) (bases[2] + bases[4]) / (lf) tot_s,
          (lf) (base_tot[2] + base_tot[4] - bases[2] - bases[4])
          / (lf) (totalaa * 3 - tot_s),
-         (lf) base_1[1] / (lf) totalaa, (lf) base_2[1] / (lf) totalaa, 
+         (lf) base_1[1] / (lf) totalaa, (lf) base_2[1] / (lf) totalaa,
          (lf) base_3[1] / (lf) totalaa,
          (lf) base_tot[1] / (lf) (totalaa * 3),
          (lf) (base_1[1] + base_1[3]) / (lf) totalaa,
          (lf) (base_2[1] + base_2[3]) / (lf) totalaa,
          (lf) (base_3[1] + base_3[3]) / (lf) totalaa,
          (lf) (base_tot[1] + base_tot[3]) / (lf) (totalaa * 3),
-         (lf) base_1[2] / (lf) totalaa, (lf) base_2[2] / (lf) totalaa, 
+         (lf) base_1[2] / (lf) totalaa, (lf) base_2[2] / (lf) totalaa,
          (lf) base_3[2] / (lf) totalaa,
          (lf) base_tot[2] / (lf) (totalaa * 3),
          (lf) (base_1[2] + base_1[4]) / (lf) totalaa,
          (lf) (base_2[2] + base_2[4]) / (lf) totalaa,
          (lf) (base_3[2] + base_3[4]) / (lf) totalaa,
          (lf) (base_tot[2] + base_tot[4]) / (lf) (totalaa * 3),
-         (lf) base_1[3] / (lf) totalaa, (lf) base_2[3] / (lf) totalaa, 
+         (lf) base_1[3] / (lf) totalaa, (lf) base_2[3] / (lf) totalaa,
          (lf) base_3[3] / (lf) totalaa,
          (lf) base_tot[3] / (lf) (totalaa * 3),
          (lf) (base_1[3] + base_1[4]) / (lf) totalaa,
          (lf) (base_2[3] + base_2[4]) / (lf) totalaa,
          (lf) (base_3[3] + base_3[4]) / (lf) totalaa,
          (lf) (base_tot[3] + base_tot[4]) / (lf) (totalaa * 3),
-         (lf) base_1[4] / (lf) totalaa, (lf) base_2[4] / (lf) totalaa, 
+         (lf) base_1[4] / (lf) totalaa, (lf) base_2[4] / (lf) totalaa,
          (lf) base_3[4] / (lf) totalaa,
          (lf) base_tot[4] / (lf) (totalaa * 3),
          (lf) (base_1[1] + base_1[2]) / (lf) totalaa,
@@ -1265,11 +1265,11 @@ void gc_out(FILE * foutput, FILE * fblkout, int which){
       }
       break;
    case 2:                          /* a bit more simple ... GC content   */
-      fprintf(foutput, "%5.3f%c", (lf) ((base_tot[2] + base_tot[4]) / (lf) 
+      fprintf(foutput, "%5.3f%c", (lf) ((base_tot[2] + base_tot[4]) / (lf)
           (totalaa * 3)),sp);
       break;
    case 3:                          /* GC3s                               */
-      fprintf(foutput, "%5.3f%c", (lf) (bases[2] + bases[4]) / 
+      fprintf(foutput, "%5.3f%c", (lf) (bases[2] + bases[4]) /
           (lf) tot_s,sp);
       break;
    case 4:                          /* Number of synonymous codons        */
@@ -1305,7 +1305,7 @@ void dot(int y, long int period)
    if (++xx % period == 0){         /* every period calls print a .       */
              fprintf(stderr,".");
              dott++;
-            }            
+            }
    if ( dott == 50) {               /* every 50 dots wrap the line        */
              fprintf(stderr,"\n");
              dott=0;
@@ -1349,7 +1349,7 @@ int cutab_out(FILE * fblkout, long *nncod, long *nnaa)
       sp = pm->seperator;
    else
       sp = '\t';
-                         
+
    for (x = 0; x < 4; x++)
       last_row[x] = 0;
 
@@ -1366,10 +1366,10 @@ int cutab_out(FILE * fblkout, long *nncod, long *nnaa)
 	 fprintf(fblkout, "%c%s%c", sp, paa->cod[x], sp):
 	 fprintf(fblkout, "    %s",   paa->cod[x]);
      }
-/* Sample of output *******************************************************/      
-/*Phe UUU    0 0.00 Ser UCU    1 0.24 Tyr UAU    1 0.11 Cys UGU    1 0.67 */ 
-/*    UUC   22 2.00     UCC   10 2.40     UAC   17 1.89     UGC    2 1.33 */ 
-/*Leu UUA    0 0.00     UCA    1 0.24 TER UAA    0 0.00 TER UGA    1 3.00 */ 
+/* Sample of output *******************************************************/
+/*Phe UUU    0 0.00 Ser UCU    1 0.24 Tyr UAU    1 0.11 Cys UGU    1 0.67 */
+/*    UUC   22 2.00     UCC   10 2.40     UAC   17 1.89     UGC    2 1.33 */
+/*Leu UUA    0 0.00     UCA    1 0.24 TER UAA    0 0.00 TER UGA    1 3.00 */
 /*    UUG    1 0.12     UCG    6 1.44     UAG    0 0.00 Trp UGG    4 1.00 */
 /**************************************************************************/
    (pm->seq_format=='M')?
@@ -1391,7 +1391,7 @@ int cutab_out(FILE * fblkout, long *nncod, long *nnaa)
       if (!(x % 16))
      fprintf(fblkout, "\n");
    }
-   fprintf(fblkout, "%li codons in %16.16s (used %22.22s)\n\n", 
+   fprintf(fblkout, "%li codons in %16.16s (used %22.22s)\n\n",
        (long int) codon_tot, title, pcu->des);
    return 1;
 }
@@ -1405,7 +1405,7 @@ int dinuc_count(char *seq, long int ttot)
 {
    static char     a = 0;
    int i;
-   
+
    for (i = 0; i < ttot; i++) {
       last_base = a;
       switch (seq[i]) {
@@ -1457,7 +1457,7 @@ int dinuc_out(FILE * fblkout, char *ttitle)
 
 
    for ( x=0 ; x<4 ; x ++)  dinuc_tot[x]=0;
- 
+
 
    for ( x=0 ; x<3 ; x++ )
        for ( i=0 ; i<16 ; i++ ){
@@ -1473,19 +1473,19 @@ int dinuc_out(FILE * fblkout, char *ttitle)
       if  (pm->seq_format=='H' ) {
 	   fprintf(fblkout,"%-13.13s%cframe%c","title", sp,sp);
 	   for (x = 0; x < 4; x++)
-	    for (i = 0; i < 4; i++) 
-	     fprintf(fblkout,"%c%c%4.4c",bases[x],bases[i],sp);        
+	    for (i = 0; i < 4; i++)
+	     fprintf(fblkout,"%c%c%4.4c",bases[x],bases[i],sp);
       }else{
 	   fprintf(fblkout, "%s","title");
         for (y = 0; y < 4; y ++){
 	     fprintf(fblkout, "%c%s",sp,"frame");
-	     for (x = 0; x < 4; x++) 
-	      for (i = 0; i < 4; i++) 
-          fprintf(fblkout,"%c%c%c",sp, bases[x],bases[i]);          
+	     for (x = 0; x < 4; x++)
+	      for (i = 0; i < 4; i++)
+          fprintf(fblkout,"%c%c%c",sp, bases[x],bases[i]);
           }
           }
       fprintf(fblkout, "\n");
-       }                            /* matches if (!called)               */ 
+       }                            /* matches if (!called)               */
 
 /*Sample output   truncated  **********************************************/
 /*title         frame TT    TC    TA    TG    CT    CC    CA    CG    AT  */
@@ -1493,10 +1493,10 @@ int dinuc_out(FILE * fblkout, char *ttitle)
 /*MLSPCOPER.PE1__ 2:3 0.000 0.195 0.000 0.098 0.000 0.138 0.008 0.073 ... */
 /*MLSPCOPER.PE1__ 3:1 0.008 0.016 0.000 0.033 0.033 0.107 0.172 0.262 ... */
 /*MLSPCOPER.PE1__ all 0.011 0.084 0.005 0.046 0.027 0.095 0.071 0.144 ... */
-/*MLSPCOPER.PE2__ 1:2 0.026 0.026 0.009 0.009 0.053 0.035 0.053 0.061 ... */  
+/*MLSPCOPER.PE2__ 1:2 0.026 0.026 0.009 0.009 0.053 0.035 0.053 0.061 ... */
 /**************************************************************************/
    for (x = 0; x < 4; x++) {
-   if ( pm->seq_format == 'H' || x == 0 )   
+   if ( pm->seq_format == 'H' || x == 0 )
      fprintf(fblkout,  (pm->seq_format=='H') ?
 	     "%-15.15s%c":"%-.15s%c", ttitle, sp);
 
@@ -1515,25 +1515,25 @@ int dinuc_out(FILE * fblkout, char *ttitle)
        break;
      }
 
-     if ( x == 3 ){ 
+     if ( x == 3 ){
        for (i = 0; i < 16; i++)
           if ( dinuc_tot[x] )
 	        fprintf(fblkout,"%5.3f%c",
               (float)(din[0][i]+din[1][i]+din[2][i])/
-              (float)dinuc_tot[x], sp);     
+              (float)dinuc_tot[x], sp);
           else
-            fprintf(fblkout,"%5.3f%c",0.00, sp);              
+            fprintf(fblkout,"%5.3f%c",0.00, sp);
      }
      else{
        for (i = 0; i < 16; i++)
-         if ( dinuc_tot[x] )	
-           fprintf(fblkout, "%5.3f%c", 
+         if ( dinuc_tot[x] )
+           fprintf(fblkout, "%5.3f%c",
              (float) din[x][i]/(float)dinuc_tot[x], sp);
            else
-               fprintf(fblkout,"%5.3f%c", 0.00, sp);              
+               fprintf(fblkout,"%5.3f%c", 0.00, sp);
      }
 
-     if ( pm->seq_format == 'H' || x == 3) 
+     if ( pm->seq_format == 'H' || x == 3)
        fprintf(fblkout, "\n");
    }
    return 1;
@@ -1551,7 +1551,7 @@ char coa_raw_out(FILE * fcoaout, long *nncod, long *nnaa, char *ttitle)
 
    static int      count = 0;
    int i;
-      
+
    for (i = 0; i < (int) strlen(ttitle); i++)  /* don't take any chances  */
       if (isspace( (int) *(ttitle + i)))    *(ttitle + i) = '_';
 
@@ -1560,7 +1560,7 @@ char coa_raw_out(FILE * fcoaout, long *nncod, long *nnaa, char *ttitle)
 
    switch (pm->coa) {
    case 'c':
-   case 'r':                                  /* if rscu or codon usage   */ 
+   case 'r':                                  /* if rscu or codon usage   */
       for (i = 1; i < 65; i++)
      fprintf(fcoaout, "%i\t", (int) nncod[i]);
       fprintf(fcoaout, "\n");
@@ -1594,7 +1594,7 @@ void sorted_by_axis1(double *ax1, int *sortax1, int lig)
    double          min;
    int             nmin, *tagged;
    int             i,j;
-   
+
    /* allocated an array such that we can record which genes have been    */
    /* processed already, and are in sortax1                               */
    if ((tagged = (int *) calloc(lig + 1, sizeof(int))) == NULL)
@@ -1608,13 +1608,13 @@ void sorted_by_axis1(double *ax1, int *sortax1, int lig)
    for (j = 1; j <= lig; j++) {
       i = 0;
       while (tagged[++i]);          /* find the first gene not in sortax1 */
-      min = ax1[i];                 /* assign it value to min             */  
+      min = ax1[i];                 /* assign it value to min             */
       nmin = i;                     /* assign it ordination to nmin       */
 
       for (i = 1; i <= lig; i++) {  /* for each gene                      */
        if (tagged[i]) continue;     /* gene is already in sortax1 .. next */
        if (ax1[i] < min) {          /* find the min value among the rest  */
-        min = ax1[i];               /* assign it value to min             */ 
+        min = ax1[i];               /* assign it value to min             */
         nmin = i;                   /* assign it ordination to nmin       */
        }
       }
@@ -1646,10 +1646,10 @@ void gen_cusort_fop(int *sortax1, int lig, FILE * fnam, FILE *ssummary)
    FILE           *fcusort = NULL;
    int            j;
 
-   
+
    /* first open the original raw codon usage file                        */
    if ((fcusort = open_file("", "cusort.coa", "w", FALSE)) == NULL)
-      my_exit(1, "gen_cusort_fop");                       
+      my_exit(1, "gen_cusort_fop");
 
    /* calloc enough memory for the codon usage of the low group of genes  */
    if ((low = (long int *) calloc(65, sizeof(long int))) == NULL)
@@ -1684,7 +1684,7 @@ void gen_cusort_fop(int *sortax1, int lig, FILE * fnam, FILE *ssummary)
       high[j] = 0;
    }
 
-   /* write explanation about what we are doing to summary.coa            */ 
+   /* write explanation about what we are doing to summary.coa            */
    fprintf(ssummary, "\ncusort.coa (not shown here) contains CU of "
        "genes sorted by their\n"
        "ordination on the principle axis or factor\n"
@@ -1694,16 +1694,16 @@ void gen_cusort_fop(int *sortax1, int lig, FILE * fnam, FILE *ssummary)
 
    for (i = 1; i <= lig; i++) {     /* foreach gene                       */
       rewind(fnam);                 /* go to start of codon_raw           */
-      clean_up(ncod, naa);          /* blank the codon usage array        */    
+      clean_up(ncod, naa);          /* blank the codon usage array        */
       j = 1;
-      while (j++ != sortax1[i])     /* find the rank of gene i            */ 
-       fgets(pm->junk, BUFSIZ,fnam);/* by scanning for lines of CU in     */ 
+      while (j++ != sortax1[i])     /* find the rank of gene i            */
+       fgets(pm->junk, BUFSIZ,fnam);/* by scanning for lines of CU in     */
       fscanf(fnam, "%s", pm->junk); /* now we know the name of seq i      */
 
       for (j = 1; j < 64; j++) {    /* now read in the cu of each codon   */
-       fscanf(fnam, "%f", &v2);     /* assign it initially to v2          */ 
+       fscanf(fnam, "%f", &v2);     /* assign it initially to v2          */
        ncod[j] = (long int) v2;     /* then place this value in ncod      */
-     if (min >= i)                  /* remember the codon usage of the    */ 
+     if (min >= i)                  /* remember the codon usage of the    */
         low[j] += (long int) v2;    /* two groups of genes at either end  */
      if (max < i)                   /* of the axis, containing min and    */
         high[j] += (long int) v2;   /* max genes                          */
@@ -1721,13 +1721,13 @@ void gen_cusort_fop(int *sortax1, int lig, FILE * fnam, FILE *ssummary)
       /* generate error messages, but we have already seen this messages  */
       /* on the first pass, so we fool it by saying all the stops are     */
       /* valid stops and not to complain again                            */
-      for (j = 1, stops = 0; j < 65; j++)   
+      for (j = 1, stops = 0; j < 65; j++)
                  if (pcu->ca[j] == 11)
                         stops += (int) ncod[j];
-      dot( 1 , 10 );  
+      dot( 1 , 10 );
       codon_usage_out(fcusort, ncod, 11, stops, pm->junk);
    }
-   fileclose(&fcusort);              
+   fileclose(&fcusort);
    highlow(low, high, ssummary);        /* now we call highlow           */
                                         /* to use the sorted cu output   */
    free(low);                           /* release the memory to the OS  */
@@ -1775,15 +1775,15 @@ void highlow(long int *low, long int *high, FILE * ssummary)
    if ((aa_high = (long int *) calloc(22, sizeof(long int))) == NULL)
       my_exit(3, "aa_high");
    if ((highest_x = (long int *) calloc(22, sizeof(long int))) == NULL)
-      my_exit(3, "last_row");      
+      my_exit(3, "last_row");
    if ((x2 = (float *) calloc(65, sizeof(float))) == NULL)
       my_exit(3, "x2");
    if ((flag = (char *) calloc(65, sizeof(char))) == NULL)
       my_exit(3, "flag");
    if ((last_row = (int *) calloc(65, sizeof(int))) == NULL)
       my_exit(3, "last_row");
-   
-  
+
+
    if (pm->seq_format=='M')
       sp = pm->seperator;
    else
@@ -1799,11 +1799,11 @@ void highlow(long int *low, long int *high, FILE * ssummary)
       }
    for (x = 0; x <65 ; x++) {
       x2      [x]= (float) 0.0;
-      flag    [x]=0;   
+      flag    [x]=0;
       last_row[x]=0;
       }
-      
-      
+
+
    /*count the amino acid usage for the two datasets, initially we only   */
    /*have the codon usage of the two groups                               */
    for (i = 1; i < 65; i++) {
@@ -1865,10 +1865,10 @@ void highlow(long int *low, long int *high, FILE * ssummary)
                      "extremes of axis 1\n");
 /* this created the hi-low codon usage table                              */
 /* Sample output truncated (***********************************************/
-/*Asp   GAU   0.10 ( 10) 1.68 ( 53)   Gly   GGU   0.21 ( 12) 0.85 ( 11)   */   
-/*      GAC*  1.90 (184) 0.32 ( 10)         GGC*  3.13 (176) 2.00 ( 26)   */   
-/*Glu   GAA   0.00 (  0) 1.34 ( 55)         GGA   0.05 (  3) 0.69 (  9)   */  
-/*      GAG*  2.00 (255) 0.66 ( 27)         GGG   0.60 ( 34) 0.46 (  6)   */   
+/*Asp   GAU   0.10 ( 10) 1.68 ( 53)   Gly   GGU   0.21 ( 12) 0.85 ( 11)   */
+/*      GAC*  1.90 (184) 0.32 ( 10)         GGC*  3.13 (176) 2.00 ( 26)   */
+/*Glu   GAA   0.00 (  0) 1.34 ( 55)         GGA   0.05 (  3) 0.69 (  9)   */
+/*      GAG*  2.00 (255) 0.66 ( 27)         GGG   0.60 ( 34) 0.46 (  6)   */
 /*                                                                        */
 /*                                                                        */
 /*        Number of codons in high bias dataset 2825                      */
@@ -1878,12 +1878,12 @@ void highlow(long int *low, long int *high, FILE * ssummary)
 /*Codon UUC (Phe) chi value was 70.175                                    */
 /*Codon UCC (Ser) chi value was 48.030                                    */
 /*Codon UAC (Tyr) chi value was 86.069                                    */
-/**************************************************************************/ 
+/**************************************************************************/
 
    for (outer = 1; outer <= 3; outer += 2) {
       for (x = 1; x < 5; x++) {
       for (j = 1; j < 5; j++) {
-        icode = ((x - 1) * 16) + ((j - 1) * 4) + outer; 
+        icode = ((x - 1) * 16) + ((j - 1) * 4) + outer;
 
 
         for (i = icode; i <= icode + 1; i++) {   /*loop twice             */
@@ -1893,7 +1893,7 @@ void highlow(long int *low, long int *high, FILE * ssummary)
 		              sp, paa->cod[i], flag[i], sp);
 	          fprintf(ssummary, "%s%c%s%c%c", paa->aa3[pcu->ca[i]],
 		              sp, paa->cod[i], flag[i], sp);
-	        } else {                       
+	        } else {
 	           fprintf(fhilo, "%c%s%c%c", sp, paa->cod[i], flag[i], sp);
 	           fprintf(ssummary, "   %c%s%c%c",sp,paa->cod[i],flag[i],sp);
 	        }
@@ -1938,19 +1938,19 @@ void highlow(long int *low, long int *high, FILE * ssummary)
    }
 
 
-   fprintf(fhilo, 
+   fprintf(fhilo,
        "\tNumber of codons in high bias dataset %li\n", left_tot);
-   fprintf(fhilo, 
+   fprintf(fhilo,
        "\tNumber of codons in low  bias dataset %li\n", right_tot);
-   fprintf(fhilo, 
+   fprintf(fhilo,
        "Note: high bias was assigned to the dataset with the lower"
        " average Nc\n");
 
-   fprintf(ssummary, 
+   fprintf(ssummary,
        "\tNumber of codons in high bias dataset %li\n", left_tot);
-   fprintf(ssummary, 
+   fprintf(ssummary,
        "\tNumber of codons in low  bias dataset %li\n", right_tot);
-   fprintf(ssummary, 
+   fprintf(ssummary,
        "Note high bias was assigned to the genes with the lower"
        " overall Nc\n");
 
@@ -1980,8 +1980,8 @@ void highlow(long int *low, long int *high, FILE * ssummary)
 
    for (i = 1; i < 65; i++) {
       if( left[i] > highest_x[pcu->ca[i]])    /* used for calculating CAI */
-                           highest_x[pcu->ca[i]]=left[i]; 
-      
+                           highest_x[pcu->ca[i]]=left[i];
+
       if (*(ds + i) == 1 || pcu->ca[i] == 11) {
      fprintf(ffop, "2");
      fprintf(ssummary, "2");
@@ -1999,7 +1999,7 @@ void highlow(long int *low, long int *high, FILE * ssummary)
      fprintf(ssummary, "2");
       }
 
-      if (!(i % 16)) {                           /* handle line wrapping  */ 
+      if (!(i % 16)) {                           /* handle line wrapping  */
      fprintf(ffop, "\n");
      fprintf(ssummary, "\n");
       } else {
@@ -2008,10 +2008,10 @@ void highlow(long int *low, long int *high, FILE * ssummary)
       }
    }
    fileclose(&ffop);                              /*   close the Fop file  */
-  
+
    if ((fcbi = open_file("", "cbi.coa", "w", FALSE)) == NULL)
       my_exit(1, "cbi.coa");                     /*    open cbi.coa       */
-      
+
  for (i = 1; i < 65; i++) {                      /* write values 2 cbi.coa*/
 
   if (flag[i] == '*')                       /* Only report optimal codons */
@@ -2019,17 +2019,17 @@ void highlow(long int *low, long int *high, FILE * ssummary)
   else
      fprintf(fcbi, "2");                    /* ignore non optimal codons  */
 
-  if (!(i % 16)) 
+  if (!(i % 16))
      fprintf(fcbi, "\n");
   else
      fprintf(fcbi, ",");
-    
+
  }
-   
-  fileclose(&fcbi);   
-   
+
+  fileclose(&fcbi);
+
    fprintf(ssummary, "\n\n");
-    
+
    /* now calculate and write out CAI adaptiveness values                 */
    fprintf(ssummary, "These are PUTATIVE CAI adaptiveness values "
      "identified by this programme\n"
@@ -2038,47 +2038,47 @@ void highlow(long int *low, long int *high, FILE * ssummary)
      "of the file used to input a personal selection of CAI values\n"
      "That is, the format required for Menu 4 option 1\n"
      "cai.coa\tinput file to be used for CAI calculations\n"
-     "\n\nCod AA    Xi\tWi\t\tCod AA    Xi\tWi\n"); 
-  
-   
+     "\n\nCod AA    Xi\tWi\t\tCod AA    Xi\tWi\n");
+
+
    if ((fcai = open_file("", "cai.coa", "w", FALSE)) == NULL)
-      my_exit(1, "cai.coa"); 
-  
+      my_exit(1, "cai.coa");
+
    for (i = 1, x = TRUE ; i < 65 && x ; i++) {
-    
+
     /* if a stop or a non-synonymous codon w = 1                          */
-    if (*(ds + i) == 1 || pcu->ca[i] == 11) {  
+    if (*(ds + i) == 1 || pcu->ca[i] == 11) {
                     fprintf(fcai, "1.0000000 \n");
-                    fprintf(ssummary,"%s %s %6.1f %9.7f\t", 
-                      paa->cod[i], 
+                    fprintf(ssummary,"%s %s %6.1f %9.7f\t",
+                      paa->cod[i],
                       paa->aa3[pcu->ca[i]],
-                      (float) left[i], 1.0000000); 
+                      (float) left[i], 1.0000000);
     } else  if ( highest_x[pcu->ca[i]] ) {
-      
+
       /* if a codon is absent then adjust its frequecy to 0.5             */
-      if ( left[i] ) 
+      if ( left[i] )
        w= (float) left[i]/ (float) highest_x[pcu->ca[i]];
       else
        w= (float) 0.5   / (float) highest_x[pcu->ca[i]];
       fprintf(fcai, "%9.7f \n", w);                    /* output CAI W    */
-      fprintf(ssummary,"%s %s %6.1f %9.7f\t", 
+      fprintf(ssummary,"%s %s %6.1f %9.7f\t",
              paa->cod[i], paa->aa3[pcu->ca[i]],
-             (left[i]) ? (float) left[i]:0.5 , w); 
-    /* either strange amino acid composition or data sets where too small */               
-    } else {                            
-      fprintf(pm->my_err, 
+             (left[i]) ? (float) left[i]:0.5 , w);
+    /* either strange amino acid composition or data sets where too small */
+    } else {
+      fprintf(pm->my_err,
           "WARNING An attempt to calculate CAI relative "
           "adaptivnesss FAILED\n no %s amino acids found"
-          " in the high bias dataset \n",paa->aa3[pcu->ca[i]]);    
-      fprintf(ssummary, 
+          " in the high bias dataset \n",paa->aa3[pcu->ca[i]]);
+      fprintf(ssummary,
           "\nWARNING An attempt to calculate CAI relative adaptiveness "
           "FAILED\n no %s amino acids found in the high bias dataset \n",
           paa->aa3[pcu->ca[i]]);
       x=FALSE;
-   }  
+   }
    if( !(i%2)) fprintf (ssummary  , "\n");
    } /* matches for (i = 1, x = TRUE ; i < 65 && x ; i++)                 */
-     
+
    fileclose(&fcai);                              /* close files           */
    fileclose(&fhilo);
    free(aa_low);                                 /* free memory           */
@@ -2116,7 +2116,7 @@ int hydro_out(FILE * foutput, long int *nnaa)
       fprintf(pm->my_err, "No output was written to file   \n", title);
       return 1;
    }
-   
+
    for (i = 1; i < 22; i++)
       if (i != 11)
      hydro += ((float) nnaa[i] / (float) a2_tot) * (float) pap->hydro[i];

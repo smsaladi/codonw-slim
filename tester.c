@@ -42,13 +42,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <string.h>  
+#include <string.h>
 #include <time.h>
 #include <ctype.h>
 #include "codonW.h"
 
 /* The accuracy of the answers are recorded using these three variable     */
-int num_questions = 0;                      
+int num_questions = 0;
 int num_cheats = 0;
 int num_wrong = 0;
 
@@ -78,7 +78,7 @@ void    tester ( void ) {
         printf("Type Help for help:");
         /* the switch biases the questions so their freq is not equal     */
         switch (i) {
-        case 1: 
+        case 1:
         case 2:                     /*  amino acid question               */
             i = rand_num(21);
             loop = TRUE;
@@ -87,13 +87,13 @@ void    tester ( void ) {
                     " %s ", paa->aa1[i]);
                 gets( pm->junk ) ;
                 strcpy ( tmp_AA, paa->aa3[i] );
-                for ( x = 0 ; x < (int)strlen(tmp_AA); x++) 
+                for ( x = 0 ; x < (int)strlen(tmp_AA); x++)
                     tmp_AA[x] = (char) toupper( (int) tmp_AA[x]);
-                for ( x = 0 ; x < (int)strlen(pm->junk  ); x++) 
+                for ( x = 0 ; x < (int)strlen(pm->junk  ); x++)
                     pm->junk  [x] =  (char) toupper(  (int) pm->junk[x]);
-                if ( !strcmp ( pm->junk, "QUIT" ) || 
+                if ( !strcmp ( pm->junk, "QUIT" ) ||
                      !strcmp ( pm->junk, "EXIT" )) {
-                    asummary();                 
+                    asummary();
                     main_loop = FALSE;
                     break;
                 }
@@ -106,7 +106,7 @@ void    tester ( void ) {
                 if ( !strcmp (pm->junk, "?" ) ) {
                     printf( "Cheat %s", paa->aa3[i]);
                     num_cheats++;             /*     The user cheated     */
-                    continue; 
+                    continue;
                 }
                 if ( !strcmp (pm->junk  , tmp_AA )) {
                     loop = FALSE;
@@ -123,16 +123,16 @@ void    tester ( void ) {
                 printf("\nHow many codons encode the Amino Acid %s ",
                         paa->aa1[i]);
                 gets( pm->junk ) ;
-                for ( x = 0 ; x < (int)strlen(pm->junk); x++) 
+                for ( x = 0 ; x < (int)strlen(pm->junk); x++)
                     pm->junk[x] = (char) toupper( (int) pm->junk[x]);
-  
-                if ( !strcmp ( pm->junk, "QUIT" ) || 
+
+                if ( !strcmp ( pm->junk, "QUIT" ) ||
                      !strcmp ( pm->junk, "EXIT" )) {
                     asummary();
                     main_loop = FALSE;
                     break;
                 }
-  
+
                 if ( !strcmp ( pm->junk,"HELP")) {
                     chelp("fun");
                     continue;
@@ -144,12 +144,12 @@ void    tester ( void ) {
                     continue;
 
                }
-                
-               
+
+
 
                 if ( atoi(pm->junk) == *(da + i) )
                     loop = FALSE;
-                
+
                 else {
                     num_wrong++;
                     printf("Wrong answer (try ?)\n");
@@ -157,27 +157,27 @@ void    tester ( void ) {
             }
             break;
         case 4:                                 /* 60% of the time ask    */
-        case 5:                                 /* ask questions about    */     
-        case 6:                                 /* codon to aa translation*/ 
-        case 7: 
+        case 5:                                 /* ask questions about    */
+        case 6:                                 /* codon to aa translation*/
+        case 7:
         case 8:
-        case 9: 
+        case 9:
         case 10:
             i = rand_num(64);
             loop = TRUE;
             while ( loop ) {
                 printf("\nName the Amino Acid encoded by the codon %s ", paa->cod[i]);
                 gets( pm->junk );
-                for ( x = 0 ; x < (int)strlen(pm->junk ); x++) 
+                for ( x = 0 ; x < (int)strlen(pm->junk ); x++)
                     pm->junk[x] = (char) toupper( (int) pm->junk[x]);
-                if ( !strcmp ( pm->junk, "QUIT" ) || 
+                if ( !strcmp ( pm->junk, "QUIT" ) ||
                      !strcmp ( pm->junk, "EXIT" )) {
                     asummary();
                     main_loop = FALSE;
                     break;
                 }
 
-                
+
                 if ( !strcmp ( pm->junk,"HELP")) {
                     chelp("fun");
                     continue;
@@ -194,15 +194,15 @@ void    tester ( void ) {
                 strcpy ( tmp_AA2, paa->aa3[pcu->ca[i]] );
 
                 /* uppercase everything, the AA names and the answer     */
-                for ( x = 0 ; x < (int)strlen(tmp_AA); x++) 
+                for ( x = 0 ; x < (int)strlen(tmp_AA); x++)
                     tmp_AA[x] = (char)toupper( (int) tmp_AA[x]);
-                for ( x = 0 ; x < (int)strlen(tmp_AA2); x++) 
+                for ( x = 0 ; x < (int)strlen(tmp_AA2); x++)
                     tmp_AA2[x] = (char)toupper((int) tmp_AA2[x]);
-                for ( x = 0 ; x < (int)strlen(pm->junk  ); x++) 
+                for ( x = 0 ; x < (int)strlen(pm->junk  ); x++)
                     pm->junk  [x] = (char)toupper((int) pm->junk[x]);
 
-                if ( !strcmp(tmp_AA, pm->junk) || 
-                     !strcmp(tmp_AA2,pm->junk)  ) {         
+                if ( !strcmp(tmp_AA, pm->junk) ||
+                     !strcmp(tmp_AA2,pm->junk)  ) {
                     loop = FALSE;
                 } else {
                     printf("Wrong answer (try ?)\n");
@@ -212,7 +212,7 @@ void    tester ( void ) {
             break;
         default:
             printf("mistake == %i \n", i);
-            exit(0);                             /* error catch            */ 
+            exit(0);                             /* error catch            */
             break;
         }                                        /* end of switch          */
         num_questions++;
@@ -229,8 +229,8 @@ void    asummary (void) {
     printf ( " You answered\n \t %5i questions\n", num_questions);
     printf ( " \t %5i answers were wrong\n", num_wrong);
     printf ( " \t %5i times you had to ask for a hint\n", num_cheats);
-    printf ( " \t  %3.0f%c accuracy \n", (float) ( (num_questions) ?                 
-        (float)100 * (num_questions - num_wrong) / 
+    printf ( " \t  %3.0f%c accuracy \n", (float) ( (num_questions) ?
+        (float)100 * (num_questions - num_wrong) /
         (float)num_questions : 0 ),'%');
     pause;
     return;

@@ -34,7 +34,7 @@
 /*                                                                        */
 /* It has however been extensively modified to integrate it               */
 /* as seamlessly as practical into CodonW and as such can no              */
-/* longer be considered as a stand alone package                          */   
+/* longer be considered as a stand alone package                          */
 /*                                                                        */
 /* Originally written as a general Multivariate analysis (MVA)            */
 /* package, it is now hardwired specifically for codon or amino           */
@@ -66,24 +66,24 @@
 /* it also counts the amino acid and codon usage of each gene             */
 /**************************************************************************/
 
-void textbin(char *fileread, char *fileout) 
+void textbin(char *fileread, char *fileout)
 {
   double     *vlec;
   int         v2;
   int i,j,x;
-  
+
   pcoa->colm=0;
-  
+
   if ( pm->coa=='a' ) {
-    for ( i=1; i<22;i++) 
+    for ( i=1; i<22;i++)
       if ( pcoa->amino[i] ) pcoa->colm++;  /* number of colms in analysis */
   }else {
-    for ( i=1; i<65;i++) 
-      if ( pcoa->codons[i]) pcoa->colm++;  /* number of colms in analysis */    
+    for ( i=1; i<65;i++)
+      if ( pcoa->codons[i]) pcoa->colm++;  /* number of colms in analysis */
   }
-  
+
   vecalloc(&vlec, pcoa->colm);             /* allocate an array           */
-  
+
   /* open output files                                                    */
   if ( (pm->fcoa_in = open_file( "", fileread, "r", FALSE)) == NULL )  {
     fprintf(pm->my_err,"(txt2bin)");
@@ -92,75 +92,75 @@ void textbin(char *fileread, char *fileout)
   if ( (pm->fcoa_out = open_file( "",fileout, "wb", FALSE)) == NULL )  {
     fprintf(pm->my_err,"(txt2bin)");
     my_exit(6,"fileout");
-  }     
-  
+  }
+
   for (i=1;i<=pcoa->rows;i++) {            /* pcoa-rows is the No of genes */
     fscanf(pm->fcoa_in,"%s",pm->junk);
 
     /* read the data from coa_raw into the array vlec                      */
-    switch (pm->coa){ 
-    case 'a': 
+    switch (pm->coa){
+    case 'a':
       for (j=1,x=1;j<21;j++) {
         fscanf(pm->fcoa_in,"%i",&v2);
         if ( pcoa->amino[j] )
          vlec[x++] = (double) v2;
-        }                                       
+        }
         fscanf(pm->fcoa_in,"%i\n",&v2);
-        if ( pcoa->amino[j] ) 
+        if ( pcoa->amino[j] )
           vlec[pcoa->colm]  = (double) v2;
         if ( x != pcoa->colm ) my_exit (99,"Fatal Error in txt2bin");
         break;
     case 'c':
-      for (j=1,x=1;j<64;j++) { 
+      for (j=1,x=1;j<64;j++) {
          fscanf(pm->fcoa_in,"%i",&v2);
         if( pcoa->codons[j] )
             vlec[x++] = (double) v2;
-        }                       
+        }
         fscanf(pm->fcoa_in,"%i\n",&v2);
-        if(pcoa->codons[j] ) 
+        if(pcoa->codons[j] )
         vlec[pcoa->colm] = (double) v2;
         if ( x != pcoa->colm ) my_exit (99,"Fatal Error in txt2bin");
       break;
     case 'r':
-      clean_up ( ncod , naa );   
-      for (j=1,x=1;j<64;j++) { 
+      clean_up ( ncod , naa );
+      for (j=1,x=1;j<64;j++) {
         fscanf(pm->fcoa_in,"%i",&v2);
         naa[pcu->ca[j]]+=v2;                         /* count amino acids */
         ncod[j]         =v2;                         /* count codons      */
-      }                       
+      }
       fscanf(pm->fcoa_in,"%i\n",&v2);                /* read last codon   */
       naa[pcu->ca[j]]+=v2;
       ncod[j]         =v2;
 
-      for (j=1,x=0;j<=64;j++) { 
+      for (j=1,x=0;j<=64;j++) {
       if(pcoa->codons[j] ) {
      ++x;
-         vlec[x] = (double) ((naa[pcu->ca[j]])? 
+         vlec[x] = (double) ((naa[pcu->ca[j]])?
                   (float) ncod[j]/naa[pcu->ca[j]]*(float)( *(ds+j) ):
             0.00);
-     } 
+     }
     }
       break;
-    
+
 #ifdef DEBUG
     default:
       fprintf(pm->my_err,"error in textbin %c unknown \n",pm->coa );
       break;
 #endif
     }                                                          /* end if */
-    writevec(vlec, pm->fcoa_out);    
+    writevec(vlec, pm->fcoa_out);
   }
                            /* close files and release memory and return  */
   fileclose(&pm->fcoa_in);
-  fileclose(&pm->fcoa_out);  
-  free  (vlec); 
+  fileclose(&pm->fcoa_out);
+  free  (vlec);
 }
 
 /*************** colmout          *****************************************/
 /* The user has already decided how many axis to be recorded to file      */
 /* this value is stored in pcoa->axis. After the analysis is complete the */
 /* output data is stored in several binary formatted file. In this case   */
-/* nfice and nfics points at the file names.                              */  
+/* nfice and nfics points at the file names.                              */
 /* For each axis that has been requested to be recorded, the position     */
 /* of each column (either amino or codon ) is read from the binary file   */
 /* and converted into an easily read text file, which is pointed          */
@@ -176,7 +176,7 @@ void colmout(char *nfice, char *nfics,AMINO_STRUCT *ppaa, FILE *summary)
     char sp=pm->seperator;
 
     lig=pcoa->colm;
- 
+
   col=pcoa->axis;                               /* number of axis        */
 
     vecalloc(&vlec, col);
@@ -185,7 +185,7 @@ if( (fice=open_file("",nfice,"rb",FALSE))==NULL) my_exit(6,"nfice2");
 if( (fics=open_file("",nfics, "w",FALSE))==NULL) my_exit(1,"nfics2");
 
 fprintf(summary,"\n\nThe position of each %s by axis \n"
-	"also see %s for seperate output\n", 
+	"also see %s for seperate output\n",
 	(pm->coa=='a')? "amino acid":"codon",nfics);
 
 fprintf(fics   , "%s","label");
@@ -195,7 +195,7 @@ fprintf(summary, "%-20.20s","label");
 for (j=1;j<=col;j++) {
   fprintf(fics   , "%c%s%d",sp,"Axis",j);
   fprintf(summary, "%c%9s%d",sp, "Axis",j);
-}  
+}
 fprintf(fics   , "\n");
 fprintf(summary, "\n");
 
@@ -204,29 +204,29 @@ i=0;
 x=1;
   while( x<=lig ) {
                                 /* only write out for the columns analysed */
-   if( pm->coa == 'a' ) { 
-      
+   if( pm->coa == 'a' ) {
+
        while  ( !pcoa->amino[++i] );                /* skip amino if false */
 
       fprintf(fics   , "%s%c",ppaa->aa3[i],sp );
       fprintf(summary, "%-20.20s%c",ppaa->aa3[i],sp );
       x++;
     }else{
-      
-      while  ( !pcoa->codons[++i] );                /* skip codon if false */   
-      
+
+      while  ( !pcoa->codons[++i] );                /* skip codon if false */
+
       fprintf(fics    , "%s%c",ppaa->cod[i],sp);
       fprintf(summary , "%-20.20s%c",ppaa->cod[i],sp);
       x++;
-    }  
+    }
         readvec(vlec, fice);
         for (j=1;j<col;j++) {
             v2 = (float) vlec[j];
-            fprintf(fics   , "%f%c", v2,sp); 
+            fprintf(fics   , "%f%c", v2,sp);
             fprintf(summary, "%10.5f%c", v2,sp);
         }
         v2 = (float) vlec[col];
-        fprintf(fics   , "%f\n", v2); 
+        fprintf(fics   , "%f\n", v2);
         fprintf(summary, "%10.5f\n", v2);
     }
     fileclose(&fics);
@@ -246,20 +246,20 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
   float     v2;
   int i,j;
   char sp=pm->seperator;
-  
+
   lig=pcoa->rows;
   col=pcoa->axis;
 
   vecalloc(&vlec, col);
   vecalloc(&ax1 , lig);
-  if( (sortax1= (int *) calloc(lig+1,sizeof(int)))==NULL) 
-      my_exit(3,"sortax1"); 
- 
+  if( (sortax1= (int *) calloc(lig+1,sizeof(int)))==NULL)
+      my_exit(3,"sortax1");
+
   if( (fice=open_file("",nfice,"rb",FALSE))==NULL) my_exit(6,"nfice3");
   if( (fics=open_file("",nfics, "w",FALSE))==NULL) my_exit(1,"nfics3");
   if( (fnam=open_file("",ncout, "r",FALSE))==NULL) my_exit(6,"ncout3");
 
-  fprintf(summary,"\n\nThe position of each gene by axis \n" 
+  fprintf(summary,"\n\nThe position of each gene by axis \n"
       "(see also %s)\n",nfics);
 
   fprintf(fics   , "%s%c","label",sp);
@@ -268,7 +268,7 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
   for (j=1;j<=col;j++) {
     fprintf(fics   , "%s%d%c","Axis",j,sp);
     fprintf(summary, "%9s%d%c", "Axis",j,sp);
-  }  
+  }
     fprintf(fics   , "\n");
     fprintf(summary, "\n");
 
@@ -276,17 +276,17 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
 
     fgets(pm->junk,BUFSIZ,fnam);
     pm->junk[35]='\0';
-    for ( j=35 ; j>=0; j--) 
+    for ( j=35 ; j>=0; j--)
       if ( isspace( (int) pm->junk[j]) ) pm->junk[j]='\0';
- 
+
    fprintf(fics   , "%s%c",pm->junk,sp);
     fprintf(summary, "%-20.20s%c",pm->junk,sp);
-    
+
     readvec(vlec, fice);
     for (j=1;j<col;j++) {
-      
+
       if (j==1)  ax1[i]=vlec[j];                        /* first factors */
-      
+
       v2 = (float) vlec[j];
       fprintf(fics   , "%f%c", v2,sp);
       fprintf(summary, "%10.5f%c", v2,sp);
@@ -294,9 +294,9 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
     v2 = (float) vlec[col];
     fprintf(fics    , "%f\n", v2);
     fprintf(summary , "%10.5f\n", v2);
-  } 
+  }
 
- if ( pm->coa != 'a' )   {  
+ if ( pm->coa != 'a' )   {
   sorted_by_axis1  ( ax1, sortax1, lig);
   gen_cusort_fop ( sortax1, lig, fnam, summary );
  }
@@ -317,7 +317,7 @@ void vecalloc (double **vec, int n)
     if ( (*vec = (double *) calloc(n+1, sizeof(double))) != NULL) {
         **vec = n;
         return;
-    } else 
+    } else
         my_exit(3,"vecalloc");
 }
 
@@ -371,12 +371,12 @@ void PrepAFC(char *nfic)
         }
         n = n + a1;
         poili[i] = a1;
-    }    
+    }
 /* scale the vectors, and matrix                                           */
     scalvec(poili, 1.0/n);
     scalvec(poico, 1.0/n);
     scalmat(w, 1.0/n);
-    strcpy(bid,"cbfcpl"); 
+    strcpy(bid,"cbfcpl");
     ecrvec(poili, bid);
     strcpy(bid,"cbfcpc");
     ecrvec(poico, bid);
@@ -408,7 +408,7 @@ void PrepAFC(char *nfic)
 
 double inertot ( void )
 {
-    int     i, j; 
+    int     i, j;
     double      **tab;
     double  *pl, *pc;
     double  a1, s1, inertia;
@@ -426,11 +426,11 @@ double inertot ( void )
             s1 = tab[i][j];
             inertia = inertia + s1 * s1 * a1 * pc[j];
         }
-    }   
+    }
     freetab(tab);
     freevec(pl);
     freevec(pc);
-    
+
     return inertia;
 }
 
@@ -443,7 +443,7 @@ void lecmat (double **tab, char *nfic)
     int     i, j, l1, c1;
     float   v2;
     FILE    *fic=NULL;
-    
+
     l1 = (int) tab[0][0];
     c1 = (int) tab[1][0];
 
@@ -458,7 +458,7 @@ void lecmat (double **tab, char *nfic)
             }
             tab[i][j] = v2;
         }
-    }  
+    }
     fileclose(&fic);
 }
 
@@ -479,9 +479,9 @@ void freetab (double **tab)
 /* Releases memory dynamically allocated to a vector                      */
 /**************************************************************************/
 void freevec (double *vec)
-{   
-    free((char *) vec); 
-}  
+{
+    free((char *) vec);
+}
 
 /************** taballoc          *****************************************/
 /* Dynamically allocates memory to the table tab(l1,c1)                   */
@@ -489,13 +489,13 @@ void freevec (double *vec)
 void taballoc (double ***tab, int l1, int c1)
 {
     int     i;
-    
+
     if ( (*tab = (double **) calloc(l1+1, sizeof(double *))) != NULL) {
         for (i=0;i<=l1;i++) {
             if ( (*(*tab+i)=(double *) calloc(c1+1, sizeof(double))) == NULL ) {
             fprintf(pm->my_err,"(taballoc)");
             my_exit(3,"taballoc");
-            }           
+            }
         }
     } else {fprintf(pm->my_err,"(taballoc)");
             my_exit(3,"taballoc2");
@@ -513,7 +513,7 @@ void lecvec (double *v1, char *nfic)
     float   v2;
     int     i, c1;
     FILE    *fic=NULL;
-    
+
     if( (fic=open_file("",nfic,"rb",FALSE))==NULL) my_exit(6,"lecvec");
 
     c1 = (int) v1[0];
@@ -523,7 +523,7 @@ void lecvec (double *v1, char *nfic)
         my_exit(5,"lecvec");
         }
         v1[i] = v2;
-    }    
+    }
     fileclose(&fic);
 }
 
@@ -535,7 +535,7 @@ void ecrmat (double **tab, char *nfic)
     int     i, j, l1, c1;
     float   v2;
     FILE    *fic=NULL;
-    
+
     l1 = (int)tab[0][0];
     c1 = (int)tab[1][0];
 
@@ -546,11 +546,11 @@ void ecrmat (double **tab, char *nfic)
             v2 = (float)tab[i][j];
             if ( fwrite((const char *)&v2, 4, 1, fic) != 1)  {
             fprintf(pm->my_err,"(ecrmat)");
-            my_exit(4,"ecrmat");         
+            my_exit(4,"ecrmat");
             }
         }
     }
-    
+
     fileclose(&fic);
 }
 /************** ecrvec           ******************************************/
@@ -565,16 +565,16 @@ void ecrvec (double *v1, char *nfic)
     c1 = (int)v1[0];
 
     if( (fic=open_file("",nfic,"wb",FALSE))==NULL) my_exit(1,"ecrvec");
-    
-    
+
+
     for (i=1;i<=c1;i++) {
         v2 = (float)v1[i];
         if ( fwrite((const char *)&v2, 4, 1, fic) != 1){
             fprintf(pm->my_err,"(ecrvec)");
-            my_exit(4,"ecrvec");         
+            my_exit(4,"ecrvec");
             }
     }
-    
+
     fileclose(&fic);
 }
 
@@ -600,9 +600,9 @@ void scalmat (double **tab, double r)
 void scalvec (double *v1, double r)
 {
     int i, c1;
-    
+
     c1 = (int) v1[0];
-    
+
     for (i=1;i<=c1;i++) {
         v1[i] = v1[i] * r;
     }
@@ -618,7 +618,7 @@ void DiagoRC ( FILE *summary)
   double        *poili, *poico, *l;
   double         s, s1, a1, inertotal;
 
-    
+
   lcmin = pcoa->colm;
   if (pcoa->rows < pcoa->colm) lcmin = pcoa->rows;
   taballoc(&w, pcoa->rows, pcoa->colm);
@@ -633,7 +633,7 @@ void DiagoRC ( FILE *summary)
   lecvec(poico, "cbfcpc");
   sqrvec(poico);
   lecmat(w, "cbfcta");
-  
+
   inertotal=0;
   for (i=1;i<=pcoa->rows;i++) {
     a1 = poili[i];
@@ -644,8 +644,8 @@ void DiagoRC ( FILE *summary)
       inertotal = inertotal + s1;
     }
   }
-  
-  fprintf(summary,"The total inertia of the data was %f\n",inertotal); 
+
+  fprintf(summary,"The total inertia of the data was %f\n",inertotal);
   fprintf(summary, "\nExplanation of the variation by axis "
                     "(see also eigen.coa)\n");
 
@@ -657,7 +657,7 @@ void DiagoRC ( FILE *summary)
 dot(1,10);
     if (pcoa->rows < pcoa->colm) {
 
-        prodmatAAtB(w, ctab);                            
+        prodmatAAtB(w, ctab);
         DiagoComp(pcoa->rows, ctab, l, &rang);
         f1=pcoa->axis;
         editvalpro(summary, l, pcoa->rows, inertotal);
@@ -676,7 +676,7 @@ dot(1,10);
             auxi[j][2] = l[j]/inertotal;
         }
         sqrvec(l);
-    }   
+    }
 
     if (f1==0) {
         if (lcmin == 1) f1 = 1;
@@ -697,7 +697,7 @@ dot(1,10);
                     s = s + w[i][j] * ctab[i][k];
                 }
             vp2[j][k] = s;
-            }       
+            }
         }
         for (i=1;i<=pcoa->colm;i++) {
             if (poico[i] != 0) {
@@ -756,9 +756,9 @@ fin:
     freevec(poili);
     freevec(poico);
     freevec(l);
-    
+
 }                                                       /* End of DiagoRC */
- 
+
 /************** sqrvec           ******************************************/
 /* This function calculates the square root of a vector                   */
 /**************************************************************************/
@@ -766,14 +766,14 @@ void sqrvec (double *v1)
 {
     int i, c1;
     double v2;
-    
+
     c1 = (int) v1[0];
-    
+
     for (i=1;i<=c1;i++) {
         v2 = v1[i];
         if (v2 < 0.0) {
         fprintf(pm->my_err,"Error: Square root of negative number (sqrvec)");
-        my_exit(99,"sqrvec");        
+        my_exit(99,"sqrvec");
         }
         v2 = sqrt(v2);
         v1[i] = v2;
@@ -787,11 +787,11 @@ void prodmatAAtB (double **a, double **b)
 {
     int j, k, i, lig, col;
     double s;
-    
+
     lig = (int) a[0][0];
     col = (int) a[1][0];
 
-    for (j=1;j<=lig;j++) { 
+    for (j=1;j<=lig;j++) {
     dot ( 1 , 10 );
         for (k=j;k<=lig;k++) {
             s = 0;
@@ -800,7 +800,7 @@ void prodmatAAtB (double **a, double **b)
             }
         b[j][k] = s;
         b[k][j] = s;
-        }       
+        }
     }
 }
 
@@ -811,10 +811,10 @@ void prodmatABC (double **a, double **b, double **c)
 {
     int j, k, i, lig, col, col2;
     double s;
-    
+
     lig = (int) a[0][0];
     col = (int) a[1][0];
-    
+
     col2 = (int) b[1][0];
 
     for (i=1;i<=lig;i++) {
@@ -825,7 +825,7 @@ void prodmatABC (double **a, double **b, double **c)
                 s = s + a[i][j] * b[j][k];
             }
         c[i][k] = s;
-        }       
+        }
     }
 }
 
@@ -836,11 +836,11 @@ void prodmatAtAB (double **a, double **b)
 {
     int j, k, i, lig, col;
     double s;
-    
+
     lig = (int) a[0][0];
     col = (int) a[1][0];
 
-    for (j=1;j<=col;j++) { 
+    for (j=1;j<=col;j++) {
      dot(1,100);
         for (k=j;k<=col;k++) {
             s = 0;
@@ -849,7 +849,7 @@ void prodmatAtAB (double **a, double **b)
             }
         b[j][k] = s;
         b[k][j] = s;
-        }       
+        }
     }
 }
 
@@ -862,12 +862,12 @@ void editvalpro (FILE *ficlist, double *vp, int n, double s)
   double        sc1, sc2;
   int           i, n1;
   float         v2, v3, v4;
-  FILE *eigen=NULL;  
+  FILE *eigen=NULL;
   char sp;
 
   sp=pm->seperator;
 
-  if ( (eigen=open_file("","eigen.coa","w",FALSE))==NULL ) 
+  if ( (eigen=open_file("","eigen.coa","w",FALSE))==NULL )
           my_exit(1,"editvalpro");
 
 
@@ -919,7 +919,7 @@ void ecrmatred (double **tab, int c1, char *nfic)
     int     i, j, l1;
     float   v2;
     FILE    *fic=NULL;
-    
+
     l1 = (int) tab[0][0];
 
     if( (fic=open_file("",nfic,"wb",FALSE))==NULL) my_exit(1,"ecrmatred");
@@ -929,11 +929,11 @@ void ecrmatred (double **tab, int c1, char *nfic)
             v2 = (float) tab[i][j];
             if ( fwrite((const char *)&v2, 4, 1, fic) != 1){
         fprintf(pm->my_err,"(ecrmatred)");
-        my_exit(4,"ecrmatred");     
+        my_exit(4,"ecrmatred");
         }
         }
     }
-    
+
     fileclose(&fic);
 }
 
@@ -950,7 +950,7 @@ void readvec (double *v1, FILE *fic)
     for (i=1;i<=c1;i++) {
         if ( fread((char *)&v2, 4, 1, fic) != 1) {
         fprintf(pm->my_err,"(readvec)");
-        my_exit(5,"readvec");     
+        my_exit(5,"readvec");
         }
         v1[i] = v2;
     }
@@ -969,7 +969,7 @@ void DiagoComp (int n0, double **w, double *d, int *rang)
     double          a, b, c, x, xp, q, bp, ab, ep, h, t, u , v;
     double          dble;
     int             ni, i, i2, j, k, jk, ijk, ij, l, ix, m, m1, isnou;
-    
+
     vecalloc(&s, n0);
     a = 0.000000001;
     ni = 100;
@@ -980,9 +980,9 @@ void DiagoComp (int n0, double **w, double *d, int *rang)
         freevec (s);
         return;
     }
-    
+
     for (i2=2;i2<=n0;i2++) {
-       
+
         b=0.0;
         c=0.0;
         i=n0-i2+2;
@@ -992,10 +992,10 @@ void DiagoComp (int n0, double **w, double *d, int *rang)
             c = c + fabs((double) w[i][l]);
         }
         if (c != 0.0) goto Et2;
-        
+
 Et1:    s[i] = w[i][k];
         goto Etc;
-        
+
 Et2:    for (l=1;l<=k;l++) {
             x = w[i][l] / c;
             w[i][l] = x;
@@ -1004,7 +1004,7 @@ Et2:    for (l=1;l<=k;l++) {
         xp = w[i][k];
         ix = 1;
         if (xp < 0.0) ix = -1;
-        
+
 /*      q = -sqrt(b) * ix; */
         dble = b;
         dble = -sqrt(dble);
@@ -1025,7 +1025,7 @@ Et2:    for (l=1;l<=k;l++) {
             for (l=m1;l<=k;l++) {
                 q = q + w[l][m] * w[i][l];
             }
-            
+
 Et3:        s[m] = q / b;
             xp = xp + s[m] * w[i][m];
         }
@@ -1041,13 +1041,13 @@ Et3:        s[m] = q / b;
         for (l=1;l<=k;l++) {
             w[i][l] = c * w[i][l];
         }
-        
+
 Etc:    d[i] = b;
     } /* for (i2=2;i2<n0;i2++) */
-    
+
     s[1] = 0.0;
     d[1] = 0.0;
-    
+
     for (i=1;i<=n0;i++) {
      dot(1,100);
         k = i - 1;
@@ -1061,7 +1061,7 @@ Etc:    d[i] = b;
                 w[l][m] = w[l][m] - q * w[l][i];
             }
         }
-        
+
 Et4:    d[i] = w[i][i];
         w[i][i] = 1.0;
         if (k < 1) goto Et5;
@@ -1072,7 +1072,7 @@ Et4:    d[i] = w[i][i];
 
 Et5:;
     }
-    
+
     for (i=2;i<=n0;i++) {
         s[i-1] = s[i];
     }
@@ -1087,23 +1087,23 @@ Et6:    for (j=k;j<=n0;j++) {
             ep = a * (fabs((double) d[j]) + fabs((double) d[j+1]));
             if (ab < ep) goto Et7;
         }
-    
+
 Et7:    isnou = 1;
         h = d[k];
         if (j == k) goto Eta;
         if (m < ni) goto Etd;
-        
+
         fprintf(pm->my_err,"Error: can't compute matrix eigenvalues");
         my_exit(99,"corresp");
-        
+
 Etd:    m = m + 1;
         q = (d[k+1]-h) * 0.5 / s[k];
-        
+
 /*      t = sqrt(q * q + 1.0); */
         dble = q * q + 1.0;
         dble = sqrt(dble);
         t = dble;
-        
+
         if (q < 0.0) isnou = -1;
         q = d[j] - h + s[k] / (q + t * isnou);
         u = 1.0;
@@ -1117,12 +1117,12 @@ Etd:    m = m + 1;
             b = v * s[i];
             if (fabs((double) xp) < fabs((double) q)) goto Et8;
             u = xp / q;
-            
+
 /*          t = sqrt(u * u + 1); */
             dble = u * u + 1.0;
             dble = sqrt(dble);
             t = dble;
-            
+
             s[i+1] = q * t;
             v = 1 / t;
             u = u * v;
@@ -1134,7 +1134,7 @@ Et8:        v = q / xp;
             dble = 1.0 + v * v;
             dble = sqrt(dble);
             t = dble;
-            
+
             s[i+1] = t * xp;
             u = 1 / t;
             v = v * u;
@@ -1158,7 +1158,7 @@ Et9:
 
 Eta:;
     } /* for (k=1;k<=n0;k++) */
-    
+
     for (ij=2;ij<=n0;ij++) {
      dot(1,300);
         i = ij - 1;
@@ -1207,15 +1207,15 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
     double      l0, inertotal, a1, a2, m2, m3, s1;
     double      temp1=0,temp2=0;
     FILE *inert_out=NULL,*fnam=NULL;
-    
+
    l1       =pcoa->rows;
    c1       =pcoa->colm;
    f1       =pcoa->axis;
    inertotal  =pcoa->inertia;
-   
-    if( (inert_out=open_file( "",inertia_out,"w",FALSE))==NULL) 
+
+    if( (inert_out=open_file( "",inertia_out,"w",FALSE))==NULL)
 	      my_exit(1,"inertia out");
-    
+
     lcmin = c1; if (l1<lcmin) lcmin=l1;
     taballoc (&w, l1,c1);
     vecalloc(&poili, l1);
@@ -1233,7 +1233,7 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
     lecmat(w, "cbfcta");
 
     fprintf(summary, "\n\nNumber of rows: %d, columns: %d\n", l1, c1);
-    fprintf(summary, "Total inertia: %8.6G - Number of axes: %d\n\n", 
+    fprintf(summary, "Total inertia: %8.6G - Number of axes: %d\n\n",
 	                  inertotal, f1);
     fprintf(summary, "Contributions of each gene to the recorded factors "
                      "A.K.A axes\n");
@@ -1251,9 +1251,9 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
 
 /* scale the vectors by 1/inertia total                                    */
 
-    scalvec(conli, 1.0/inertotal);    
+    scalvec(conli, 1.0/inertotal);
 
-    
+
   if( (fnam=open_file("",ncout, "r",FALSE))==NULL) my_exit(6,"inertialgn");
 
     fprintf(summary, "Row inertia\n");
@@ -1262,7 +1262,7 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
     fprintf(summary, "Short_Gene_Name|Num  |");
     for (k=1;k<=f1;k++) {
         fprintf(summary, "Fac%2d|", k);
-        
+
     }
     fprintf(summary  , "\n");
     fprintf(inert_out, "\n");
@@ -1270,15 +1270,15 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
 
       fgets(pm->junk,BUFSIZ,fnam);
       pm->junk[35]='\0';
-      for ( j=35 ; j>=0; j--) if ( isspace((int)pm->junk[j]) ) 
+      for ( j=35 ; j>=0; j--) if ( isspace((int)pm->junk[j]) )
 	       pm->junk[j]='\0';
-      
+
       fprintf(inert_out   ,"%-.15s%c",pm->junk,pm->seperator);
       fprintf(summary, "%-15.15s",pm->junk);
-      
+
       fprintf(summary  ,"|%5d|", i);
       fprintf(inert_out,"%d%c", i,pm->seperator);
-      
+
       l0 = poili[i]*poili[i]/inertotal;
 
       for (j=1;j<=f1;j++) {
@@ -1298,7 +1298,7 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
 	    (pm->coa=='a')?"amino acid":"codon",inertia_out);
 
     fclose(fnam);
-    if( (fnam=open_file("",ncout, "r",FALSE))==NULL) 
+    if( (fnam=open_file("",ncout, "r",FALSE))==NULL)
         my_exit(6,"inertialgn");
 
     fprintf(summary, "----------Relative contributions----------\n");
@@ -1309,19 +1309,19 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
     fprintf(summary, "|Remains| Weight | Cont.|");
     fprintf(summary, "\n");
     fprintf(inert_out,"\n");
-    
+
     for (i=1;i<=l1;i++) {
 
       fgets(pm->junk,BUFSIZ,fnam);
       pm->junk[35]='\0';
-      for ( j=35 ; j>=0; j--) if ( isspace( (int) pm->junk[j]) ) 
+      for ( j=35 ; j>=0; j--) if ( isspace( (int) pm->junk[j]) )
           pm->junk[j]='\0';
-      
+
       fprintf(inert_out   , "%-.15s%c",pm->junk,pm->seperator);
       fprintf(summary, "%-15.15s",pm->junk);
 
 
-        fprintf(summary, "|%5d|", i);  
+        fprintf(summary, "|%5d|", i);
         fprintf(inert_out,"%d%c", i,pm->seperator);
         a2 = 0.;
         m3 = poili[i]*poili[i]/inertotal;
@@ -1330,18 +1330,18 @@ void inertialig( char *inertia_out, char *ncout, FILE *summary)
         for (j=1;j<=f1;j++) {
             a1 = cooli[i][j] * cooli[i][j] * m3 / m2;
             a2 = a2 + a1;
-            fprintf(summary, "%5d|", (int) (a1 * 10000)); 
+            fprintf(summary, "%5d|", (int) (a1 * 10000));
             fprintf(inert_out,"%d%c",(int) (a1 * 10000),pm->seperator);
         }
         fprintf(summary, "|%5d  ", (int) ((1-a2) * 10000));
-        fprintf(summary, "|%5d   |%5d |\n", (int) (inertotal * m3 * 10000), 
+        fprintf(summary, "|%5d   |%5d |\n", (int) (inertotal * m3 * 10000),
             (int) (m2 * 10000));
         fprintf(inert_out, "\n");
     }
     fprintf(summary  , "\n");
     fprintf(inert_out, "\n");
-    
-                                                        /* free memory    */  
+
+                                                        /* free memory    */
     freetab(w);
     freevec(poili);
     freevec(poico);
@@ -1366,8 +1366,8 @@ void inertiacol(char *inertia_out, FILE *summary )
     double      *vtab, *conco, *poili, *poico;
     double      l0, inertotal, a1, a2, m2, m3, s1;
     FILE *inert_out=NULL;
-    
-    if( (inert_out=open_file( "",inertia_out,"a",FALSE))==NULL) 
+
+    if( (inert_out=open_file( "",inertia_out,"a",FALSE))==NULL)
 		my_exit(1,"inertia out2");
 
     l1      =pcoa->rows;
@@ -1410,7 +1410,7 @@ void inertiacol(char *inertia_out, FILE *summary )
 
     /* scale the vectors by 1/inertia total                                     */
     scalvec(conco, 1.0/inertotal);
-    
+
     fprintf(summary, "\n\nColumn inertia\n");
     fprintf(summary, "All contributions are in 1/10000\n\n");
     fprintf(summary, "----------Absolute contributions----------\n");
@@ -1422,22 +1422,22 @@ void inertiacol(char *inertia_out, FILE *summary )
     for (x=0,i=1;i<=c1;i++) {
 
       if (pm->coa == 'a' ){
-        
+
           while(pcoa->amino[++x] == FALSE);
-       
-        fprintf(summary, "%s", paa->aa3[x]); 
-        fprintf(inert_out,"%s%c",paa->aa3[x],pm->seperator);      
-      }else{ 
-	
+
+        fprintf(summary, "%s", paa->aa3[x]);
+        fprintf(inert_out,"%s%c",paa->aa3[x],pm->seperator);
+      }else{
+
           while(pcoa->codons[++x] == FALSE);
-        
-          fprintf(summary, "%s", paa->cod[x]); 
-        fprintf(inert_out,"%s%c",paa->cod[x],pm->seperator);      	
+
+          fprintf(summary, "%s", paa->cod[x]);
+        fprintf(inert_out,"%s%c",paa->cod[x],pm->seperator);      
       }
-      
-      fprintf(summary, "|%5d|", i); 
+
+      fprintf(summary, "|%5d|", i);
       fprintf(inert_out,"%d%c",i,pm->seperator);
-      
+
       l0 = poico[i]*poico[i]/inertotal;
       for (j=1;j<=f1;j++) {
 	a1 = cooco[i][j] * cooco[i][j] * l0 / vtab[j];
@@ -1445,10 +1445,10 @@ void inertiacol(char *inertia_out, FILE *summary )
 	fprintf(inert_out,"%i%c", (int) (a1 * 10000),pm->seperator );
       }
         fprintf(summary,  "\n");
-        fprintf(inert_out,"\n"); 
+        fprintf(inert_out,"\n");
     }
-    fprintf(summary,  "\n"); 
-    fprintf(inert_out,"\n"); 
+    fprintf(summary,  "\n");
+    fprintf(inert_out,"\n");
     fprintf(summary, "----------Relative contributions----------\n");
     fprintf(summary, "Key|Num  |");
     for (k=1;k<=f1;k++) {
@@ -1460,20 +1460,20 @@ void inertiacol(char *inertia_out, FILE *summary )
 
 
       if (pm->coa == 'a' ){
-        
+
           while(pcoa->amino[++x] == FALSE);
-        
-        fprintf(summary, "%s", paa->aa3[x]); 
-        fprintf(inert_out,"%s%c",paa->aa3[x],pm->seperator);      
-	}else{ 
-	
+
+        fprintf(summary, "%s", paa->aa3[x]);
+        fprintf(inert_out,"%s%c",paa->aa3[x],pm->seperator);
+	}else{
+
           while(pcoa->codons[++x] == FALSE);
-        
-        fprintf(summary, "%s", paa->cod[x]); 
-        fprintf(inert_out,"%s%c",paa->cod[x],pm->seperator);      	
+
+        fprintf(summary, "%s", paa->cod[x]);
+        fprintf(inert_out,"%s%c",paa->cod[x],pm->seperator);      
 	}
 
-        fprintf(summary, "|%5d|", i); 
+        fprintf(summary, "|%5d|", i);
         fprintf(inert_out,"%d%c",i,pm->seperator);
         a2 = 0.;
         m3 = poico[i]*poico[i]/inertotal;
@@ -1482,23 +1482,23 @@ void inertiacol(char *inertia_out, FILE *summary )
         for (j=1;j<=f1;j++) {
             a1 = cooco[i][j] * cooco[i][j] * m3 / m2;
             a2 = a2 + a1;
-            fprintf(summary, "%5d|", (int) (a1 * 10000)); 
+            fprintf(summary, "%5d|", (int) (a1 * 10000));
             fprintf(inert_out,"%d%c",(int) (a1 * 10000),pm->seperator);
         }
         fprintf(summary, "|%5d  ", (int) ((1-a2) * 10000));
-        fprintf(summary, "|%5d   |%5d |\n", 
+        fprintf(summary, "|%5d   |%5d |\n",
 			(int) (inertotal * m3 * 10000), (int) (m2 * 10000));
         fprintf(inert_out,"\n");
     }
     fprintf(summary, "\n");
-    
+
     freetab(w);
     freetab(cooco);
     freevec(poili);
     freevec(poico);
     freevec(conco);
-    freevec(vtab);    
-} 									/* End of Inertia */       
+    freevec(vtab);
+} 									/* End of Inertia */
 
 /**************  selectcol         ***************************************/
 /* extract a column from the file *nfic, column has the dimension of the */
@@ -1509,11 +1509,11 @@ void selectcol (char *nfic , double *col, int numcol)
 {
     FILE    *fic=NULL;
     int i, c1,l1;
-    double *vlec;   
-    
+    double *vlec;
+
     c1=2;
     l1=( pcoa->rows < pcoa->colm)? pcoa->rows:pcoa->colm;
-    
+
     vecalloc(&vlec, c1);
 
 
@@ -1521,17 +1521,17 @@ void selectcol (char *nfic , double *col, int numcol)
         fprintf (pm->my_err,"fatal input-output error numcol>c1 (selectcol");
         my_exit(99,"corresp");
     }
-    
+
 if( (fic=open_file( "",nfic,"rb",FALSE))==NULL) my_exit(6,"nfic4");
     for (i=1;i<=l1;i++) {
         readvec(vlec, fic);
         col[i] = vlec[numcol];
     }
-    
+
     fileclose(&fic);
     freevec(vlec);
 }
- 
+
 /**************  suprow            ***************************************/
 /* This sub adds supplementary genes after the correspondence analysis   */
 /* has completed for an initial set of genes. The supplementary genes are*/
@@ -1540,7 +1540,7 @@ if( (fic=open_file( "",nfic,"rb",FALSE))==NULL) my_exit(6,"nfic4");
 /* the position of the supplementary genes on the originally identified  */
 /* axis                                                                  */
 /*************************************************************************/
-void suprow (int num_seq, char *nficvp, char *nfictasup, char *nficlisup, 
+void suprow (int num_seq, char *nficvp, char *nfictasup, char *nficlisup,
 char*option , FILE *summary)
 {
     int         l1,c1,l2,c2,i,j,k;
@@ -1550,16 +1550,16 @@ char*option , FILE *summary)
     double      a1, a2;
     FILE        *ficlisup=NULL;
     FILE        *fnam=NULL;
-    
+
     l2=num_seq;
     c2=pcoa->colm;
     l1=pcoa->rows;
     c1=pcoa->colm;
 
-   if( (fnam=open_file("",option, "r",FALSE))==NULL) 
+   if( (fnam=open_file("",option, "r",FALSE))==NULL)
        my_exit(6,"sup row corresp");
-      
-                
+
+
     taballoc(&tabsup, l2, c2);
     lecmat(tabsup, nfictasup);
 
@@ -1573,7 +1573,7 @@ char*option , FILE *summary)
 
     vecalloc(&poico, c1);
     lecvec(poico, "cbfcpc");
-    
+
     for (j=1;j<=pcoa->axis;j++) {
         vp[j] = sqrt((double)vp[j]);
         a1 = vp[j];
@@ -1587,7 +1587,7 @@ char*option , FILE *summary)
             compos[i][j] = compos[i][j] * a1;
         }
     }
-     
+
  /* Transform genes with the initial factor                               */
 
     for (i=1;i<=l2;i++) {
@@ -1602,27 +1602,27 @@ char*option , FILE *summary)
                 }
             }
         }
-    
+
   /* Position the suppli. genes on the original factors                    */
-  
-  if( (ficlisup = open_file("",nficlisup,"a",FALSE))==NULL ) 
+
+  if( (ficlisup = open_file("",nficlisup,"a",FALSE))==NULL )
          my_exit(1,"nficlisup");
 
-   fprintf(summary,"\n\nThe position of each additional gene by axis " 
+   fprintf(summary,"\n\nThe position of each additional gene by axis "
                 "(see also %s )\n",option);
 
     fprintf(summary, "Additional genes added after COA: \n");
     fprintf(summary, "Number of genes: %d, columns: %d\n\n", l1, c1);
 
-      
-    for (i=1;i<=l2;i++) { 
+
+    for (i=1;i<=l2;i++) {
       fgets(pm->junk,BUFSIZ,fnam);
       pm->junk[35]='\0';
-      for ( j=35 ; j>=0; j--) 
+      for ( j=35 ; j>=0; j--)
           if ( isspace((int)pm->junk[j]) ) pm->junk[j]='\0';
        fprintf(ficlisup, "%s%c",pm->junk,pm->seperator);
        fprintf(summary , "%s%c",pm->junk,pm->seperator);
-    
+
         for (k=1;k<=pcoa->axis;k++) {
             a1 = 0.;
             for (j=1;j<=c1;j++) {
@@ -1653,13 +1653,13 @@ void lecvalpro (double *v1, char *nfic)
     float   v2;
     int     i, c1;
     FILE    *fic=NULL;
-    
+
     if ( (fic=open_file("",nfic,"rb",FALSE))==NULL) my_exit(6,"lecvalpro");
 
     c1 = (int) v1[0];
     for (i=1;i<=c1;i++) {
         if ( fread((char *)&v2, 4, 1, fic) != 1) {
-        fprintf(pm->my_err,"(lecvalpro)");    
+        fprintf(pm->my_err,"(lecvalpro)");
         my_exit(5,"lecvalpro");
         }
         v1[i] = v2;
@@ -1667,7 +1667,7 @@ void lecvalpro (double *v1, char *nfic)
         fprintf(pm->my_err,"(lecvalpro)");
         my_exit(5,"lecvalpro2");
         }
-    }   
+    }
     fileclose(&fic);
 }
 
