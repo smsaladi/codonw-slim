@@ -140,13 +140,13 @@ int main(int argc, char *argv[])
   /******************** main loop ****************************/
 
   do {
-    if (pm->codonW) {  
+    if (pm->codonW) {
                                   /* If the program   chosen is codons    */
-      printf(" Welcome to CodonW %.*s for Help type h\n\n",
+      fprintf(stderr, "Welcome to CodonW %.*s for Help type h\n",
               (int) strlen(Revision) - 11, Revision +10 ); 
                                   /* Now Run the main menu interface      */      
-      if (pm->menu) main_menu(0); 
-    } 
+      if (pm->menu) main_menu(0);
+    }
 
           /* if users select human readable output they want nice tables  */
     if (pm->bulk == 'C' && pm->seq_format == 'H')  pm->bulk = 'O';
@@ -186,9 +186,6 @@ int main(int argc, char *argv[])
 /*  reads input data, returns the number of sequences read in             */
 /*  num_sequence is global so I don't really have to assign it here       */    
     num_sequence = tidy(finput, foutput, fblkout, fcoaout);
-
-    fprintf(pm->my_err,"\n\n\t\tNumber of sequences: %i\n",
-        num_sequence);
 
 /* num_seq_int_stop  value is calculated in codon_usage_out               */ 
     if (num_seq_int_stop > 0 && pm->warn ) {   
@@ -323,7 +320,6 @@ int main(int argc, char *argv[])
     fileclose(&fcoaout);
       }
     }
-   printf("\n");
   } while (pm->codonW && pm->menu ); /* OK now we loop back to main_menu  */
 /* though only if we are in interactive mode and running as CodonW        */
   my_exit(0,"");                     /* last call to my_exit              */
@@ -945,34 +941,6 @@ int my_exit(int error_num, char *message)
     fclose(pm->inputfile);
     deletefile("cb1rawin");
   }
-  if (error_num == 2 || error_num == 0 ) {
-    if (pm->analysis_run) {
-      fprintf(stderr, "Files used:\n");
-      if (strlen(pm->curr_infilename))
-	fprintf(pm->my_err, " Input file was\t %s \n", 
-            	pm->curr_infilename);
-
-      if (strlen(pm->curr_outfilename)){
-	fprintf(pm->my_err, " Output file was\t %s %s",
-		pm->curr_outfilename,
-		(pm->codonW) ? " (codon usage indices, e.g. gc3s)\n":"\n");
-      }
-
-      if (strlen(pm->curr_tidyoutname)){
-	fprintf(pm->my_err, " Output file was\t %s %s",
-		pm->curr_tidyoutname,
-		(pm->codonW) ? " (bulk output e.g. raw codon usage)\n":"\n");	
-      }
-
-      if (pm->coa)
-	fprintf(pm->my_err, " For more information about the COrrespondence "
-		"Analysis see summary.coa\n");
-    } else if ( pm->codonW )          
-      fprintf(stderr, " \n\n WARNING You are exiting before codonW has generated any results\n"
-	      "  Select 'r' from the main menu to run\n");
-  }
-
-  if ( pm->codonW )  printf("\n CodonW has finished\n");
 
   switch ((int) error_num) {
 

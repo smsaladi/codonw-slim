@@ -101,7 +101,6 @@ int initilize_point(char code, char fop_species, char cai_species)
    da = how_synon_aa();                                     
    pcoa = &coa;
 
-   printf ("\n");   
    if (pm->codonW)
      printf ("Genetic code is currently set to %s %s\n\n",pcu->des,pcu->typ);
 
@@ -689,7 +688,7 @@ int cai_out(FILE * foutput, long int *nncod)
       }                             /*        matches if( pm->caifile...  */
 
     
-     printf ("Using %s (%s) w values to calculate "
+     fprintf(stderr, "Using %s (%s) w values to calculate "
 	        		      "CAI \n",pcai->des,pcai->ref);
      cai_ttt = TRUE;                /*stops this "if" from being entered  */
 
