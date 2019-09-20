@@ -606,8 +606,10 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* By this point we should have processed all the command line arguments  */
     /* so now we test for any remaining, these are unrecognised               */
 
-    while (p = garg(0, NULL, "-", GARG_THERE))
-        if (pm->menu)
+    while ((p = garg(0, NULL, "-", GARG_THERE)))
+        if (strcmp(&p, "-"))
+            continue;
+        else if (pm->menu)
             printf("Unrecognised argument %s\n", p);
         else
         {
@@ -632,7 +634,9 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* The second should be the output filename                               */
     if (p = garg(0, NULL, "", GARG_THERE))
     {
-        if ((pm->outputfile = open_file("", p, "w",
+        if (strcmp(&p, "-"))
+            pm->outputfile = stdout;
+        else if ((pm->outputfile = open_file("", p, "w",
                                         (int)pm->verbose)) == NULL)
         {
             printf("Could not open output file - %s\n", p);
