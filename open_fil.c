@@ -37,7 +37,7 @@
 #define no_file_found() system("dir/w");
 #elif BSD || SYSV
 #define no_file_found() system("ls -F");
-#elif defined (WIN32) || defined (_WIN)
+#elif defined(WIN32) || defined(_WIN)
 #define no_file_found() system("dir/w");
 #else
 #define no_file_found() printf("This would have presented a list of files\n\tbut I do not know howto your operating system\n");
@@ -66,12 +66,12 @@
 /***************************************************************************/
 
 FILE *open_file(char *file_needed, char *default_filename,
-char *write_perm, int  verbose )
+                char *write_perm, int verbose)
 {
-    char   infile_name[MAX_FILENAME_LEN]="";
-    FILE  *input=NULL;
-    char   temp[4];
-    char  *answer = pm->junk;
+    char infile_name[MAX_FILENAME_LEN] = "";
+    FILE *input = NULL;
+    char temp[4];
+    char *answer = pm->junk;
 
     /**********************************************************************/
     /* If a string has been given for file_needed it is assumed           */
@@ -81,28 +81,32 @@ char *write_perm, int  verbose )
     /* will be suggested as well, otherwise there is no default           */
     /**********************************************************************/
 
-    if ( strlen(file_needed)) {
-        while (!strlen(infile_name) )  {
+    if (strlen(file_needed))
+    {
+        while (!strlen(infile_name))
+        {
             printf("\nName of %s (h for help) [%s] ",
-                      file_needed,default_filename);
-            gets(infile_name);                          /* get filename   */
+                   file_needed, default_filename);
+            gets(infile_name); /* get filename   */
 
-            if ( WasHelpCalled ( infile_name ) ) {
-                     chelp("open_file_query");          /* Help ....      */
-                     infile_name[0]='\0';
-                     continue;
-                }
+            if (WasHelpCalled(infile_name))
+            {
+                chelp("open_file_query"); /* Help ....      */
+                infile_name[0] = '\0';
+                continue;
+            }
 
-            if ( !strlen(infile_name) && default_filename )
+            if (!strlen(infile_name) && default_filename)
                 strcpy(infile_name, default_filename);
-        }                                         /* end of get filename  */
-    } else if ( strlen(default_filename) )        /* use default filename */
-        strcpy(infile_name, default_filename);
-    else {                                        /* not enough info      */
-        fprintf(stderr, "Programming error: no filename supplied\n");
-        my_exit (0,"open file");
+        } /* end of get filename  */
     }
-
+    else if (strlen(default_filename)) /* use default filename */
+        strcpy(infile_name, default_filename);
+    else
+    { /* not enough info      */
+        fprintf(stderr, "Programming error: no filename supplied\n");
+        my_exit(0, "open file");
+    }
 
     /**********************************************************************/
     /* At this point infile_name contains a possible filename             */
@@ -122,57 +126,64 @@ char *write_perm, int  verbose )
     /* the user can type q to quit at any stage of this prompting process */
     /**********************************************************************/
 
-    if ( !strcmp(write_perm, "r") || !strcmp(write_perm, "r+")
-       ||!strcmp(write_perm, "rb") ){
-        while ( !(input = fopen (infile_name , write_perm )))  {
-            fprintf(stderr,"\nThese are the files in the current directory "
-                "I cannot find %.*s \n\n",strlen(infile_name),infile_name);
+    if (!strcmp(write_perm, "r") || !strcmp(write_perm, "r+") || !strcmp(write_perm, "rb"))
+    {
+        while (!(input = fopen(infile_name, write_perm)))
+        {
+            fprintf(stderr, "\nThese are the files in the current directory "
+                            "I cannot find %.*s \n\n",
+                    strlen(infile_name), infile_name);
             no_file_found();
             fprintf(stderr, "\n\nPlease enter another filename, "
-                " (Q)uit, (H)elp [%s] ",infile_name);
+                            " (Q)uit, (H)elp [%s] ",
+                    infile_name);
             gets(answer);
 
-            if (strlen (answer)==1 &&
-                   ((char)toupper((int)answer[0])=='Q'))
-                   my_exit(2,"open_file");
-            else if (WasHelpCalled ( infile_name )){
-                   chelp ("File_not_found");
-                }
-            else if (strlen (answer))
-                strcpy (infile_name, answer);
-		}                                     /* end of while loop */
-        strcpy ( answer,infile_name);           /* allow transfer    */
+            if (strlen(answer) == 1 &&
+                ((char)toupper((int)answer[0]) == 'Q'))
+                my_exit(2, "open_file");
+            else if (WasHelpCalled(infile_name))
+            {
+                chelp("File_not_found");
+            }
+            else if (strlen(answer))
+                strcpy(infile_name, answer);
+        }                            /* end of while loop */
+        strcpy(answer, infile_name); /* allow transfer    */
         return input;
     }
 
     /************************* Append  ***********************************/
-    else if ( !strcmp(write_perm, "a") || !strcmp(write_perm, "a+")
-           || !strcmp(write_perm, "ab") ) {
-        input = fopen (infile_name, write_perm);
-        strcpy ( answer,infile_name);
+    else if (!strcmp(write_perm, "a") || !strcmp(write_perm, "a+") || !strcmp(write_perm, "ab"))
+    {
+        input = fopen(infile_name, write_perm);
+        strcpy(answer, infile_name);
         return input;
     }
     /************************* Write    **********************************/
-    else if ( !strcmp( write_perm, "w") || !strcmp(write_perm, "w+")
-            ||!strcmp( write_perm, "wb") ) {
+    else if (!strcmp(write_perm, "w") || !strcmp(write_perm, "w+") || !strcmp(write_perm, "wb"))
+    {
 
-         while ( verbose == TRUE ) {
-            if ( (input = fopen (infile_name , "r")) ) {
-                fclose(input);                  /* close the filehandle  */
+        while (verbose == TRUE)
+        {
+            if ((input = fopen(infile_name, "r")))
+            {
+                fclose(input); /* close the filehandle  */
                 fprintf(stderr, "\nWarning :File %.*s "
-                    "exists already \n\tDo you wish to"
-                    " overwrite ? (y/n/h/q)\t [y] ",
-                    strlen(infile_name), infile_name);
+                                "exists already \n\tDo you wish to"
+                                " overwrite ? (y/n/h/q)\t [y] ",
+                        strlen(infile_name), infile_name);
                 fgets(temp, 3, stdin);
 
-                switch (toupper( (int) temp[0])) {
+                switch (toupper((int)temp[0]))
+                {
                 case 'Y':
                 case '\0':
                 case '\n':
                     verbose = FALSE;
                     continue;
                 case 'Q':
-                    my_exit(2,"open_file2");
+                    my_exit(2, "open_file2");
                     break;
                 case 'H':
                     chelp("file_exists");
@@ -180,9 +191,9 @@ char *write_perm, int  verbose )
                     break;
                 default:
                     fprintf(stderr,
-                        "\nYou decided not to overwrite, please enter\n"
-                        " another filename, (q)uit, (a)ppend, (h)elp \n"
-                        " (a/q/h/filename)\t[a] ");
+                            "\nYou decided not to overwrite, please enter\n"
+                            " another filename, (q)uit, (a)ppend, (h)elp \n"
+                            " (a/q/h/filename)\t[a] ");
                     gets(answer);
                 }
 
@@ -190,31 +201,34 @@ char *write_perm, int  verbose )
                 /* as appendable else if 'q' then the programme exits    */
                 /* anything else is taken as a file name                 */
 
-                if ( strlen(answer) <= 1 ) {
-                    switch (toupper( (int) answer[0])) {
+                if (strlen(answer) <= 1)
+                {
+                    switch (toupper((int)answer[0]))
+                    {
                     case 'Q':
                         return (NULL);
                     case 'A':
                     case '\0':
-                    case'\n':
-                        verbose = FALSE;  /* leave the while loop   */
+                    case '\n':
+                        verbose = FALSE; /* leave the while loop   */
                         strcpy(write_perm, "a+");
                         break;
                     case 'H':
-                     chelp("file_append");
-                     continue;
-                     break;
+                        chelp("file_append");
+                        continue;
+                        break;
                     default:
                         continue;
-                    };                                /* end of switch   */
+                    }; /* end of switch   */
                 }
-            } else                              /* filename is unique    */
-              verbose = FALSE;             /* exit the while loop   */
-              }                                 /* match while preserve  */
-        input = fopen (infile_name,write_perm); /* opens filehandle      */
-        strcpy ( answer,infile_name);
+            }
+            else                                /* filename is unique    */
+                verbose = FALSE;                /* exit the while loop   */
+        }                                       /* match while preserve  */
+        input = fopen(infile_name, write_perm); /* opens filehandle      */
+        strcpy(answer, infile_name);
         return input;
-    }                                           /* matchs if w or w+     */
+    } /* matchs if w or w+     */
     return (NULL);
 }
 
@@ -231,6 +245,3 @@ char *write_perm, int  verbose )
     printf( "Failed\n");
  } */
 /*************************************************************************/
-
-
-
