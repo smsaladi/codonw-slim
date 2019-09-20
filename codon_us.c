@@ -319,7 +319,7 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 		   "\nWarning: Sequence %3li \"%-20.20s\" is not terminated by"
 		   " a stop codon\n", num_sequence, ttitle);
 	       error_lines++;
-            }     
+            }
        }
      }  
      break;
@@ -327,13 +327,15 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
                                    /* Nc error routines see codon_us      */
      dot(0,10);                    /* dot resetting internal counter      */
      if (x==3) x=4;                /* if x=3 there are no 3 or 4 fold AA  */ 
-     fprintf(pm->my_err, 
-	     "\nSequence %li \"%-20.20s\" contains ",num_sequence, ttitle);
-     (y) ? fprintf(pm->my_err, "only %i ", (int) y) : 
+     if (pm->warn) {
+       fprintf(pm->my_err, 
+	       "\nSequence %li \"%-20.20s\" contains ",num_sequence, ttitle);
+       (y) ? fprintf(pm->my_err, "only %i ", (int) y) : 
        fprintf(pm->my_err, "no ");
-     fprintf(pm->my_err, "amino acids with %i synonymous codons\n", x);
-     fprintf(pm->my_err, "\t--Nc was not calculated \n");
-     error_lines+=2;      
+       fprintf(pm->my_err, "amino acids with %i synonymous codons\n", x);
+       fprintf(pm->my_err, "\t--Nc was not calculated \n");
+       error_lines+=2;
+     }
      break;
    case 4:                         /* run silent                          */
      break;
