@@ -71,8 +71,6 @@
 /* output_long        if sequence is very long then process what we know  */
 /*                    and write sequence to disk in fragments             */
 /* file_close         Closes open files                                   */
-/* c_help             Generates help informatio                           */
-/* WasHelpCalled      Checks strings to see if help was requested         */
 /*                                                                        */
 /**************************************************************************/
 
@@ -161,7 +159,7 @@ int main(int argc, char *argv[])
 
   fileclose(&pm->fcoa_out);
   if (pm->coa)
-    if ((pm->fcoa_out = open_file("", "coa_raw", "w", FALSE)) == NULL)
+    if ((pm->fcoa_out = open_file("coa_raw", "w")) == NULL)
       my_exit(1, "coa_raw"); /*controlled exit from CodonW     */
   fcoaout = pm->fcoa_out;
 
@@ -193,7 +191,7 @@ int main(int argc, char *argv[])
   if (pm->coa)
   {
     if (fsummary == NULL)
-      if ((fsummary = open_file("", "summary.coa", "w", FALSE)) == NULL)
+      if ((fsummary = open_file("summary.coa", "w")) == NULL)
         my_exit(1, "summary.coa");
     /* set the number of genes in the analysis to the number read in by tidy   */
     pcoa->rows = num_sequence;
@@ -269,14 +267,14 @@ int main(int argc, char *argv[])
     /* calculation can proceed as with the original data                      */
     if (strlen(pcoa->add_row))
     {
-      if ((finput = open_file("", pcoa->add_row, "r", FALSE)) == NULL)
+      if ((finput = open_file(pcoa->add_row, "r")) == NULL)
         my_exit(6, "add_row");
       if ((foutput = tmpfile()) == NULL)
         my_exit(1, "temp file foutput");
       if ((fblkout = tmpfile()) == NULL)
         my_exit(1, "temp file fblkout");
 
-      if ((fcoaout = open_file("", "coa1_raw", "w", FALSE)) == NULL)
+      if ((fcoaout = open_file("coa1_raw", "w")) == NULL)
         my_exit(1, "coa1_raw");
 
       clean_up(ncod, naa);
@@ -966,7 +964,6 @@ int my_exit(int error_num, char *message)
   }
   if (pm->inputfile = fopen("cb1rawin", "r"))
   {
-    fclose(pm->inputfile);
     deletefile("cb1rawin");
   }
 
@@ -1019,7 +1016,7 @@ int my_exit(int error_num, char *message)
 /************************** file_close   **********************************/
 /* Fileclose function checks whether the filepointer is open, if so it    */
 /* attempts to close the open file handle and assigns a null pointer      */
-/* to that  handle                                                        */
+/* to that handle                                                         */
 /**************************************************************************/
 
 int fileclose(FILE **file_pointer)
@@ -1037,23 +1034,17 @@ int fileclose(FILE **file_pointer)
   return 1;
 }
 
-/************************** Chelp    **************************************/
-/* Chelp scans opens the help file and returns text associated with that  */
-/* help keyword. Help keywords are surrounded by hashs, starting in the   */
-/* first column of the ASCII help file and are terminated by //           */
-/**************************************************************************/
 
-int chelp(char *help_keyword)
+/************** open_file **************************************************/
+/* This subroutine is a front end to fopen open.                           */
+/***************************************************************************/
+
+FILE *open_file(char *file_needed, char *write_perm)
 {
-  return 0; /* failed for some reason             */
-}
+    FILE *input = NULL;
 
-/******************** WasHelpCalled     ***********************************/
-/* Checks the string input to see if the user asked for help              */
-/**************************************************************************/
+    if (!(input = fopen(file_needed, write_perm)))
+        my_exit(2, "File not found");
 
-char WasHelpCalled(char *input)
-{
-
-  return FALSE;
+    return input;
 }

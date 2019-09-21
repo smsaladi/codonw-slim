@@ -87,7 +87,6 @@ typedef struct
 {
   char prog;    /* used to ident which prog */
   char bulk;    /* used to ident blk output */
-  char verbose; /* don't overwrite files    */
   char totals;  /* concatenate genes ?      */
   char warn;    /* show sequence warning    */
 
@@ -125,8 +124,6 @@ typedef struct
   char messages[300];    /* used to constuct messgs  */
   char analysis_run;     /* has CodonW actually run  */
 
-  int term_length;   /* how many lines are there */
-                     /* file pointers            */
   FILE *inputfile;   /* input file               */
   FILE *outputfile;  /* .out file                */
   FILE *tidyoutfile; /* .blk file                */
@@ -426,7 +423,6 @@ MENU_STRUCT Z_menu = {
     /* define all manner of default values              */
     FALSE, /* prog                                             */
     'X',   /*This default is set in proc_commline to CU        */
-    TRUE,  /*verbose                                      */
     FALSE, /*totals                                            */
     TRUE,  /*warnings about sequence data are to be displayed  */
     FALSE, /*codons                                            */
@@ -463,7 +459,6 @@ MENU_STRUCT Z_menu = {
     "",    /* Null the string messages                         */
 
     FALSE, /* was analysis run                                 */
-    24,    /* current number of lines (height of ) screen      */
 
     NULL, /* Null pointer input file                          */
     NULL, /* Null pointer outputfile                          */
@@ -540,8 +535,7 @@ extern int NumCaiSpecies;
 
 /****************** Function type declarations *****************************/
 
-FILE *open_file(char *info, char *default_name, char *mode,
-                int verbose);
+FILE *open_file(char *filename, char *mode);
 
 int *how_synon(void);
 int *how_synon_aa(void);
@@ -575,7 +569,6 @@ int printinfo(void);
 int dinuc_count(char *seq, long int tot);
 int tidy(FILE *finput, FILE *foutput, FILE *fblkout,
          FILE *fcoaout);
-int chelp(char *help);
 
 long int codon_error(int last_aa, int valid_stops, char *title,
                      char error_level);
@@ -586,7 +579,6 @@ double inertot(void);
 char *get_aa(int one_or_3_letter, char *the_dna_word);
 char *garg(int argc, char *argv[], const char *targ, int mode);
 char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title);
-char WasHelpCalled(char *input);
 
 void sorted_by_axis1(double *ax1, int *sortax1, int lig);
 void highlow(long int *low, long int *high, FILE *summ);

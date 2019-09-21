@@ -1,6 +1,6 @@
 override cflags  = $(CFLAGS) -g
 
-objects = codon_us.o codons.o open_fil.o commline.o coresp.o
+objects = codon_us.o codons.o commline.o coresp.o
 
 CC=cc
 CFLAGS= -O -DBSD
@@ -10,7 +10,7 @@ LN=ln -f
 all: codonw
 
 codonw: $(objects)
-	$(CC) $(CFLAGS)  $(objects) -o codonw -lm
+	$(CC) $(CFLAGS) $(objects) -o codonw -lm
 
 clean:
 	\rm -f $(objects) codonw
@@ -23,9 +23,6 @@ codons.o: codons.c codonW.h
 
 coresp.o: coresp.c codonW.h
 	$(CC) -c $(CFLAGS) coresp.c
-
-open_fil.o:    open_fil.c codonW.h
-	$(CC) -c $(CFLAGS) open_fil.c
 
 commline.o:    commline.c codonW.h
 	$(CC) -c $(CFLAGS) commline.c

@@ -263,7 +263,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 {
    long int ns = 0; /* number of stops       */
    long int loc_cod_tot = 0;
-   static int error_lines = 0;
    int i;
 
    for (i = 1, ns = 0; i < 65; i++)
@@ -285,7 +284,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
          fprintf(pm->my_err, "\nWarning: Sequence %3li \"%-20.20s\" does "
                              "not begin with a recognised start codon\n",
                  num_sequence, ttitle);
-         error_lines++;
       }
 
       if (ns && pm->warn)
@@ -300,7 +298,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
                                 "%li internal stop codon(s)\n",
                     num_sequence, ttitle, ns);
          num_seq_int_stop++;
-         error_lines++;
       }
       break;
    case 2:
@@ -309,7 +306,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
       { /*  last codon was partial */
          fprintf(pm->my_err,
                  "\nWarning: Sequence %3li \"%-20.20s\" last codon was partial\n", num_sequence, ttitle);
-         error_lines++;
       }
       else
       {
@@ -325,7 +321,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
                        "\nWarning: sequence %3li \"%-20.20s\" has %li non translatable"
                        " codon(s)\n",
                        num_sequence, ttitle, ncod[0]);
-            error_lines++;
          }
          if (pcu->ca[x] != 11 && pm->warn)
          {
@@ -335,7 +330,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
                        "\nWarning: Sequence %3li \"%-20.20s\" is not terminated by"
                        " a stop codon\n",
                        num_sequence, ttitle);
-               error_lines++;
             }
          }
       }
@@ -352,7 +346,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
          (y) ? fprintf(pm->my_err, "only %i ", (int)y) : fprintf(pm->my_err, "no ");
          fprintf(pm->my_err, "amino acids with %i synonymous codons\n", x);
          fprintf(pm->my_err, "\t--Nc was not calculated \n");
-         error_lines += 2;
       }
       break;
    case 4: /* run silent                          */
@@ -360,11 +353,7 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
    default:
       my_exit(99, "Programme error in codon_error\n");
    }
-   if ((((error_lines + 2) * 2) > pm->term_length) && pm->verbose && pm->my_err == stderr)
-   {
-      error_lines = 0; /* count lines of errors               */
-      dot(0, 10);
-   }
+
    return loc_cod_tot; /* Number of codons counted            */
 }
 
@@ -880,8 +869,7 @@ int fop_out(FILE *foutput, long int *nncod)
          pfop = &user_fop; /*  assigns pointer to user fop values*/
       }
 
-      printf("Using %s (%s)\noptimal codons to calculate "
-             "Fop\n",
+      printf("Using %s (%s)\noptimal codons to calculate Fop\n",
              pfop->des, pfop->ref);
 
       /* initilise has_opt_info             */
@@ -897,19 +885,15 @@ int fop_out(FILE *foutput, long int *nncod)
 
          if (pfop->fop_cod[x] == 1)
          {
-            if (!asked_about_fop && pm->verbose)
-            {
-               printf("\nIn the set of optimal codons you have selected,\n"
-                      "non-optimal codons have been identified\nThey can be "
-                      "used in the calculation of a modified Fop, "
-                      "(Fop=(opt-rare)/total)\n else the original formulae "
-                      "will be used (Fop=opt/total)\n\n\t\tDo you wish "
-                      "calculate a modified fop (y/n) [n] ");
-               gets(pm->junk);
-               if ('Y' == (char)toupper((int)pm->junk[0]))
-                  factor_in_rare = TRUE;
-               asked_about_fop = TRUE;
-            }
+            // FIX: MODIFIED FOP OPTION
+            // This should be a global option
+            //  In the set of optimal codons you have selected,
+            //  non-optimal codons have been identified\nThey can be 
+            //  used in the calculation of a modified Fop,
+            //  (Fop=(opt-rare)/total)\n else the original formulae
+            //   will be used (Fop=opt/total)\n\n\t\tDo you wish
+            /// calculate a modified fop (y/n) [n] ");
+            //  Y: factor_in_rare = TRUE;
 
             if (factor_in_rare == TRUE)
                has_opt_info[pcu->ca[x]]++;
@@ -1548,7 +1532,7 @@ void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary)
    int j;
 
    /* first open the original raw codon usage file                        */
-   if ((fcusort = open_file("", "cusort.coa", "w", FALSE)) == NULL)
+   if ((fcusort = open_file("cusort.coa", "w")) == NULL)
       my_exit(1, "gen_cusort_fop");
 
    /* calloc enough memory for the codon usage of the low group of genes  */
@@ -1674,9 +1658,9 @@ void highlow(long int *low, long int *high, FILE *ssummary)
    FILE *fcbi = NULL;
 
    /*calloc to the pointers the required storage                          */
-   if ((fhilo = open_file("", "hilo.coa", "w", FALSE)) == NULL)
+   if ((fhilo = open_file("hilo.coa", "w")) == NULL)
       my_exit(1, "hilo.coa");
-   if ((ffop = open_file("", "fop.coa", "w", FALSE)) == NULL)
+   if ((ffop = open_file("fop.coa", "w")) == NULL)
       my_exit(1, "fop.coa");
    if ((aa_low = (long int *)calloc(22, sizeof(long int))) == NULL)
       my_exit(3, "aa_low");
@@ -1930,7 +1914,7 @@ void highlow(long int *low, long int *high, FILE *ssummary)
    }
    fileclose(&ffop); /*   close the Fop file  */
 
-   if ((fcbi = open_file("", "cbi.coa", "w", FALSE)) == NULL)
+   if ((fcbi = open_file("cbi.coa", "w")) == NULL)
       my_exit(1, "cbi.coa"); /*    open cbi.coa       */
 
    for (i = 1; i < 65; i++)
@@ -1961,7 +1945,7 @@ void highlow(long int *low, long int *high, FILE *ssummary)
                      "cai.coa\tinput file to be used for CAI calculations\n"
                      "\n\nCod AA    Xi\tWi\t\tCod AA    Xi\tWi\n");
 
-   if ((fcai = open_file("", "cai.coa", "w", FALSE)) == NULL)
+   if ((fcai = open_file("cai.coa", "w")) == NULL)
       my_exit(1, "cai.coa");
 
    for (i = 1, x = TRUE; i < 65 && x; i++)

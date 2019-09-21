@@ -55,7 +55,6 @@ int proc_comm_line(int *pargc, char ***pargv)
             "General options and defaults:\n"
             " -h(elp)\tThis help message\n"
             " -nowarn\tPrevent warnings about sequences being displayed\n"
-            " -silent\tOverwrite files silently\n"
             " -totals\tConcatenate all genes in inputfile\n"
             " -code N\tGenetic code as defined under menu 3 option 5\n"
             " -f_type N\tFop/CBI codons as defined by menu 3 option 6\n"
@@ -106,10 +105,6 @@ int proc_comm_line(int *pargc, char ***pargv)
             " value\n");
         my_exit(0, ""); /* after writing out help quit         */
     }
-
-    /* -silent stops warnings about file about to be overwritten               */
-    if (garg(0, NULL, "-silent", GARG_THERE))
-        pm->verbose = FALSE;
 
     /* -total causes sequences to be concatenated and treated as one sequence */
     if (garg(0, NULL, "-total", GARG_THERE))
@@ -233,7 +228,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* Fop                                                                     */
     if (p = garg(0, NULL, "-fop_file", GARG_NEXT | GARG_EXACT))
     {
-        if ((pm->fopfile = open_file("", p, "r", FALSE)) == NULL)
+        if ((pm->fopfile = open_file(p, "r")) == NULL)
         {
             printf("Could not open Fop file - %s\n", p);
             my_exit(1, "commline open fop file");
@@ -247,7 +242,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* CAI                                                                     */
     if (p = garg(0, NULL, "-cai_file", GARG_NEXT | GARG_EXACT))
     {
-        if ((pm->caifile = open_file("", p, "r", FALSE)) == NULL)
+        if ((pm->caifile = open_file(p, "r")) == NULL)
         {
             printf("Could not open CAI file - %s\n", p);
             my_exit(1, "commline failed error");
@@ -259,7 +254,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* CBI                                                                     */
     if (p = garg(0, NULL, "-cbi_file", GARG_NEXT | GARG_EXACT))
     {
-        if ((pm->cbifile = open_file("", p, "r", FALSE)) == NULL)
+        if ((pm->cbifile = open_file(p, "r")) == NULL)
         {
             printf("Could not open CBI file - %s\n", p);
             my_exit(1, "Commline failed to open file");
@@ -398,7 +393,7 @@ int proc_comm_line(int *pargc, char ***pargv)
 
     if (p = garg(0, NULL, "", GARG_THERE))
     {
-        if ((pm->inputfile = open_file("", p, "r", FALSE)) == NULL)
+        if ((pm->inputfile = open_file(p, "r")) == NULL)
         {
             printf("Could not open input file - %s\n", p);
             my_exit(1, "failed to open file in proc_commline");
@@ -411,8 +406,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     {
         if (strcmp(&p, "-"))
             pm->outputfile = stdout;
-        else if ((pm->outputfile = open_file("", p, "w",
-                                        (int)pm->verbose)) == NULL)
+        else if ((pm->outputfile = open_file(p, "w")) == NULL)
         {
             printf("Could not open output file - %s\n", p);
             my_exit(1, "commline out file");
@@ -424,8 +418,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* The third which only occurs if the programme is running as CodonW      */
     if (pm->codonW && (p = garg(0, NULL, "", GARG_THERE)))
     {
-        if ((pm->tidyoutfile = open_file("", p, "w",
-                                         (int)pm->verbose)) == NULL)
+        if ((pm->tidyoutfile = open_file(p, "w")) == NULL)
         {
             printf("Could not open blkoutput file - %s\n", p);
             my_exit(1, "commline blk outfile");

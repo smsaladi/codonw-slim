@@ -88,12 +88,12 @@ void textbin(char *fileread, char *fileout)
     vecalloc(&vlec, pcoa->colm); /* allocate an array           */
 
     /* open output files                                                    */
-    if ((pm->fcoa_in = open_file("", fileread, "r", FALSE)) == NULL)
+    if ((pm->fcoa_in = open_file(fileread, "r")) == NULL)
     {
         fprintf(pm->my_err, "(txt2bin)");
         my_exit(1, "txt2bin");
     }
-    if ((pm->fcoa_out = open_file("", fileout, "wb", FALSE)) == NULL)
+    if ((pm->fcoa_out = open_file(fileout, "wb")) == NULL)
     {
         fprintf(pm->my_err, "(txt2bin)");
         my_exit(6, "fileout");
@@ -193,9 +193,9 @@ void colmout(char *nfice, char *nfics, AMINO_STRUCT *ppaa, FILE *summary)
 
     vecalloc(&vlec, col);
 
-    if ((fice = open_file("", nfice, "rb", FALSE)) == NULL)
+    if ((fice = open_file(nfice, "rb")) == NULL)
         my_exit(6, "nfice2");
-    if ((fics = open_file("", nfics, "w", FALSE)) == NULL)
+    if ((fics = open_file(nfics, "w")) == NULL)
         my_exit(1, "nfics2");
 
     fprintf(summary, "\n\nThe position of each %s by axis \n"
@@ -275,11 +275,11 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
     if ((sortax1 = (int *)calloc(lig + 1, sizeof(int))) == NULL)
         my_exit(3, "sortax1");
 
-    if ((fice = open_file("", nfice, "rb", FALSE)) == NULL)
+    if ((fice = open_file(nfice, "rb")) == NULL)
         my_exit(6, "nfice3");
-    if ((fics = open_file("", nfics, "w", FALSE)) == NULL)
+    if ((fics = open_file(nfics, "w")) == NULL)
         my_exit(1, "nfics3");
-    if ((fnam = open_file("", ncout, "r", FALSE)) == NULL)
+    if ((fnam = open_file(ncout, "r")) == NULL)
         my_exit(6, "ncout3");
 
     fprintf(summary, "\n\nThe position of each gene by axis \n"
@@ -488,7 +488,7 @@ void lecmat(double **tab, char *nfic)
     l1 = (int)tab[0][0];
     c1 = (int)tab[1][0];
 
-    if ((fic = open_file("", nfic, "rb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "rb")) == NULL)
         my_exit(1, "lecmat");
 
     for (i = 1; i <= l1; i++)
@@ -565,7 +565,7 @@ void lecvec(double *v1, char *nfic)
     int i, c1;
     FILE *fic = NULL;
 
-    if ((fic = open_file("", nfic, "rb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "rb")) == NULL)
         my_exit(6, "lecvec");
 
     c1 = (int)v1[0];
@@ -593,7 +593,7 @@ void ecrmat(double **tab, char *nfic)
     l1 = (int)tab[0][0];
     c1 = (int)tab[1][0];
 
-    if ((fic = open_file("", nfic, "wb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "wb")) == NULL)
         my_exit(1, "ecrmat");
 
     for (i = 1; i <= l1; i++)
@@ -622,7 +622,7 @@ void ecrvec(double *v1, char *nfic)
 
     c1 = (int)v1[0];
 
-    if ((fic = open_file("", nfic, "wb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "wb")) == NULL)
         my_exit(1, "ecrvec");
 
     for (i = 1; i <= c1; i++)
@@ -970,7 +970,7 @@ void editvalpro(FILE *ficlist, double *vp, int n, double s)
 
     sp = pm->seperator;
 
-    if ((eigen = open_file("", "eigen.coa", "w", FALSE)) == NULL)
+    if ((eigen = open_file("eigen.coa", "w")) == NULL)
         my_exit(1, "editvalpro");
 
     sc1 = 0.0;
@@ -1030,7 +1030,7 @@ void ecrmatred(double **tab, int c1, char *nfic)
 
     l1 = (int)tab[0][0];
 
-    if ((fic = open_file("", nfic, "wb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "wb")) == NULL)
         my_exit(1, "ecrmatred");
 
     for (i = 1; i <= l1; i++)
@@ -1378,7 +1378,7 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
     f1 = pcoa->axis;
     inertotal = pcoa->inertia;
 
-    if ((inert_out = open_file("", inertia_out, "w", FALSE)) == NULL)
+    if ((inert_out = open_file(inertia_out, "w")) == NULL)
         my_exit(1, "inertia out");
 
     lcmin = c1;
@@ -1422,7 +1422,7 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
 
     scalvec(conli, 1.0 / inertotal);
 
-    if ((fnam = open_file("", ncout, "r", FALSE)) == NULL)
+    if ((fnam = open_file(ncout, "r")) == NULL)
         my_exit(6, "inertialgn");
 
     fprintf(summary, "Row inertia\n");
@@ -1470,7 +1470,7 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
             (pm->coa == 'a') ? "amino acid" : "codon", inertia_out);
 
     fclose(fnam);
-    if ((fnam = open_file("", ncout, "r", FALSE)) == NULL)
+    if ((fnam = open_file(ncout, "r")) == NULL)
         my_exit(6, "inertialgn");
 
     fprintf(summary, "----------Relative contributions----------\n");
@@ -1543,7 +1543,7 @@ void inertiacol(char *inertia_out, FILE *summary)
     double l0, inertotal, a1, a2, m2, m3, s1;
     FILE *inert_out = NULL;
 
-    if ((inert_out = open_file("", inertia_out, "a", FALSE)) == NULL)
+    if ((inert_out = open_file(inertia_out, "a")) == NULL)
         my_exit(1, "inertia out2");
 
     l1 = pcoa->rows;
@@ -1719,7 +1719,7 @@ void selectcol(char *nfic, double *col, int numcol)
         my_exit(99, "corresp");
     }
 
-    if ((fic = open_file("", nfic, "rb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "rb")) == NULL)
         my_exit(6, "nfic4");
     for (i = 1; i <= l1; i++)
     {
@@ -1755,7 +1755,7 @@ void suprow(int num_seq, char *nficvp, char *nfictasup, char *nficlisup,
     l1 = pcoa->rows;
     c1 = pcoa->colm;
 
-    if ((fnam = open_file("", option, "r", FALSE)) == NULL)
+    if ((fnam = open_file(option, "r")) == NULL)
         my_exit(6, "sup row corresp");
 
     taballoc(&tabsup, l2, c2);
@@ -1814,7 +1814,7 @@ void suprow(int num_seq, char *nficvp, char *nfictasup, char *nficlisup,
 
     /* Position the suppli. genes on the original factors                    */
 
-    if ((ficlisup = open_file("", nficlisup, "a", FALSE)) == NULL)
+    if ((ficlisup = open_file(nficlisup, "a")) == NULL)
         my_exit(1, "nficlisup");
 
     fprintf(summary, "\n\nThe position of each additional gene by axis "
@@ -1867,7 +1867,7 @@ void lecvalpro(double *v1, char *nfic)
     int i, c1;
     FILE *fic = NULL;
 
-    if ((fic = open_file("", nfic, "rb", FALSE)) == NULL)
+    if ((fic = open_file(nfic, "rb")) == NULL)
         my_exit(6, "lecvalpro");
 
     c1 = (int)v1[0];
