@@ -75,6 +75,7 @@
 #include <math.h>
 #include <limits.h>
 #include "codonW.h"
+
 /********************* Initilize Pointers**********************************/
 /* Various pointers to structures are assigned here dependent on the      */
 /* genetic code chosen.                                                   */
@@ -106,6 +107,7 @@ int initilize_point(char code, char fop_species, char cai_species)
 
    return 1;
 }
+
 /*******************How Synonymous is this codon  *************************/
 /* This function discovers at run time how synonymous a codon is by check-*/
 /* ing all other codons to see if they encode the same AA                 */

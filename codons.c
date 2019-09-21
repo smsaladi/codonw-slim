@@ -128,8 +128,7 @@ int main(int argc, char *argv[])
   initilize_point(pm->code, pm->f_type, pm->c_type);
   initilize_coa(pm->code);
 
-  fprintf(stderr, "Welcome to CodonW %.*s for Help type h\n",
-        (int)strlen(Revision) - 11, Revision + 10);
+  fprintf(stderr, "Welcome to CodonW\n");
   
   proc_comm_line(&argc, &argv);
 

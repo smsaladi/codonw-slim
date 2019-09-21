@@ -177,9 +177,6 @@ typedef struct
 #endif
 
 #ifdef ORIG_DEFS            /* declare only once     */
-char Revision[] = "1.4.4";  /* version               */
-char Update[] = "$Date$";   /* date                  */
-char Author[] = "$Author$"; /* author                */
 char title[100];            /* sequence description  */
 char long_seq;              /* length of seq title   */
 char last_base;
@@ -498,9 +495,6 @@ extern AMINO_STRUCT amino_acids;
 extern AMINO_PROP_STRUCT amino_prop;
 extern MENU_STRUCT Z_menu;
 
-extern char Revision[]; /* version string    */
-extern char Update[];
-extern char Author[];
 extern char title[100];
 extern char long_seq;
 extern char last_base;
