@@ -1,6 +1,6 @@
 override cflags  = $(CFLAGS) -g
 
-objects = codon_us.o codons.o commline.o coresp.o
+objects = codon_us.o codons.o commline.o coresp.o defaults.o
 
 CC=cc
 CFLAGS= -O -DBSD
@@ -26,3 +26,10 @@ coresp.o: coresp.c codonW.h
 
 commline.o:    commline.c codonW.h
 	$(CC) -c $(CFLAGS) commline.c
+
+defaults.o:    defaults.c codonW.h
+	$(CC) -c $(CFLAGS) defaults.c
+
+
+
+

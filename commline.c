@@ -25,6 +25,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
+
 #include "codonW.h"
 
 /************** process_command_line  *************************************/
@@ -106,8 +108,8 @@ int proc_comm_line(int *pargc, char ***pargv)
 
     /* -total causes sequences to be concatenated and treated as one sequence */
     if (garg(0, NULL, "-total", GARG_THERE))
-        pm->totals = TRUE;
-
+        pm->totals = true;
+                
     /* -code determines the genetic code                                       */
     if (p = garg(0, NULL, "-code", GARG_NEXT | GARG_EXACT))
     {
@@ -181,41 +183,41 @@ int proc_comm_line(int *pargc, char ***pargv)
     /* Indices are CAI, FOP, CBI, Nc, GC, GC3s, Lsyn, Laa, silent_base        */
     /* composition, hydropathicity, aromaticity                               */
     if (p = garg(0, NULL, "-cai", GARG_EXACT))
-        pm->cai = TRUE;
+        pm->cai = true;
     if (p = garg(0, NULL, "-fop", GARG_EXACT))
-        pm->fop = TRUE;
+        pm->fop = true;
     if (p = garg(0, NULL, "-cbi", GARG_EXACT))
-        pm->cbi = TRUE;
+        pm->cbi = true;
     if (p = garg(0, NULL, "-enc", GARG_EXACT))
-        pm->enc = TRUE;
+        pm->enc = true;
     if (p = garg(0, NULL, "-gc", GARG_EXACT))
-        pm->gc = TRUE;
+        pm->gc = true;
     if (p = garg(0, NULL, "-gc3s", GARG_EXACT))
-        pm->gc3s = TRUE;
+        pm->gc3s = true;
     if (p = garg(0, NULL, "-sil_base", GARG_EXACT))
-        pm->sil_base = TRUE;
+        pm->sil_base = true;
     if (p = garg(0, NULL, "-L_sym", GARG_EXACT))
-        pm->L_sym = TRUE;
+        pm->L_sym = true;
     if (p = garg(0, NULL, "-L_aa", GARG_EXACT))
-        pm->L_aa = TRUE;
+        pm->L_aa = true;
     if (p = garg(0, NULL, "-hyd", GARG_EXACT))
-        pm->hyd = TRUE;
+        pm->hyd = true;
     if (p = garg(0, NULL, "-aro", GARG_EXACT))
-        pm->aro = TRUE;
+        pm->aro = true;
     /* Turns on all the above indices                                         */
     if (p = garg(0, NULL, "-all_indices", GARG_EXACT))
     {
-        pm->cai = TRUE;
-        pm->fop = TRUE;
-        pm->cbi = TRUE;
-        pm->enc = TRUE;
-        pm->gc = TRUE;
-        pm->gc3s = TRUE;
-        pm->sil_base = TRUE;
-        pm->L_sym = TRUE;
-        pm->L_aa = TRUE;
-        pm->hyd = TRUE;
-        pm->aro = TRUE;
+        pm->cai = true;
+        pm->fop = true;
+        pm->cbi = true;
+        pm->enc = true;
+        pm->gc = true;
+        pm->gc3s = true;
+        pm->sil_base = true;
+        pm->L_sym = true;
+        pm->L_aa = true;
+        pm->hyd = true;
+        pm->aro = true;
     }
 
     /* This section in used to input the filenames for personal choices of Fop */
@@ -234,7 +236,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
             strncpy(pm->fop_filen, pm->junk, MAX_FILENAME_LEN - 1);
         /* idiot catch, if you load personal fop values you want to calculate fop */
-        pm->fop = TRUE;
+        pm->fop = true;
     }
 
     /* CAI                                                                     */
@@ -247,7 +249,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         }
         else
             strncpy(pm->cai_filen, pm->junk, MAX_FILENAME_LEN - 1);
-        pm->cai = TRUE; /* idiot catch          */
+        pm->cai = true; /* idiot catch          */
     }
     /* CBI                                                                     */
     if (p = garg(0, NULL, "-cbi_file", GARG_NEXT | GARG_EXACT))
@@ -259,7 +261,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         }
         else
             strncpy(pm->cbi_filen, pm->junk, MAX_FILENAME_LEN - 1);
-        pm->cbi = TRUE; /* idiot catch            */
+        pm->cbi = true; /* idiot catch            */
     }
 
     /* This section changes the default correspondence menu choices normally   */
@@ -275,7 +277,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         (coa.level = 'e');                            /* analysis         */
 
     if (pm->coa && pm->totals) {
-        pm->coa = FALSE;
+        pm->coa = false;
         fprintf(pm->my_err, "COA analysis of concatenated sequences is nonsensical."
                             "Ignoring `-coa_*`");
     }
@@ -333,7 +335,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     if (p = garg(0, NULL, "-cutot", GARG_THERE))
     {
         pm->bulk = 'C';
-        pm->totals = TRUE;
+        pm->totals = true;
     }
     if (p = garg(0, NULL, "-reader", GARG_EXACT))
         pm->bulk = 'R';
@@ -354,7 +356,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     if (p = garg(0, NULL, "-noblk", GARG_EXACT))
         pm->bulk = 'X';
 
-    pm->codonW = TRUE;
+    pm->codonW = true;
     if (pm->bulk == 'X')
         pm->bulk = 'C';
 

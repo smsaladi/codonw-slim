@@ -79,12 +79,9 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#include <stdbool.h>
 
-#define ORIG_DEFS
-/* used to decide whether declarations are external or not          */
-/* Master Header file                                               */
 #include "codonW.h"
-#undef ORIG_DEFS
 
 #if defined(__MWERKS__)
 #include <console.h>
@@ -291,7 +288,7 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
   char seq[MAX_GENE + LINE_LENGTH + 1];
   char in[LINE_LENGTH + 1];
-  int first_line = TRUE, ic = 0;
+  int first_line = true, ic = 0;
   int ii = 0;
   int i, x;
   long ic_orig = 0;
@@ -313,7 +310,7 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
       if (first_line)
       { /* if true this is the first header*/
 
-        first_line = FALSE; /* will only be reset when reread  */
+        first_line = false; /* will only be reset when reread  */
                             /* the next sequence               */
         if (num_sequence)
         { /* wait till we have read the first*/
@@ -380,7 +377,7 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
     }           /* if (in[0] == ';' || in[0] == '>')    */
     else
     {                    /* this must be a line containing seq   */
-      first_line = TRUE; /* so reset the first_line variable     */
+      first_line = true; /* so reset the first_line variable     */
     }
 
     /* at this point we have read in the header lines and have been or about to*/
@@ -455,9 +452,9 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
         in[2] = (char)toupper((int)in[2]);
 
         if (in[1] == 'T' && (in[0] == 'A' || in[2] == 'G'))
-          valid_start = TRUE; /* Yeup it could be a start codon   */
+          valid_start = true; /* Yeup it could be a start codon   */
         else
-          valid_start = FALSE; /* Nope it doesn't seem to be one   */
+          valid_start = false; /* Nope it doesn't seem to be one   */
       }
       ic++;  /* total No. of sequence bases read */
       tot++; /* total currently stored in memory */
@@ -491,7 +488,7 @@ int toutput(FILE *fblkout, char *seq)
   char codon[4];
   int i, x;
 
-  if (long_seq == FALSE)
+  if (long_seq == false)
   { /* then this must be a complete genes  */
     switch (pm->bulk)
     {
@@ -632,7 +629,7 @@ int output_long(FILE *fblkout, char *seq)
   char codon[4];
   int i, x;
 
-  if (long_seq == FALSE)
+  if (long_seq == false)
   {
     /* First call to output_long for seq. So record where the header line is  */
     /* and then write the dummy header line.                                  */
@@ -642,7 +639,7 @@ int output_long(FILE *fblkout, char *seq)
       fprintf(fblkout, ">%6s %-72.72s\n", "      ", title);
     else
       fprintf(fblkout, ">%-20.20s%9s\n", title, "    ");
-    long_seq = TRUE;
+    long_seq = true;
   }
   /* see toutput for explanation of the switch statement                    */
   while (ic < MAX_GENE && ic < tot)

@@ -56,6 +56,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stdbool.h>
+
 #include "codonW.h"
 
 /*************** textbin          *****************************************/
@@ -1599,7 +1601,7 @@ void inertiacol(char *inertia_out, FILE *summary)
         if (pm->coa == 'a')
         {
 
-            while (pcoa->amino[++x] == FALSE)
+            while (pcoa->amino[++x] == false)
                 ;
 
             fprintf(summary, "%s", paa->aa3[x]);
@@ -1608,7 +1610,7 @@ void inertiacol(char *inertia_out, FILE *summary)
         else
         {
 
-            while (pcoa->codons[++x] == FALSE)
+            while (pcoa->codons[++x] == false)
                 ;
 
             fprintf(summary, "%s", paa->cod[x]);
@@ -1644,7 +1646,7 @@ void inertiacol(char *inertia_out, FILE *summary)
         if (pm->coa == 'a')
         {
 
-            while (pcoa->amino[++x] == FALSE)
+            while (pcoa->amino[++x] == false)
                 ;
 
             fprintf(summary, "%s", paa->aa3[x]);
@@ -1653,7 +1655,7 @@ void inertiacol(char *inertia_out, FILE *summary)
         else
         {
 
-            while (pcoa->codons[++x] == FALSE)
+            while (pcoa->codons[++x] == false)
                 ;
 
             fprintf(summary, "%s", paa->cod[x]);
