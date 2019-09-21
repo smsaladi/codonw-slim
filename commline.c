@@ -274,6 +274,13 @@ int proc_comm_line(int *pargc, char ***pargv)
     if (p = garg(0, NULL, "-coa_expert", GARG_EXACT)) /* detailed inertia */
         (coa.level = 'e');                            /* analysis         */
 
+    if (pm->coa && pm->totals) {
+        pm->coa = FALSE;
+        fprintf(pm->my_err, "COA analysis of concatenated sequences is nonsensical."
+                            "Ignoring `-coa_*`");
+    }
+
+
     /* These are options selectable under the advanced COA menu                */
     /* This first option -coa_axes changes the number of axis recorded to file */
     if (p = garg(0, NULL, "-coa_axes", GARG_NEXT | GARG_EXACT))

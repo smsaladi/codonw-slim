@@ -91,14 +91,8 @@
 #endif
 
 /**************************   MAIN   **************************************/
-/* The main function processes commandline arguments to decide whether    */
-/* CodonW is running in an interactive mode, if so then the menu is called*/
-/* CodonW also had the less documented feature of imitating other useful  */
-/* codon usage and sequence manipulation program.    If the program is    */
-/* called by a recognised name (see proc_comm_line for a list) such as    */
-/* rscu then pm->codons is false and it only performs the required tasks  */
-/* bypassing the menu system.                                             */
-/* Main then calls tidy() to read in the data files, and count codon usage*/
+/* The main function processes commandline arguments to decide analysis to*/
+/* run. tidy() to read in the data files, and count codon usage*/
 /* depending on the requested output options toutput calls various subrou */
 /* tines. If COA has been requested it also calls these subroutines and   */
 /* recording useful information to summary.coa.                           */
@@ -109,45 +103,23 @@ int main(int argc, char *argv[])
   FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
   FILE *fcoaout = NULL;
   FILE *fsummary = NULL;
-  int num_seq = 0;
+  int num_seq;
 
-  num_sequence = 0;
-  num_seq_int_stop = 0;
-  valid_stops = 0;
-  last_aa = 0;
+  clean_up(ncod, naa); /* zero count of codons and amino acids   */
 
 #if defined(__MWERKS__) /* Macintosh code-warrior */
   argc = ccommand(&argv);
 #endif
 
   pm = &Z_menu;
-  pm->totals = FALSE;
   pm->my_err = stderr;
 
   initilize_point(pm->code, pm->f_type, pm->c_type);
   initilize_coa(pm->code);
 
   fprintf(stderr, "Welcome to CodonW\n");
-  
   proc_comm_line(&argc, &argv);
 
-  if (pm->inputfile != NULL) /* rewind various input files in case */
-    rewind(pm->inputfile);   /* this is a second analysis run      */
-  if (pm->fopfile != NULL)
-    rewind(pm->fopfile);
-  if (pm->cbifile != NULL)
-    rewind(pm->cbifile);
-  if (pm->caifile != NULL)
-    rewind(pm->caifile);
-
-  /* num_sequence                 number of sequences read              */
-  /* num_seq_int_stop             number with internal stop codons      */
-  /* valid_stops                  No.terminated with a stop codon       */
-  /* tot                          total number of codons read           */
-
-  num_sequence = num_seq_int_stop = valid_stops = tot = 0;
-
-  clean_up(ncod, naa); /*re-zero count of amino and codons   */
   finput = pm->inputfile;
   foutput = pm->outputfile;
   fblkout = pm->tidyoutfile;
@@ -177,10 +149,6 @@ int main(int argc, char *argv[])
                           "stop codons \tWARNING\n",
               num_seq_int_stop);
   }
-
-  if (pm->coa && pm->totals) /* idiots error catch             */
-    my_exit(99, "A COA analysis of concatenated sequences is nonsensical\n"
-                "I have completed any other requests but not the COA");
 
   /* if COA has been requested then open summary.coa and start the analysis  */
   if (pm->coa)
