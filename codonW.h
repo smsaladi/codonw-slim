@@ -30,7 +30,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#define ARB_UNIT 100                 /* used to define the array*/
+#define ARB_UNIT 10000               /* used to define the array*/
 #define MAX_GENE (ARB_UNIT * 3)      /* seq, which holds readin */
 #define LINE_LENGTH (ARB_UNIT + 100) /* sequence data           */
 #define GARG_EXACT 0x800             /* used in function gargs  */
@@ -160,7 +160,6 @@ extern AMINO_PROP_STRUCT amino_prop;
 extern MENU_STRUCT Z_menu;
 
 extern char title[100];
-extern char long_seq;
 extern char last_base;
 
 extern long int ncod[65];
@@ -212,7 +211,6 @@ int fop_out(FILE *foutput, long int *ncod);
 int hydro_out(FILE *foutput, long int *naa);
 int aromo_out(FILE *foutput, long int *naa);
 int toutput(FILE *fblkout, char *seq);
-int output_long(FILE *fblkout, char *seq);
 int cutab_out(FILE *fblkout, long *ncod, long *naa);
 int dinuc_out(FILE *fblkout, char *title);
 int fileclose(FILE **file_pointer);

@@ -67,8 +67,6 @@
 /* tidy               reads the input data                                */
 /* output             called from tidy to decide what to do with the data */
 /* toutput            handles the reformatting and translation of seqs    */
-/* output_long        if sequence is very long then process what we know  */
-/*                    and write sequence to disk in fragments             */
 /* file_close         Closes open files                                   */
 /*                                                                        */
 /**************************************************************************/
@@ -318,12 +316,6 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
           /* now if we are concatenating sequence data we need will handle it thus   */
           if (pm->totals)
           {
-
-            /* first if translating or reformatting the input file flush the read      */
-            /* data to the disk                                                        */
-
-            if (strchr("RNT", (int)pm->bulk) != NULL)
-              output_long(fblkout, seq);
             if (tot)
             {
               /* if something we have sequence read in, then we need to process this  */
@@ -385,29 +377,6 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
     /* seq, tot is equivalent to the last element in the array                 */
     /* if tot is greater than or equal to MAX_GENE then the array is quite full*/
     /* luckily we made the array seq to be MAX_GENE plus LINE_LENGTH +1        */
-
-    if (tot >= MAX_GENE)
-    {                        /* sequence is larger than seq          */
-      master_ic += MAX_GENE; /* now remember how many bases we are   */
-      ic_orig = tot;         /* going to write to disk               */
-                             /* and what size the array was to start */
-
-      if (strchr("RNT", (int)pm->bulk) != NULL)
-        output_long(fblkout, seq); /* flush to disk and then continue      */
-      else if (pm->bulk == 'D')
-        dinuc_count(seq, tot); /* then we had better count the dinucs  */
-
-      /* Now count first MAX_GENE bases, luckily MAX_GENE is always a multiple of*/
-      /* 3, we count the bases and amino acids in codon_usage_tot                */
-
-      last_aa = codon_usage_tot(seq, MAX_GENE);
-
-      /* now we move all unprocessed/written/counted bases to the front of seq   */
-
-      for (i = MAX_GENE, x = 0; i < ic_orig; i++, x++)
-        seq[x] = seq[i]; /* i is pointing near the end of array  */
-      tot = x;           /* x the front of the array             */
-    }                    /* Matches if (tot >= MAX_GENE)         */
 
     ic = 0; /* first base of the input file         */
     while (in[ic] != '\0')
@@ -478,8 +447,7 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 /* This subroutine is very similar to output_long, basically it reformats */
 /* or translates sequences less than MAX_GENE in length as a single read  */
 /* It writes in reader format "ACG ATT ATC" i.e writes the sequence in    */
-/* codons. Because it works with output_long it needs to know whether     */
-/* the sequence being written to disk is a fragment or a complete gene    */
+/* codons.     */
 /**************************************************************************/
 int toutput(FILE *fblkout, char *seq)
 {
@@ -488,61 +456,27 @@ int toutput(FILE *fblkout, char *seq)
   char codon[4];
   int i, x;
 
-  if (long_seq == false)
-  { /* then this must be a complete genes  */
-    switch (pm->bulk)
-    {
-    case 'T': /* tidy or fasta formatted header      */
-      fprintf(fblkout, ">%-20.20s%6li\n",
-              title, (long int)tot + master_ic);
-      break;
-    case 'R': /* reader header .. don't ask          */
-      fprintf(fblkout, ">%6li %-70.70s\n",
-              (long int)tot + master_ic, title);
-      break;
-    case 'N': /* Conceptually translated DNA header  */
-      fprintf(fblkout, ">%-20.20s%6li\n",
-              title, (long int)((tot + master_ic) / 3));
-      break;
-    default: /* whoops                              */
-      printf("\nProgramming error type A2 check code \n");
-      my_exit(99, "toutput");
-      break;
-    }
-  }
-  else
+  /* must be a complete genes  */
+  switch (pm->bulk)
   {
-
-    /* then long_seq must be true, this means we are about to finish writing a*/
-    /* sequence that has already been written in MAX_GENE chunks to disk)     */
-    /* when we wrote the original header line, we didn't know the size of the */
-    /* sequence, but now we do so we are going to update that bit of info     */
-    /* luckily remembered to record where the header line is in the file      */
-    /* its at fl_pos_start                                                    */
-
-    fl_pos_curr = ftell(fblkout);    /* record where we are at present     */
-    fseek(fblkout, fl_pos_start, 0); /* find the header line for this seq  */
-    switch (pm->bulk)
-    {
-    case 'T': /* Now update the info                */
-      fprintf(fblkout, ">%-20.20s%6li",
-              title, (long int)tot + master_ic);
-      break;
-    case 'R':
-      fprintf(fblkout, ">%6li %-70.70s",
-              (long int)tot + master_ic, title);
-      break;
-    case 'N':
-      fprintf(fblkout, ">%-20.20s%6li", title,
-              (long int)((tot + master_ic) / 3));
-      break;
-    default:
-      printf("\nProgramming error type A3 check code \n");
-      my_exit(99, "output");
-    }
-    fseek(fblkout, fl_pos_curr, 0); /* now we move back to where we were   */
+  case 'T': /* tidy or fasta formatted header      */
+    fprintf(fblkout, ">%-20.20s%6li\n",
+            title, (long int)tot + master_ic);
+    break;
+  case 'R': /* reader header .. don't ask          */
+    fprintf(fblkout, ">%6li %-70.70s\n",
+            (long int)tot + master_ic, title);
+    break;
+  case 'N': /* Conceptually translated DNA header  */
+    fprintf(fblkout, ">%-20.20s%6li\n",
+            title, (long int)((tot + master_ic) / 3));
+    break;
+  default: /* whoops                              */
+    printf("\nProgramming error type A2 check code \n");
+    my_exit(99, "toutput");
+    break;
   }
-
+  
   while (ic < tot)
   { /* keep writing till the array is empty*/
     switch (pm->bulk)
@@ -613,75 +547,6 @@ int toutput(FILE *fblkout, char *seq)
               non_std_char, num_sequence);
   }
   return 1; /* return to calling function           */
-}
-
-/************************* output_long   **********************************/
-/* called to write a block of a sequence that has exceeded the MAX_GENE   */
-/* limit. If this is the first time it has been called for this sequence  */
-/* (ie. long_seq is false) it write a dummy header line which is updated  */
-/* by toutput when the last fragment of the sequence is written to disk   */
-/**************************************************************************/
-
-int output_long(FILE *fblkout, char *seq)
-{
-  long int ic = 0;
-  char space = 3;
-  char codon[4];
-  int i, x;
-
-  if (long_seq == false)
-  {
-    /* First call to output_long for seq. So record where the header line is  */
-    /* and then write the dummy header line.                                  */
-
-    fl_pos_start = ftell(fblkout);
-    if (pm->bulk == 'R')
-      fprintf(fblkout, ">%6s %-72.72s\n", "      ", title);
-    else
-      fprintf(fblkout, ">%-20.20s%9s\n", title, "    ");
-    long_seq = true;
-  }
-  /* see toutput for explanation of the switch statement                    */
-  while (ic < MAX_GENE && ic < tot)
-  {
-    switch (pm->bulk)
-    {
-    case 'T':
-      fprintf(fblkout, "%c", seq[ic++]);
-      reg++;
-      break;
-    case 'R':
-      if (space == 3)
-      {
-        fprintf(fblkout, " ");
-        space = 0;
-      }
-      else
-      {
-        fprintf(fblkout, "%c", seq[ic++]);
-        space++;
-        reg++;
-      }
-      break;
-    case 'N':
-      for (i = (int)ic, x = 0; i < (int)ic + 3 && i < tot; i++, x++)
-        codon[x] = *(seq + i);
-      codon[x] = '\0';
-      fprintf(fblkout, "%c", *get_aa(1, codon));
-      ic += 3;
-      reg++;
-      break;
-    default:
-      printf("\nProgramming error type A1 check code \n");
-      my_exit(99, "output_long");
-    }
-    if (!(reg % 61))
-    {
-      reg = 1;
-      fprintf(fblkout, "\n");
-    }
-  }
-  return 1; /* return to tidy                      */
 }
 
 /*************************  output       **********************************/

@@ -62,8 +62,6 @@
 /* tidy               reads the input data                                */
 /* output             called from tidy to decide what to do with the data */
 /* toutput            handles the reformatting and translation of seqs    */
-/* output_long        if sequence is very long then process what we know  */
-/*                    and write sequence to disk in fragments             */
 /* open_file          Open files, checks for existing files               */
 /* fileclose          Closes files and returns a NULL pointer or exits    */
 /*                                                                        */
@@ -594,7 +592,6 @@ int clean_up(long int *nncod, long int *nnaa)
    dinuc_count(" ", 1);
    master_ic = tot =
        non_std_char = AT_TOT = GC_TOT = AA_TOT = GAP_TOT = IUBC_TOT = 0;
-   long_seq = false;
    valid_stops = valid_start = codon_tot = tot = fram = 0;
    return 1;
 }

@@ -33,7 +33,6 @@
 #include "codonW.h"
 
 char title[100];            /* sequence description  */
-char long_seq;              /* length of seq title   */
 char last_base;
 long int ncod[65];
 long int naa[23];
