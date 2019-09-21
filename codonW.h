@@ -85,7 +85,6 @@ typedef struct
 
 typedef struct
 {
-  char prog;    /* used to ident which prog */
   char bulk;    /* used to ident blk output */
   char totals;  /* concatenate genes ?      */
   char warn;    /* show sequence warning    */
@@ -392,7 +391,6 @@ AMINO_PROP_STRUCT amino_prop = {/* amino acid properties */
 
 MENU_STRUCT Z_menu = {
     /* define all manner of default values              */
-    FALSE, /* prog                                             */
     'X',   /*This default is set in proc_commline to CU        */
     FALSE, /*totals                                            */
     TRUE,  /*warnings about sequence data are to be displayed  */

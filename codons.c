@@ -773,13 +773,8 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
     /* better write the remaing sequence in seq to disk                   */
     toutput(fblkout, seq);
   }
-  else if (strchr("OCASDLDBX", (int)pm->bulk) != NULL)
+  else if (strchr("OCASDLBX", (int)pm->bulk) != NULL)
   {
-
-    /* These subroutines are self explanatory (see the top of this file)      */
-    /* are called such that only one can be called for each sequence read     */
-    /* all these calls are written to the bulk output file                    */
-
     switch ((int)pm->bulk)
     {
     case 'S':
@@ -804,19 +799,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
     case 'O':
       cutab_out(fblkout, ncod, naa);
       break;
-    case 'X':
-      /* X is no bulk output written to file */
-      break;
-    default:
-      fprintf(stderr, "ERROR-23 %s bulk undefined\n", pm->prog);
-      my_exit(99, "output");
-      break;
     }
-  }
-  else if (pm->bulk)
-  { /* just a programming error catch     */
-    fprintf(stderr, "ERROR-24 %s -prog undefined\n", pm->prog);
-    my_exit(99, "output");
   }
 
   /* if an index has been requested then this is true                     */
