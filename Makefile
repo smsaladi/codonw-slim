@@ -18,7 +18,7 @@ clean:
 codon_us.o: codon_us.c codonW.h
 	$(CC) -c $(CFLAGS) codon_us.c
 
-codons.o: codons.c codonW.h
+codons.o: codons.c codonW.h kseq.h
 	$(CC) -c $(CFLAGS) codons.c
 
 coresp.o: coresp.c codonW.h

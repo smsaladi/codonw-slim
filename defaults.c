@@ -32,7 +32,7 @@
 
 #include "codonW.h"
 
-char title[100];            /* sequence description  */
+char *title;
 char last_base;
 long int ncod[65];
 long int naa[23];
@@ -41,14 +41,8 @@ long int codon_tot;
 long int master_ic;
 long int fl_pos_start;
 long int fl_pos_curr;
-long int GC_TOT;
-long int AT_TOT;
-long int AA_TOT;
-long int IUBC_TOT;
-long int GAP_TOT;
 extern long int num_sequence = 0;
 long int num_seq_int_stop = 0;
-long int non_std_char;
 long int tot;
 int last_aa = 0;
 int reg = 1;

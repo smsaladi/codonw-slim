@@ -183,13 +183,14 @@ int initilize_coa(char code)
 /* pcu->ca contains codon to amino acid translations for the current code */
 /* and is assigned in initialise point                                    */
 /**************************************************************************/
-int codon_usage_tot(char *seq, long int how_many)
+int codon_usage_tot(char *seq)
 {
    char codon[4];
    int icode;
-   int i;
+   unsigned int i;
+   unsigned int seqlen = (int)strlen(seq);
 
-   for (i = 0; i < how_many - 2; i += 3)
+   for (i = 0; i < seqlen - 2; i += 3)
    {
       strncpy(codon, (seq + i), 3);
       icode = ident_codon(codon);
@@ -198,12 +199,16 @@ int codon_usage_tot(char *seq, long int how_many)
       codon_tot++;           /*increment the codon total */
    }
 
-   if (how_many % 3)
+   if (seqlen % 3)
    {             /*if last codon was partial */
       icode = 0; /*set icode to zero and     */
       ncod[0]++; /*increment untranslated    */
    }             /*codons                    */
-   return icode; /*return the last codon     */
+
+   if (pcu->ca[icode] == 11)
+      valid_stops++;
+
+   return icode;
 }
 
 /****************** Ident codon               *****************************/
@@ -272,6 +277,12 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
       if (pcu->ca[i] == 11)
          ns += ncod[i]; /*count  stop codons     */
    }
+
+   // TODO: CHECK FOR ERRORS WITHIN HERE ITSELF
+   // if (in[1] == 'T' && (in[0] == 'A' || in[2] == 'G'))
+   //    valid_start = true; /* Yeup it could be a start codon   */
+   // else
+   //    valid_start = false; /* Nope it doesn't seem to be one   */
 
    switch (error_level)
    {
@@ -589,9 +600,7 @@ int clean_up(long int *nncod, long int *nnaa)
          din[x][i] = 0;
 
    dinuc_count(" ", 1);
-   master_ic = tot =
-       non_std_char = AT_TOT = GC_TOT = AA_TOT = GAP_TOT = IUBC_TOT = 0;
-   valid_stops = valid_start = codon_tot = tot = fram = 0;
+   valid_stops = valid_start = codon_tot = fram = 0;
    return 1;
 }
 /*****************Codon Adaptation Index output   *************************/

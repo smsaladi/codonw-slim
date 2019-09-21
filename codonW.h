@@ -159,7 +159,7 @@ extern AMINO_STRUCT amino_acids;
 extern AMINO_PROP_STRUCT amino_prop;
 extern MENU_STRUCT Z_menu;
 
-extern char title[100];
+extern char *title;
 extern char last_base;
 
 extern long int ncod[65];
@@ -169,14 +169,8 @@ extern long int codon_tot;
 extern long int master_ic;
 extern long int fl_pos_start;
 extern long int fl_pos_curr;
-extern long int GC_TOT;
-extern long int AT_TOT;
-extern long int AA_TOT;
-extern long int IUBC_TOT;
-extern long int GAP_TOT;
 extern long int num_sequence;
 extern long int num_seq_int_stop;
-extern long int non_std_char;
 extern long int tot;
 extern int last_aa;
 extern int reg;
@@ -198,7 +192,7 @@ int *how_synon_aa(void);
 int *how_synon(void);
 int *how_synon_aa(void);
 
-int codon_usage_tot(char *seq, long int how_many);
+int codon_usage_tot(char *seq);
 int ident_codon(char *codon);
 int codon_usage_out(FILE *fblkout, long int *ncod, int last_aa,
                     int valid_stops, char *info);
@@ -264,7 +258,7 @@ void bintext(char *nfice, char *nfics);
 void select_coa(char choice);
 void textbin(char *filein, char *fileout);
 void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary);
-void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout);
+void output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout);
 void rowout(char *nfice, char *nfics, char *ncout, FILE *summary);
 void PrepAFC(char *nfic);
 void inertialig(char *inertia_out, char *filen, FILE *summary);

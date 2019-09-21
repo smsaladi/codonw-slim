@@ -78,6 +78,9 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#include "kseq.h"
+KSEQ_INIT(int, read)  
+
 #include "codonW.h"
 
 #if defined(__MWERKS__)
@@ -235,7 +238,7 @@ int main(int argc, char *argv[])
         my_exit(1, "coa1_raw");
 
       clean_up(ncod, naa);
-      num_sequence = num_seq_int_stop = valid_stops = tot = 0;
+      num_sequence = num_seq_int_stop = valid_stops = 0;
       /* load the additional data file and process as normal                    */
       /* but don't calculate any indices or write the data to the normal output */
       /* files, rather write them to tmp files which will be deleted at end of  */
@@ -270,173 +273,45 @@ int main(int argc, char *argv[])
 
 /**********************  END of MAIN()   **********************************/
 
+/* Titles are cleaned up by removing separator if present    */
+static void clean_title(char* title, char sep) {
+    for (int i = 0; i < (int)strlen(title); i++)
+      if (title[i] == sep)
+        title[i] = '_';
+}
+
+static int strtoupper(char *str) 
+{
+  for(int i = 0; i < strlen(str); i++)
+    str[i] = toupper(str[i]);
+  return 0;
+}
+
 /**********************  Subroutines     **********************************/
 /* Tidy                                                                   */
 /*  reads input data from a sequence file containing fasta like formatted */
-/*  sequence discards numbers, but keeps other characters                 */
-/*  Each sequence must begin with title line must start with > or ;       */
-/*  any following descriptive lines must begin with ; or >.Sequence start */
-/*  is the first alphabetic character on the line following the headers   */
-/*  There is no limit to sequence length or number of sequences but       */
-/*  input lines should be less than 200 char in width                     */
 /**************************************************************************/
 
 int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
-  char seq[MAX_GENE + LINE_LENGTH + 1];
-  char in[LINE_LENGTH + 1];
-  int first_line = true, ic = 0;
-  int ii = 0;
-  int i, x;
-  long ic_orig = 0;
-  /* while still able to read data from the input file keep reading         */
-  while ((fgets(in, LINE_LENGTH, finput) != NULL))
-  {
+	int l;
 
-    /* idiot error check to see if the file looks like fasta or PIR format    */
-    if (!num_sequence && in[0] != ';' && in[0] != '>')
-    {
-      fprintf(stderr, "\n Error input file not in a recognised format \n"
-                      " you must convert it into FASTA/Pearson format"
-                      " EXITING\n");
-      my_exit(99, "input file not in a recognised format:tidy");
-    }
+	kseq_t *seq = kseq_init(fileno(finput));
+	while ((l = kseq_read(seq)) >= 0) {
+    // strtoupper(seq->seq.s);
 
-    if (in[0] == ';' || in[0] == '>')
-    { /* if true them this is a header   */
-      if (first_line)
-      { /* if true this is the first header*/
-
-        first_line = false; /* will only be reset when reread  */
-                            /* the next sequence               */
-        if (num_sequence)
-        { /* wait till we have read the first*/
-          /* before writing to disk          */
-          /* now if we are concatenating sequence data we need will handle it thus   */
-          if (pm->totals)
-          {
-            if (tot)
-            {
-              /* if something we have sequence read in, then we need to process this  */
-              /* check whether the last codon of the sequence was was a stop          */
-              last_aa = codon_usage_tot(seq, tot);
-              if (pcu->ca[last_aa] == 11)
-                valid_stops++;
-            }
-            /* rather re-setting everything to zero, we will just blank the array seq  */
-            tot = 0;
-          }
-          else
-          {
-            /* else matches if tot; if sequences are not being concatenated we call    */
-            /* output to decide what to do with all the read data                      */
-            /* then we blank all the data from memory and start again                  */
-            output(seq, foutput, fblkout, fcoaout);
-            clean_up(ncod, naa);
-          }
-        } /* matches if(num_sequence)       */
-
-        /* If we get here we have read a header line, this then needs to be proc'ed*/
-        /* first the header is tested to see does it contain spaces the string is  */
-        /* converted from the first non space character to the title array         */
-
-        for (ii = 1; isspace((int)in[ii]) && ii < (int)strlen(in); ii++)
-          ;
-        strncpy(title, in + ii, 99);
-
-        /* Titles are cleaned up by removing newline characters and the delimiting */
-        /* character p,->seperater and also null terminating the title string      */
-
-        for (i = 0; i < (int)strlen(title); i++)
-        {
-          if (title[i] == '\n')
-            title[i] = '\0'; /* chops new line off                  */
-          else if (title[i] == pm->seperator)
-            title[i] = '_'; /* removes the separator if present    */
-          else if (i == (int)(strlen(title) - 1))
-            title[i] = '\0'; /* if we have reached end of title     */
-        }
-
-        /* if we are reformatting the data, we print a friendly dot just in-case   */
-        if (strchr("RNT", (int)pm->bulk) == NULL || pm->totals)
-          dot((int)num_sequence, 5);
-        /* we have now finished processing our first header line and are reading   */
-        /* our sequence data                                                       */
-        num_sequence++;
-      }         /* matches if first line                */
-      continue; /* read another line ie. jump to while()*/
-    }           /* if (in[0] == ';' || in[0] == '>')    */
+    if (pm->totals) /* accumulate sequence          */        
+      codon_usage_tot(seq->seq.s);
     else
-    {                    /* this must be a line containing seq   */
-      first_line = true; /* so reset the first_line variable     */
-    }
+      output(seq->seq.s, seq->name.s, foutput, fblkout, fcoaout);
 
-    /* at this point we have read in the header lines and have been or about to*/
-    /* process the input data, now we test how much we have read into the array*/
-    /* seq, tot is equivalent to the last element in the array                 */
-    /* if tot is greater than or equal to MAX_GENE then the array is quite full*/
-    /* luckily we made the array seq to be MAX_GENE plus LINE_LENGTH +1        */
+    num_sequence++;
+  }
+	kseq_destroy(seq);
 
-    ic = 0; /* first base of the input file         */
-    while (in[ic] != '\0')
-    { /* scan input line till we see a Null   */
-      if (isalpha((int)in[ic]))
-        ; /* do nothing if a alpha                */
-      else if (pm->bulk == 'R' && in[ic] == '-')
-        ; /* do nothing            */
-      else if (in[ic] == '*' || in[ic] == '.')
-        ; /* do nothing            */
+  if (pm->totals)
+    output("", "", foutput, fblkout, fcoaout);
 
-      else
-      {
-        ic++; /* is not one above skip to next letter */
-        continue;
-      } /* while( in[ic] != '\0')               */
-
-      in[ic] = (char)toupper((int)in[ic]); /*   converts2capitals              */
-      if (strrchr("CG", (int)in[ic]) != NULL)
-        GC_TOT++; /* is it a G or C                   */
-      else if (strrchr("ATU", (int)in[ic]) != NULL)
-        AT_TOT++; /* is it an A or T                  */
-      else if (in[ic] == '-')
-        GAP_TOT++; /* is it a gap character            */
-      else
-        non_std_char++; /* then it isn't a standard base    */
-
-      if (strrchr("ABCDEFGHIKLMNPQRSTVWYZX", (int)in[ic]) != NULL)
-        AA_TOT++; /* it might be an amino acid        */
-      if (strrchr("MRWSYKVHDBXN", (int)in[ic]) != NULL)
-        IUBC_TOT++; /* it might be a IUBC code          */
-
-      seq[tot] = in[ic];   /* move base into seq array         */
-      seq[tot + 1] = '\0'; /* make sure array is null term'ed  */
-
-      /* now we test that the first codon is a valid start codon                    */
-
-      if (tot == 0 && master_ic == 0)
-      {
-
-        in[1] = (char)toupper((int)in[1]); /* Uppercase the first codon         */
-        in[2] = (char)toupper((int)in[2]);
-
-        if (in[1] == 'T' && (in[0] == 'A' || in[2] == 'G'))
-          valid_start = true; /* Yeup it could be a start codon   */
-        else
-          valid_start = false; /* Nope it doesn't seem to be one   */
-      }
-      ic++;  /* total No. of sequence bases read */
-      tot++; /* total currently stored in memory */
-    }
-  } /* reached end of input file        */
-
-  /* Idiot error catch, this file is empty, at least it looks empty to codonW*/
-
-  if (!num_sequence)
-    my_exit(99, "The input file was empty");
-
-  /* better make sure to write anything left in seq to disk before returning */
-
-  output(seq, foutput, fblkout, fcoaout);
   return (int)num_sequence;
 }
 
@@ -447,17 +322,14 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 /* requested and write these to file, it handles all output except for COA*/
 /**************************************************************************/
 
-void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
+void output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
   char sp = pm->seperator;
 
-  if (tot)
-  { /* still data in array seq..           */
-    last_aa = codon_usage_tot(seq, tot);
-    if (pcu->ca[last_aa] == 11)
-      valid_stops++; /* check the last codon was a stop    */
-  }
+  clean_title(title, pm->seperator);
 
+  valid_stops = 0;
+  last_aa = codon_usage_tot(seq);
   /* codon_error, if 4th parameter is 1, then checks for valid start and  */
   /* internal stop codon, if 4th parmater is 2, checks that the last codon*/
   /* is a stop or was partial, and for non-translatable codons            */
@@ -504,7 +376,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
   {
     /* if this is the first sequence then write a header line           */
 
-    if (num_sequence == 1 || pm->totals)
+    if (num_sequence == 0 || pm->totals)
     {
 
       fprintf(foutput, "%-.25s%c", "title", sp);
@@ -568,6 +440,9 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 
     fprintf(foutput, "\n");
   }
+
+  clean_up(ncod, naa);
+
   return;
 }
 
