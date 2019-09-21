@@ -150,32 +150,6 @@ typedef struct
 #define FALSE 0 /* for dumb compilers       */
 #endif
 
-/* these handle how to delete files, and blank the screen                 */
-#if defined _WINDOWS || defined _WIN32
-#define deletefile(x) _unlink(x)
-#define clearscr(x)         \
-  {                         \
-    int n;                  \
-    for (n = 0; n < x; n++) \
-      printf("\n");         \
-  }
-#elif defined _DOS
-#define deletefile(x) _unlink(x)
-#define clearscr(x) system("cls");
-#else
-#define deletefile(x) remove(x)
-#if defined DEBUG
-#define clearscr(x)         \
-  {                         \
-    int n;                  \
-    for (n = 0; n < x; n++) \
-      printf("\n");         \
-  }
-#else
-#define clearscr(x) system("clear");
-#endif
-#endif
-
 #ifdef ORIG_DEFS            /* declare only once     */
 char title[100];            /* sequence description  */
 char long_seq;              /* length of seq title   */

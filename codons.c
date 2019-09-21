@@ -26,7 +26,6 @@
 /* This file contains main() function and drives CodonW.                  */
 /*                                                                        */
 /* External subroutines and functions                                     */
-/* clearscr           screen clearing Macro defined in CodonW.h           */
 /* proc_comm_line     process command line arguments                      */
 /* initilize_point    assigns genetic code dependent parameters to structs*/
 /* initilize_coa      selects the default codons to exclude from the      */
@@ -905,18 +904,8 @@ int my_exit(int error_num, char *message)
 {
 
   fileclose(&pm->inputfile);
-
-  /* if we are masuquarading as another program we assign both outputfile */
-  /* and tidyout the same filehandle (we don't want to close this twice   */
-  if (pm->outputfile == pm->tidyoutfile)
-  {
-    fileclose(&pm->outputfile);
-  }
-  else
-  {
-    fileclose(&pm->outputfile);
-    fileclose(&pm->tidyoutfile);
-  }
+  fileclose(&pm->outputfile);
+  fileclose(&pm->tidyoutfile);
 
   fileclose(&pm->cuout);
   fileclose(&pm->fopfile);
@@ -929,41 +918,42 @@ int my_exit(int error_num, char *message)
   if (pm->inputfile = fopen("cbrawin", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbrawin");
+    remove("cbrawin");
   }
   if (pm->inputfile = fopen("cbfcco", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbfcco");
+    remove("cbfcco");
   }
   if (pm->inputfile = fopen("cbfcli", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbfcli");
+    remove("cbfcli");
   }
   if (pm->inputfile = fopen("cbfcpc", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbfcpc");
+    remove("cbfcpc");
   }
   if (pm->inputfile = fopen("cbfcpl", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbfcpl");
+    remove("cbfcpl");
   }
   if (pm->inputfile = fopen("cbfcta", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbfcta");
+    remove("cbfcta");
   }
   if (pm->inputfile = fopen("cbfcvp", "r"))
   {
     fclose(pm->inputfile);
-    deletefile("cbfcvp");
+    remove("cbfcvp");
   }
   if (pm->inputfile = fopen("cb1rawin", "r"))
   {
-    deletefile("cb1rawin");
+    fclose(pm->inputfile);
+    remove("cb1rawin");
   }
 
   switch ((int)error_num)
