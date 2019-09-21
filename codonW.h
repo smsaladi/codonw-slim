@@ -258,7 +258,6 @@ void bintext(char *nfice, char *nfics);
 void select_coa(char choice);
 void textbin(char *filein, char *fileout);
 void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary);
-void output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout);
 void rowout(char *nfice, char *nfics, char *ncout, FILE *summary);
 void PrepAFC(char *nfic);
 void inertialig(char *inertia_out, char *filen, FILE *summary);

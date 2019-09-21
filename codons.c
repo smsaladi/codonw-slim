@@ -89,7 +89,7 @@ KSEQ_INIT(int, read)
 
 /**************************   MAIN   **************************************/
 /* The main function processes commandline arguments to decide analysis to*/
-/* run. tidy() to read in the data files, and count codon usage*/
+/* run. process_sequence_input() to read in the data files, and count codon usage*/
 /* depending on the requested output options output calls various subrou */
 /* tines. If COA has been requested it also calls these subroutines and   */
 /* recording useful information to summary.coa.                           */
@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
   FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
   FILE *fcoaout = NULL;
   FILE *fsummary = NULL;
-  int num_seq;
 
   clean_up(ncod, naa); /* zero count of codons and amino acids   */
 
@@ -124,16 +123,13 @@ int main(int argc, char *argv[])
   fileclose(&pm->fcoa_out);
   if (pm->coa)
     if ((pm->fcoa_out = open_file("coa_raw", "w")) == NULL)
-      my_exit(1, "coa_raw"); /*controlled exit from CodonW     */
+      my_exit(1, "coa_raw");
   fcoaout = pm->fcoa_out;
 
-  /*  Tidy                                                                  */
-  /*  reads input data, returns the number of sequences read in             */
-  /*  num_sequence is global so I don't really have to assign it here       */
   fprintf(stderr, "%s", finput);
-  num_sequence = tidy(finput, foutput, fblkout, fcoaout);
+  num_sequence = process_sequence_input(finput, foutput, fblkout, fcoaout);
 
-  /* num_seq_int_stop  value is calculated in codon_usage_out               */
+  /* num_seq_int_stop value is calculated in codon_usage_out               */
   if (num_seq_int_stop > 0 && pm->warn)
   {
     if (pm->totals && (num_seq_int_stop >= valid_stops))
@@ -147,137 +143,125 @@ int main(int argc, char *argv[])
               num_seq_int_stop);
   }
 
-  /* if COA has been requested then open summary.coa and start the analysis  */
-  if (pm->coa)
-  {
-    if (fsummary == NULL)
-      if ((fsummary = open_file("summary.coa", "w")) == NULL)
-        my_exit(1, "summary.coa");
-    /* set the number of genes in the analysis to the number read in by tidy   */
-    pcoa->rows = num_sequence;
-    fileclose(&fcoaout);
-    /* if COA has been selected then during the reading in phase raw codon usag*/
-    /* will have been written to the file coa_raw                              */
-    /* text bin converts this to binary data for the COA analysis program      */
-    textbin("coa_raw", "cbrawin");
+  if (pm->coa) {
     printf("Generating correspondence analysis\n");
     dot(0, 10);
-
-    fprintf(fsummary, "\t\tSummary of Correspondence Analysis \n\n"
-                      "The input file was %s it contained %i genes\n"
-                      "The number of axes generated was %i\n"
-                      "A COA was requested of %s%s usage\n\n\n"
-                      "Most of the output presented in this file "
-                      "has also been written to separate files\n"
-                      "genes.coa\tThe position of the genes on the "
-                      "first %i axis\n"
-                      "%s.coa\tThe position of the %i %s on the %i "
-                      "principle axes\n\n\n",
-            pm->curr_infilename,
-            pcoa->rows,
-            ((pcoa->rows < pcoa->colm) ? pcoa->rows : pcoa->colm) - 1,
-            (pm->coa == 'r') ? "relative synonymous " : "",
-            (pm->coa == 'a') ? "amino acid" : "codon",
-            pcoa->axis,
-            (pm->coa == 'a') ? "amino" : "codon",
-            pcoa->colm,
-            (pm->coa == 'a') ? "amino acids" : "codons",
-            pcoa->axis);
-    /* allocate memory for the rows and columns, scale both, and write out the*/
-    /* resulting matrix to the file cbrawin                                   */
-
-    PrepAFC("cbrawin");
-
-    /* Now do the analysis, calculate the data inertia and all the vectors    */
-
-    DiagoRC(fsummary);
-
-    /* colmout records the position of the columns on each of the factors/axes*/
-
-    if (pm->coa == 'a')
-      colmout("cbfcco", "amino.coa", paa, fsummary);
-    else
-      colmout("cbfcco", "codon.coa", paa, fsummary);
-
-    /* rowout records the position of the genes on each of the axis           */
-
-    rowout("cbfcli", "genes.coa", "coa_raw", fsummary);
-
-    /* pcoa->level == e for exhaustive analysis of inertia                    */
-    if (pcoa->level == 'e')
-    {
-
-      fprintf(fsummary, "\n\n\nYou requested detailed output from the COA"
-                        "\n\nThe absolute and relative inertia "
-                        "of each gene and %s (see also inertia.coa)\n",
-              (pm->coa == 'a') ? "amino acids" : "codons");
-      /* inertialig must preceed inertiacol, records inertia of genes to file   */
-      /* it opens the raw codon usage file and loads the raw data to memory     */
-      inertialig("inertia.coa", "coa_raw", fsummary);
-      /* uses the preloaded raw codon usage, to calculate inertia and other data*/
-      /* such as contribution of each column to each factor and to the extent   */
-      /* each column is explained by each factor and what the residual variation*/
-      /* is                                                                     */
-      inertiacol("inertia.coa", fsummary);
-    }
-
-    /* if pcoa->add_row is real string, then it will be the name of the file  */
-    /* containing additional sequence data, that will be excluded from the COA*/
-    /* but factored in, using the original COA vectors and then all other     */
-    /* calculation can proceed as with the original data                      */
-    if (strlen(pcoa->add_row))
-    {
-      if ((finput = open_file(pcoa->add_row, "r")) == NULL)
-        my_exit(6, "add_row");
-      if ((foutput = tmpfile()) == NULL)
-        my_exit(1, "temp file foutput");
-      if ((fblkout = tmpfile()) == NULL)
-        my_exit(1, "temp file fblkout");
-
-      if ((fcoaout = open_file("coa1_raw", "w")) == NULL)
-        my_exit(1, "coa1_raw");
-
-      clean_up(ncod, naa);
-      num_sequence = num_seq_int_stop = valid_stops = 0;
-      /* load the additional data file and process as normal                    */
-      /* but don't calculate any indices or write the data to the normal output */
-      /* files, rather write them to tmp files which will be deleted at end of  */
-      /* program execution                                                      */
-      num_seq = tidy(finput, foutput, fblkout, fcoaout);
-
-      /* close the files now we are finished                                    */
-      fileclose(&fcoaout);
-      fileclose(&foutput);
-      fileclose(&fblkout);
-      fileclose(&finput);
-
-      /* covert to binary, use additional raw data file, note not coa_raw this  */
-      textbin("coa1_raw", "cb1raw");
-      /* now call the routine suprow and add these additional genes, we will    */
-      /* process this data for inertia and append the gene and col. coordinates */
-      /* to the original gene.coa and codon.coa (or amino.coa)                  */
-      suprow(num_seq, "cbfcvp", "cb1raw", "genes.coa", "coa1_raw", fsummary);
-
-      /* close these files now that we have finished with them and the COA      */
-
-      fileclose(&foutput);
-      fileclose(&fblkout);
-      fileclose(&fcoaout);
-    }
+    run_coa_summary();
   }
 
   my_exit(0, "");
-  return 0;                         /* dummy return to keep pedantic but */
-                                    /* brain dead compilers happy        */
+  return 0;
 }
 
-/**********************  END of MAIN()   **********************************/
+int run_coa_summary()
+{
+  FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
+  FILE *fcoaout = NULL;
+  FILE *fsummary = NULL;
+
+  if ((fsummary = open_file("summary.coa", "w")) == NULL)
+    my_exit(1, "summary.coa");
+  
+  /* set the number of genes in the analysis to the number read in by tidy   */
+  pcoa->rows = num_sequence;
+  
+  /* if COA has been selected then during the reading in phase raw codon usag*/
+  /* will have been written to the file coa_raw                              */
+  /* text bin converts this to binary data for the COA analysis program      */
+  textbin("coa_raw", "cbrawin");
+
+  fprintf(fsummary, "\t\tSummary of Correspondence Analysis \n\n"
+                    "The input file was %s it contained %i genes\n"
+                    "The number of axes generated was %i\n"
+                    "A COA was requested of %s%s usage\n\n\n"
+                    "Most of the output presented in this file "
+                    "has also been written to separate files\n"
+                    "genes.coa\tThe position of the genes on the "
+                    "first %i axis\n"
+                    "%s.coa\tThe position of the %i %s on the %i "
+                    "principle axes\n\n\n",
+          pm->curr_infilename,
+          pcoa->rows,
+          ((pcoa->rows < pcoa->colm) ? pcoa->rows : pcoa->colm) - 1,
+          (pm->coa == 'r') ? "relative synonymous " : "",
+          (pm->coa == 'a') ? "amino acid" : "codon",
+          pcoa->axis,
+          (pm->coa == 'a') ? "amino" : "codon",
+          pcoa->colm,
+          (pm->coa == 'a') ? "amino acids" : "codons",
+          pcoa->axis);
+
+  /* allocate memory for the rows and columns, scale both, and write out the*/
+  /* resulting matrix to the file cbrawin                                   */
+  PrepAFC("cbrawin");
+
+  /* Now do the analysis, calculate the data inertia and all the vectors    */
+  DiagoRC(fsummary);
+
+  /* colmout records the position of the columns on each of the factors/axes*/
+  if (pm->coa == 'a')
+    colmout("cbfcco", "amino.coa", paa, fsummary);
+  else
+    colmout("cbfcco", "codon.coa", paa, fsummary);
+
+  /* rowout records the position of the genes on each of the axis           */
+  rowout("cbfcli", "genes.coa", "coa_raw", fsummary);
+
+  /* pcoa->level == e for exhaustive analysis of inertia                    */
+  if (pcoa->level == 'e')
+  {
+    fprintf(fsummary, "\n\n\nYou requested detailed output from the COA"
+                      "\n\nThe absolute and relative inertia "
+                      "of each gene and %s (see also inertia.coa)\n",
+            (pm->coa == 'a') ? "amino acids" : "codons");
+    /* inertialig must preceed inertiacol, records inertia of genes to file   */
+    /* it opens the raw codon usage file and loads the raw data to memory     */
+    inertialig("inertia.coa", "coa_raw", fsummary);
+    /* uses the preloaded raw codon usage, to calculate inertia and other data*/
+    /* such as contribution of each column to each factor and to the extent   */
+    /* each column is explained by each factor and what the residual variation*/
+    /* is                                                                     */
+    inertiacol("inertia.coa", fsummary);
+  }
+
+  /* if pcoa->add_row is real string, then it will be the name of the file  */
+  /* containing additional sequence data, that will be excluded from the COA*/
+  /* but factored in, using the original COA vectors and then all other     */
+  /* calculation can proceed as with the original data                      */
+  if (strlen(pcoa->add_row))
+  {
+    if ((finput = open_file(pcoa->add_row, "r")) == NULL)
+      my_exit(6, "add_row");
+
+    if ((fcoaout = open_file("coa1_raw", "w")) == NULL)
+      my_exit(1, "coa1_raw");
+
+    int num_seq = process_sequence_input(finput, NULL, NULL, fcoaout); /* write only fcoaout */
+
+    /* close the files now we are finished                                    */
+    fileclose(&fcoaout);
+    fileclose(&finput);
+
+    /* covert to binary, use additional raw data file, note not coa_raw this  */
+    textbin("coa1_raw", "cb1raw");
+    
+    /* now call the routine suprow and add these additional genes, we will    */
+    /* process this data for inertia and append the gene and col. coordinates */
+    /* to the original gene.coa and codon.coa (or amino.coa)                  */
+    suprow(num_seq, "cbfcvp", "cb1raw", "genes.coa", "coa1_raw", fsummary);
+    fileclose(&fsummary);
+
+  }
+
+  return 0;
+}
 
 /* Titles are cleaned up by removing separator if present    */
-static void clean_title(char* title, char sep) {
+static int clean_title(char* title, char sep) {
     for (int i = 0; i < (int)strlen(title); i++)
       if (title[i] == sep)
         title[i] = '_';
+    return 0;
 }
 
 static int strtoupper(char *str) 
@@ -288,11 +272,10 @@ static int strtoupper(char *str)
 }
 
 /**********************  Subroutines     **********************************/
-/* Tidy                                                                   */
-/*  reads input data from a sequence file containing fasta like formatted */
+/*  reads input data from a fasta/q formatted sequence file               */
 /**************************************************************************/
 
-int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
+int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
 	int l;
 
@@ -303,17 +286,22 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
     if (pm->totals) /* accumulate sequence          */        
       codon_usage_tot(seq->seq.s);
     else
-      output(seq->seq.s, seq->name.s, foutput, fblkout, fcoaout);
+      print_output(seq->seq.s, seq->name.s, foutput, fblkout, fcoaout);
 
     num_sequence++;
   }
 	kseq_destroy(seq);
 
   if (pm->totals)
-    output("", "", foutput, fblkout, fcoaout);
+    print_output("", "", foutput, fblkout, fcoaout);
 
   return (int)num_sequence;
 }
+
+// int calculate_features(char *seq, FEATS *features)
+// {
+//   return 0;
+// }
 
 /*************************  output       **********************************/
 /* Called from after subroutine tidy has read the sequence into memory    */
@@ -322,7 +310,7 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 /* requested and write these to file, it handles all output except for COA*/
 /**************************************************************************/
 
-void output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout)
+int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
   char sp = pm->seperator;
 
@@ -443,7 +431,7 @@ void output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 
   clean_up(ncod, naa);
 
-  return;
+  return 0;
 }
 
 /************************* my_exit       **********************************/
