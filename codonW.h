@@ -118,7 +118,6 @@ typedef struct
 
   char junk[BUFSIZ + 1]; /* used to store char info  */
   char messages[300];    /* used to constuct messgs  */
-  char analysis_run;     /* has CodonW actually run  */
 
   FILE *inputfile;   /* input file               */
   FILE *outputfile;  /* .out file                */
@@ -523,7 +522,6 @@ int initilize_point(char code, char fop_type, char cai_type);
 int initilize_coa(char code);
 int proc_comm_line(int *argc, char ***arg_list);
 int my_exit(int exit_value, char *message);
-int printinfo(void);
 
 int dinuc_count(char *seq, long int tot);
 int tidy(FILE *finput, FILE *foutput, FILE *fblkout,
@@ -543,7 +541,6 @@ void sorted_by_axis1(double *ax1, int *sortax1, int lig);
 void highlow(long int *low, long int *high, FILE *summ);
 
 void asummary(void);
-void tester(void);
 void vecalloc(double **vec, int n);
 void vecalloc(double **vec, int n);
 void writevec(double *v1, FILE *fic);
@@ -563,7 +560,6 @@ void prodmatAtAB(double **a, double **b);
 void ecrmatred(double **tab, int c1, char *nfic);
 void readvec(double *v1, FILE *fic);
 void lecvalpro(double *v1, char *nfic);
-void writescal(double r, FILE *fic);
 void editvalpro(FILE *ficlist, double *vp, int n, double s);
 void DiagoRC(FILE *summary);
 void gc_out(FILE *foutput, FILE *fblkout, int which);
@@ -571,10 +567,8 @@ void base_sil_us_out(FILE *foutput, long int *ncod, long int *naa);
 void bintext(char *nfice, char *nfics);
 void select_coa(char choice);
 void textbin(char *filein, char *fileout);
-void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa,
-             FILE *summary);
-void output(char *seq, FILE *foutput, FILE *fblkout,
-            FILE *fcoaout);
+void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary);
+void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout);
 void rowout(char *nfice, char *nfics, char *ncout, FILE *summary);
 void PrepAFC(char *nfic);
 void inertialig(char *inertia_out, char *filen, FILE *summary);

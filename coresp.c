@@ -1364,7 +1364,7 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
     double **cooli, **w;
     double *vtab, *conli, *poili, *poico;
     double l0, inertotal, a1, a2, m2, m3, s1;
-    double temp1 = 0, temp2 = 0;
+    double temp1 = 0, temp2;
     FILE *inert_out = NULL, *fnam = NULL;
 
     l1 = pcoa->rows;

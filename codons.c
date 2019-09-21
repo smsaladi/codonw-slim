@@ -131,9 +131,6 @@ int main(int argc, char *argv[])
   
   proc_comm_line(&argc, &argv);
 
-  pm->analysis_run = TRUE; /* codons has started an analysis this*/
-                            /* parameter is checked by my_exit    */
-
   if (pm->inputfile != NULL) /* rewind various input files in case */
     rewind(pm->inputfile);   /* this is a second analysis run      */
   if (pm->fopfile != NULL)
