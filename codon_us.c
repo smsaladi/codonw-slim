@@ -61,7 +61,6 @@
 /* my_exit            Controls exit from CodonW closes any open files     */
 /* tidy               reads the input data                                */
 /* output             called from tidy to decide what to do with the data */
-/* toutput            handles the reformatting and translation of seqs    */
 /* open_file          Open files, checks for existing files               */
 /* fileclose          Closes files and returns a NULL pointer or exits    */
 /*                                                                        */

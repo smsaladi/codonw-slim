@@ -210,7 +210,6 @@ int cbi_out(FILE *foutput, long int *ncod, long int *naa);
 int fop_out(FILE *foutput, long int *ncod);
 int hydro_out(FILE *foutput, long int *naa);
 int aromo_out(FILE *foutput, long int *naa);
-int toutput(FILE *fblkout, char *seq);
 int cutab_out(FILE *fblkout, long *ncod, long *naa);
 int dinuc_out(FILE *fblkout, char *title);
 int fileclose(FILE **file_pointer);

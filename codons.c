@@ -66,7 +66,6 @@
 /* my_exit            Controls exit from CodonW closes any open files     */
 /* tidy               reads the input data                                */
 /* output             called from tidy to decide what to do with the data */
-/* toutput            handles the reformatting and translation of seqs    */
 /* file_close         Closes open files                                   */
 /*                                                                        */
 /**************************************************************************/
@@ -88,7 +87,7 @@
 /**************************   MAIN   **************************************/
 /* The main function processes commandline arguments to decide analysis to*/
 /* run. tidy() to read in the data files, and count codon usage*/
-/* depending on the requested output options toutput calls various subrou */
+/* depending on the requested output options output calls various subrou */
 /* tines. If COA has been requested it also calls these subroutines and   */
 /* recording useful information to summary.coa.                           */
 /**************************************************************************/
@@ -441,114 +440,6 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
   return (int)num_sequence;
 }
 
-/************************  TOUTPUT       **********************************/
-/* toutput                                                                */
-/*                                                                        */
-/* This subroutine is very similar to output_long, basically it reformats */
-/* or translates sequences less than MAX_GENE in length as a single read  */
-/* It writes in reader format "ACG ATT ATC" i.e writes the sequence in    */
-/* codons.     */
-/**************************************************************************/
-int toutput(FILE *fblkout, char *seq)
-{
-  long int ic = 0;
-  int space = 3;
-  char codon[4];
-  int i, x;
-
-  /* must be a complete genes  */
-  switch (pm->bulk)
-  {
-  case 'T': /* tidy or fasta formatted header      */
-    fprintf(fblkout, ">%-20.20s%6li\n",
-            title, (long int)tot + master_ic);
-    break;
-  case 'R': /* reader header .. don't ask          */
-    fprintf(fblkout, ">%6li %-70.70s\n",
-            (long int)tot + master_ic, title);
-    break;
-  case 'N': /* Conceptually translated DNA header  */
-    fprintf(fblkout, ">%-20.20s%6li\n",
-            title, (long int)((tot + master_ic) / 3));
-    break;
-  default: /* whoops                              */
-    printf("\nProgramming error type A2 check code \n");
-    my_exit(99, "toutput");
-    break;
-  }
-  
-  while (ic < tot)
-  { /* keep writing till the array is empty*/
-    switch (pm->bulk)
-    {
-    case 'T':
-      fprintf(fblkout, "%c", seq[ic++]);
-      reg++;
-      break;
-    case 'R':
-      if (space == 3)
-      {                        /* Its reader format so print a space   */
-        fprintf(fblkout, " "); /* every third base                     */
-        space = 0;
-      }
-      else
-      { /* not the 3rd base yet so just print   */
-        fprintf(fblkout, "%c", seq[ic++]);
-        space++;
-        reg++;
-      }
-      break;
-    case 'N':
-      for (i = (int)ic, x = 0; i < (int)ic + 3 && i < tot; i++, x++)
-        codon[x] = *(seq + i); /* get the next three bases if there    */
-      codon[x] = '\0';         /* null terminate the codon array       */
-      ic += 3;                 /* remember that we have read 3 bases   */
-      /* use the function get_aa to return the amino acid for the codon    */
-      /* 1 = is for the one letter code of the codon                       */
-      fprintf(fblkout, "%c", *get_aa(1, codon));
-      reg++;
-      break;
-    }
-    if (!(reg % 61))
-    { /* every 60 bases print a new line char */
-      reg = 1;
-      fprintf(fblkout, "\n");
-    }
-  }
-
-  if (reg != 1)
-  {                         /* reached the end of sequence so we    */
-    fprintf(fblkout, "\n"); /* print a \n char unless we just did   */
-    reg = 1;                /* reset  number of bases printed       */
-  }
-
-  /* Now that we have finished writing this sequence to disk lets have a     */
-  /* closer look at it, and do a few diagnostics about the bases used        */
-
-  if (AT_TOT + GC_TOT > AA_TOT * 0.5)
-  { /* Assume its DNA then                */
-    fprintf(pm->my_err, "%3li>\t%6li %-40.40s\tDNA\tGC%"
-                        " =%5.3f\n" /* with G+C content and length of gene */
-            ,
-            num_sequence, (long int)tot + master_ic, title, (float)GC_TOT / (GC_TOT + AT_TOT));
-
-    if (non_std_char - IUBC_TOT && pm->warn) /* any non IUBC characters */
-      fprintf(pm->my_err, "\t\t WARNING %d non IUBC standard characters "
-                          "in sequence %i\n",
-              non_std_char - IUBC_TOT, num_sequence);
-  }
-  else
-  { /* if not DNA then it must be a protein */
-    fprintf(pm->my_err, "\t%3i>\t%6li %-40.40s\tPROTEIN\n", num_sequence, (long int)tot + master_ic, title);
-    if ((tot + master_ic) - AA_TOT && pm->warn) /* non IUBC AA chars        */
-      fprintf(pm->my_err, "\t\t WARNING %d non "
-                          "standard AA characters "
-                          "in sequence %i\n",
-              non_std_char, num_sequence);
-  }
-  return 1; /* return to calling function           */
-}
-
 /*************************  output       **********************************/
 /* Called from after subroutine tidy has read the sequence into memory    */
 /* or  more accurately counted the codon and amino acid usage. This sub-  */
@@ -577,12 +468,7 @@ void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
   if (pm->totals)
     strcpy(title, "Average_of_genes");
 
-  if (strchr("RNT", (int)pm->bulk) != NULL)
-  {
-    /* better write the remaing sequence in seq to disk                   */
-    toutput(fblkout, seq);
-  }
-  else if (strchr("OCASDLBX", (int)pm->bulk) != NULL)
+  if (strchr("OCASDLBX", (int)pm->bulk) != NULL)
   {
     switch ((int)pm->bulk)
     {
