@@ -153,12 +153,6 @@ void textbin(char *fileread, char *fileout)
                 }
             }
             break;
-
-#ifdef DEBUG
-        default:
-            fprintf(pm->my_err, "error in textbin %c unknown \n", pm->coa);
-            break;
-#endif
         } /* end if */
         writevec(vlec, pm->fcoa_out);
     }

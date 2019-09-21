@@ -1168,15 +1168,6 @@ void gc_out(FILE *foutput, FILE *fblkout, int which)
    case 5: /* Total length in translatable AA    */
       fprintf(foutput, "%3li%c", totalaa, sp);
       break;
-
-#ifdef DEBUG
-   default:
-      fprintf(stderr, " Programming error in GC_out which (%i) is out of "
-                      "valid range\n",
-              (int)which);
-      my_exit(99, "gc out");
-      break;
-#endif
    }
    return;
 }
@@ -1452,10 +1443,6 @@ char coa_raw_out(FILE *fcoaout, long *nncod, long *nnaa, char *ttitle)
          fprintf(fcoaout, "%i\t", (int)nnaa[i]);
       fprintf(fcoaout, "\n");
       break;
-#ifdef DEBUG /* Debugging code           */
-   default:
-      fprintf(pm->my_err, " Error in coa_out_raw\n");
-#endif
    }
    return 1;
 }

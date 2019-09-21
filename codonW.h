@@ -30,9 +30,6 @@
 #define GARG_THERE 0x2000            /* used in function gargs  */
 #define GARG_SUBSQ 0x4000            /* used in function gargs  */
 #define MAX_ARGS 100                 /* used in function gargs  */
-/*                                                debugging code          */
-#define debug_ printf("Got to %i\n", debugger++);
-#define debug(x) printf(#x " = %d", x);
 #define MAX_FILENAME_LEN 90 /* max filename             */
 
 /* define the structures used within codonW                               */
@@ -136,10 +133,6 @@ typedef struct
   FILE *fcoa_in;
   FILE *fcoa_out;
 } MENU_STRUCT;
-
-#ifndef DECOSF
-#define DEBUG /* include debug  code      */
-#endif
 
 #ifndef TRUE
 #define TRUE 1 /* for dumb compilers       */

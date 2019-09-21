@@ -435,21 +435,6 @@ int tidy(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
       else if (pm->bulk == 'D')
         dinuc_count(seq, tot); /* then we had better count the dinucs  */
 
-/* Debugging code in-case we are asking for something that we can't handle */
-#ifdef DEBUG
-      else if (strchr("OCASLDBX", (int)pm->bulk) != NULL)
-        ; /* dummy      */
-      else if (pm->bulk)
-        fprintf(stderr, "ERROR-22 %c pm->bulk undefined\n", pm->bulk);
-
-      if (pm->cai || pm->fop || pm->cbi || pm->enc || pm->gc ||
-          pm->gc3s || pm->sil_base || pm->bulk ||
-          pm->coa)
-        ;
-      else
-        fprintf(stderr, "Programming error");
-#endif
-
       /* Now count first MAX_GENE bases, luckily MAX_GENE is always a multiple of*/
       /* 3, we count the bases and amino acids in codon_usage_tot                */
 
