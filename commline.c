@@ -59,8 +59,6 @@ int proc_comm_line(int *pargc, char ***pargv)
             " -code N\tGenetic code as defined under menu 3 option 5\n"
             " -f_type N\tFop/CBI codons as defined by menu 3 option 6\n"
             " -c_type N\tCai fitness values as defined by menu 3 option 7\n"
-            " -t (char)\tColumn separator to be used in output files "
-            "(comma,tab,space)\n"
             "\nCodon usage indices and Amino acid indices \n"
             " -cai\t\tcalculate Codon Adaptation Index (CAI)\n"
             " -fop\t\tcalculate Frequency of OPtimal codons index (FOP)\n"
@@ -348,29 +346,6 @@ int proc_comm_line(int *pargc, char ***pargv)
         pm->bulk = 'D';
     if (p = garg(0, NULL, "-noblk", GARG_EXACT))
         pm->bulk = 'X';
-
-    /* -t is used to change the column separator used in the output files     */
-    /* at present it must be a space, tab or comma                            */
-    /* Must occur after -transl or it misreads transl as a seperator          */
-    if (p = garg(0, NULL, "-t", GARG_NEXT | GARG_SUBSQ))
-    {
-        strcpy(pm->junk, p);
-        n = 0;
-        do
-        {
-            c = pm->junk[n++];
-        } while (strchr("'\"\0", (int)c) != NULL);
-        if (strchr("\t, ", (int)c) == NULL)
-        {
-            printf("WARNING: The chosen separator %s is unsuitable use"
-                   "comma, tab or space\n",
-                   pm->junk);
-        }
-        else
-        {
-            pm->seperator = c;
-        }
-    }
 
     pm->codonW = TRUE;
     if (pm->bulk == 'X')

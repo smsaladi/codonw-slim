@@ -400,7 +400,7 @@ MENU_STRUCT Z_menu = {
     FALSE, /* hydrophobicity                                   */
     FALSE, /* aromaticity                                      */
 
-    ' ', /* default seperator                                */
+    ',', /* default seperator                                */
 
     FALSE, /* coa                                              */
 

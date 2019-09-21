@@ -514,7 +514,7 @@ void base_sil_us_out(FILE *foutput, long *nncod, long *nnaa)
 
    long cb[4]; /* codons that could have been GCAT    */
    int done[4];
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    for (x = 0; x < 4; x++)
    {
@@ -617,7 +617,7 @@ int cai_out(FILE *foutput, long int *nncod)
    double sigma;
    float ftemp;
    int x;
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
    static char cai_ttt = FALSE;
    static char description[61];
    static char reference[61];
@@ -705,7 +705,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa)
    float fcbi;
    int c, x;
    char str[2];
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    static char description[61];
    static char reference[61];
@@ -828,7 +828,7 @@ int fop_out(FILE *foutput, long int *nncod)
 
    char str[2];
 
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    static char first_call = TRUE;
    static char description[61];
@@ -965,7 +965,7 @@ float enc_out(FILE *foutput, long int *nncod, long int *nnaa)
    double totb[9];
    double averb = 0, bb = 0, k2 = 0, s2 = 0;
    float enc_tot = 0.0F;
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    /* don't assume that 6 is the largest possible amino acid family assume 9*/
    for (i = 0; i < 9; i++)
@@ -1074,7 +1074,7 @@ void gc_out(FILE *foutput, FILE *fblkout, int which)
    long int totalaa = 0;
    static char header = FALSE;
    int x, y, z;
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    typedef double lf;
 
@@ -1230,8 +1230,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa)
 {
    int last_row[4];
    int x;
-   char sp;
-   sp = pm->seperator;
+   char sp = pm->seperator;
 
    for (x = 0; x < 4; x++)
       last_row[x] = 0;
@@ -2007,7 +2006,7 @@ int hydro_out(FILE *foutput, long int *nnaa)
    long int a2_tot = 0;
    float hydro = (float)0.0;
    int i;
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)
@@ -2040,7 +2039,7 @@ int aromo_out(FILE *foutput, long int *nnaa)
    long int a1_tot = 0;
    float aromo = (float)0.0;
    int i;
-   char sp = (char)pm->seperator;
+   char sp = pm->seperator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)

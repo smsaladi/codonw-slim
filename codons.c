@@ -728,10 +728,7 @@ int output_long(FILE *fblkout, char *seq)
 
 void output(char *seq, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
-  char sp;
-
-  /* set the column delimiter to something shorter than pm->seperator     */
-  sp = (char)pm->seperator;
+  char sp = pm->seperator;
 
   if (tot)
   { /* still data in array seq..           */

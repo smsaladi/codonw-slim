@@ -960,9 +960,7 @@ void editvalpro(FILE *ficlist, double *vp, int n, double s)
     int i, n1;
     float v2, v3, v4;
     FILE *eigen = NULL;
-    char sp;
-
-    sp = pm->seperator;
+    char sp = pm->seperator;
 
     if ((eigen = open_file("eigen.coa", "w")) == NULL)
         my_exit(1, "editvalpro");
