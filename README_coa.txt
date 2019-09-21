@@ -1,4 +1,12 @@
 
+========================================
+
+CodonW was written by John Peden in the laboratory
+of Paul Sharp at the University of Nottingham. It is distributed under the
+terms of the GNU public license, see the file License included with the
+distribution.
+
+========================================
 
 README.coa
 
@@ -153,4 +161,7 @@ genes; that the genes used to identify of optimal codons where highly
 expressed. If these assumptions are valid then the files �cbi.coa
 �cai.coa� and �fop.coa� can be used to calculate the indexes CBI,
 Fop respectively.
+
+
+For the most up to date version see http://codonw.sourceforge.net
 
