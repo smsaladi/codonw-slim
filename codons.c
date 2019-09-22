@@ -312,9 +312,9 @@ int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fco
 
 int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout)
 {
-  char sp = pm->seperator;
+  char sp = pm->separator;
 
-  clean_title(title, pm->seperator);
+  clean_title(title, pm->separator);
 
   valid_stops = 0;
   last_aa = codon_usage_tot(seq);

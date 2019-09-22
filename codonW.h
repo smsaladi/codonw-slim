@@ -104,7 +104,7 @@ typedef struct
   char hyd;      /* calc hydropathicity      */
   char aro;      /* calc aromaticity         */
 
-  char seperator; /* column separator         */
+  char separator; /* column separator         */
   char coa;       /* calculate a COA or not ? */
 
   char code;   /* which genetic code       */

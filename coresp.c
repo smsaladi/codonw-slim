@@ -181,7 +181,7 @@ void colmout(char *nfice, char *nfics, AMINO_STRUCT *ppaa, FILE *summary)
     FILE *fice = NULL, *fics = NULL;
     float v2;
     int x, i, j;
-    char sp = pm->seperator;
+    char sp = pm->separator;
 
     lig = pcoa->colm;
 
@@ -261,7 +261,7 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
     FILE *fice = NULL, *fics = NULL, *fnam = NULL;
     float v2;
     int i, j;
-    char sp = pm->seperator;
+    char sp = pm->separator;
 
     lig = pcoa->rows;
     col = pcoa->axis;
@@ -962,7 +962,7 @@ void editvalpro(FILE *ficlist, double *vp, int n, double s)
     int i, n1;
     float v2, v3, v4;
     FILE *eigen = NULL;
-    char sp = pm->seperator;
+    char sp = pm->separator;
 
     if ((eigen = open_file("eigen.coa", "w")) == NULL)
         my_exit(1, "editvalpro");
@@ -1438,11 +1438,11 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
             if (isspace((int)pm->junk[j]))
                 pm->junk[j] = '\0';
 
-        fprintf(inert_out, "%-.15s%c", pm->junk, pm->seperator);
+        fprintf(inert_out, "%-.15s%c", pm->junk, pm->separator);
         fprintf(summary, "%-15.15s", pm->junk);
 
         fprintf(summary, "|%5d|", i);
-        fprintf(inert_out, "%d%c", i, pm->seperator);
+        fprintf(inert_out, "%d%c", i, pm->separator);
 
         l0 = poili[i] * poili[i] / inertotal;
 
@@ -1452,7 +1452,7 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
             temp2 = (l0 / vtab[j]);              /* need to split calculation*/
             a1 = temp1 * temp2;
             fprintf(summary, "%5d|", (int)(a1 * 10000));
-            fprintf(inert_out, "%d%c", (int)(a1 * 10000), pm->seperator);
+            fprintf(inert_out, "%d%c", (int)(a1 * 10000), pm->separator);
         }
         fprintf(summary, "\n");
         fprintf(inert_out, "\n");
@@ -1486,11 +1486,11 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
             if (isspace((int)pm->junk[j]))
                 pm->junk[j] = '\0';
 
-        fprintf(inert_out, "%-.15s%c", pm->junk, pm->seperator);
+        fprintf(inert_out, "%-.15s%c", pm->junk, pm->separator);
         fprintf(summary, "%-15.15s", pm->junk);
 
         fprintf(summary, "|%5d|", i);
-        fprintf(inert_out, "%d%c", i, pm->seperator);
+        fprintf(inert_out, "%d%c", i, pm->separator);
         a2 = 0.;
         m3 = poili[i] * poili[i] / inertotal;
         m2 = conli[i];
@@ -1501,7 +1501,7 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
             a1 = cooli[i][j] * cooli[i][j] * m3 / m2;
             a2 = a2 + a1;
             fprintf(summary, "%5d|", (int)(a1 * 10000));
-            fprintf(inert_out, "%d%c", (int)(a1 * 10000), pm->seperator);
+            fprintf(inert_out, "%d%c", (int)(a1 * 10000), pm->separator);
         }
         fprintf(summary, "|%5d  ", (int)((1 - a2) * 10000));
         fprintf(summary, "|%5d   |%5d |\n", (int)(inertotal * m3 * 10000),
@@ -1605,7 +1605,7 @@ void inertiacol(char *inertia_out, FILE *summary)
                 ;
 
             fprintf(summary, "%s", paa->aa3[x]);
-            fprintf(inert_out, "%s%c", paa->aa3[x], pm->seperator);
+            fprintf(inert_out, "%s%c", paa->aa3[x], pm->separator);
         }
         else
         {
@@ -1614,18 +1614,18 @@ void inertiacol(char *inertia_out, FILE *summary)
                 ;
 
             fprintf(summary, "%s", paa->cod[x]);
-            fprintf(inert_out, "%s%c", paa->cod[x], pm->seperator);
+            fprintf(inert_out, "%s%c", paa->cod[x], pm->separator);
         }
 
         fprintf(summary, "|%5d|", i);
-        fprintf(inert_out, "%d%c", i, pm->seperator);
+        fprintf(inert_out, "%d%c", i, pm->separator);
 
         l0 = poico[i] * poico[i] / inertotal;
         for (j = 1; j <= f1; j++)
         {
             a1 = cooco[i][j] * cooco[i][j] * l0 / vtab[j];
             fprintf(summary, "%5d|", (int)(a1 * 10000));
-            fprintf(inert_out, "%i%c", (int)(a1 * 10000), pm->seperator);
+            fprintf(inert_out, "%i%c", (int)(a1 * 10000), pm->separator);
         }
         fprintf(summary, "\n");
         fprintf(inert_out, "\n");
@@ -1650,7 +1650,7 @@ void inertiacol(char *inertia_out, FILE *summary)
                 ;
 
             fprintf(summary, "%s", paa->aa3[x]);
-            fprintf(inert_out, "%s%c", paa->aa3[x], pm->seperator);
+            fprintf(inert_out, "%s%c", paa->aa3[x], pm->separator);
         }
         else
         {
@@ -1659,11 +1659,11 @@ void inertiacol(char *inertia_out, FILE *summary)
                 ;
 
             fprintf(summary, "%s", paa->cod[x]);
-            fprintf(inert_out, "%s%c", paa->cod[x], pm->seperator);
+            fprintf(inert_out, "%s%c", paa->cod[x], pm->separator);
         }
 
         fprintf(summary, "|%5d|", i);
-        fprintf(inert_out, "%d%c", i, pm->seperator);
+        fprintf(inert_out, "%d%c", i, pm->separator);
         a2 = 0.;
         m3 = poico[i] * poico[i] / inertotal;
         m2 = conco[i];
@@ -1674,7 +1674,7 @@ void inertiacol(char *inertia_out, FILE *summary)
             a1 = cooco[i][j] * cooco[i][j] * m3 / m2;
             a2 = a2 + a1;
             fprintf(summary, "%5d|", (int)(a1 * 10000));
-            fprintf(inert_out, "%d%c", (int)(a1 * 10000), pm->seperator);
+            fprintf(inert_out, "%d%c", (int)(a1 * 10000), pm->separator);
         }
         fprintf(summary, "|%5d  ", (int)((1 - a2) * 10000));
         fprintf(summary, "|%5d   |%5d |\n",
@@ -1825,8 +1825,8 @@ void suprow(int num_seq, char *nficvp, char *nfictasup, char *nficlisup,
         for (j = 35; j >= 0; j--)
             if (isspace((int)pm->junk[j]))
                 pm->junk[j] = '\0';
-        fprintf(ficlisup, "%s%c", pm->junk, pm->seperator);
-        fprintf(summary, "%s%c", pm->junk, pm->seperator);
+        fprintf(ficlisup, "%s%c", pm->junk, pm->separator);
+        fprintf(summary, "%s%c", pm->junk, pm->separator);
 
         for (k = 1; k <= pcoa->axis; k++)
         {
@@ -1835,8 +1835,8 @@ void suprow(int num_seq, char *nficvp, char *nfictasup, char *nficlisup,
             {
                 a1 = a1 + tabsup[i][j] * compos[j][k];
             }
-            fprintf(ficlisup, "%f%c", (float)a1, pm->seperator);
-            fprintf(summary, "%10.5f%c", (float)a1, pm->seperator);
+            fprintf(ficlisup, "%f%c", (float)a1, pm->separator);
+            fprintf(summary, "%10.5f%c", (float)a1, pm->separator);
         }
         fprintf(ficlisup, "\n");
         fprintf(summary, "\n");

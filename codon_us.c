@@ -379,7 +379,7 @@ int codon_usage_out(FILE *fblkout, long int *nncod, int last_aa,
 {
    long int ccodon_tot = 0;
    int x;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    ccodon_tot = codon_error(last_aa, vvalid_stops, "", (char)4); /*dummy*/
 
@@ -424,7 +424,7 @@ int codon_usage_out(FILE *fblkout, long int *nncod, int last_aa,
 int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa)
 {
    int x;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    /* ds points to an array[64] of synonym values i.e. how synon its AA is  */
 
@@ -490,7 +490,7 @@ int aa_usage_out(FILE *fblkout, long *nnaa)
 {
    static char first_line = true;
    int i;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    if (first_line)
    {
@@ -525,7 +525,7 @@ void base_sil_us_out(FILE *foutput, long *nncod, long *nnaa)
 
    long cb[4]; /* codons that could have been GCAT    */
    int done[4];
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    for (x = 0; x < 4; x++)
    {
@@ -625,7 +625,7 @@ int cai_out(FILE *foutput, long int *nncod)
    double sigma;
    float ftemp;
    int x;
-   char sp = pm->seperator;
+   char sp = pm->separator;
    static char cai_ttt = false;
    static char description[61];
    static char reference[61];
@@ -713,7 +713,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa)
    float fcbi;
    int c, x;
    char str[2];
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    static char description[61];
    static char reference[61];
@@ -836,7 +836,7 @@ int fop_out(FILE *foutput, long int *nncod)
 
    char str[2];
 
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    static char first_call = true;
    static char description[61];
@@ -973,7 +973,7 @@ float enc_out(FILE *foutput, long int *nncod, long int *nnaa)
    double totb[9];
    double averb = 0, bb = 0, k2 = 0, s2 = 0;
    float enc_tot = 0.0F;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    /* don't assume that 6 is the largest possible amino acid family assume 9*/
    for (i = 0; i < 9; i++)
@@ -1082,7 +1082,7 @@ void gc_out(FILE *foutput, FILE *fblkout, int which)
    long int totalaa = 0;
    static char header = false;
    int x, y, z;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    typedef double lf;
 
@@ -1238,7 +1238,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa)
 {
    int last_row[4];
    int x;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    for (x = 0; x < 4; x++)
       last_row[x] = 0;
@@ -1332,7 +1332,7 @@ int dinuc_out(FILE *fblkout, char *ttitle)
 {
    static char called = false;
    char bases[5] = {'T', 'C', 'A', 'G'};
-   char sp = pm->seperator;
+   char sp = pm->separator;
    long dinuc_tot[4];
    int i, x, y;
 
@@ -2015,7 +2015,7 @@ int hydro_out(FILE *foutput, long int *nnaa)
    long int a2_tot = 0;
    float hydro = (float)0.0;
    int i;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)
@@ -2048,7 +2048,7 @@ int aromo_out(FILE *foutput, long int *nnaa)
    long int a1_tot = 0;
    float aromo = (float)0.0;
    int i;
-   char sp = pm->seperator;
+   char sp = pm->separator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)
