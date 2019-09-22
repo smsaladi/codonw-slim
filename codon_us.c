@@ -270,6 +270,7 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
    long int ns = 0; /* number of stops       */
    long int loc_cod_tot = 0;
    int i;
+   bool valid_start;
 
    for (i = 1, ns = 0; i < 65; i++)
    {
@@ -600,7 +601,7 @@ int clean_up(long int *nncod, long int *nnaa)
          din[x][i] = 0;
 
    dinuc_count(" ", 1);
-   valid_stops = valid_start = codon_tot = fram = 0;
+   valid_stops = codon_tot = fram = 0;
    return 1;
 }
 /*****************Codon Adaptation Index output   *************************/
@@ -1279,6 +1280,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa)
 /**************************************************************************/
 int dinuc_count(char *seq, long int ttot)
 {
+   char last_base;
    static char a = 0;
    int i;
 

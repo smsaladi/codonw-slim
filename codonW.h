@@ -30,9 +30,6 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#define ARB_UNIT 10000               /* used to define the array*/
-#define MAX_GENE (ARB_UNIT * 3)      /* seq, which holds readin */
-#define LINE_LENGTH (ARB_UNIT + 100) /* sequence data           */
 #define GARG_EXACT 0x800             /* used in function gargs  */
 #define GARG_NEXT 0x1000             /* used in function gargs  */
 #define GARG_THERE 0x2000            /* used in function gargs  */
@@ -94,7 +91,6 @@ typedef struct
   char totals;  /* concatenate genes ?      */
   char warn;    /* show sequence warning    */
 
-  char codonW;   /* am I codonW              */
   char fop;      /* calc index fop           */
   char cai;      /* calc index CAI           */
   char cbi;      /* calc index CBI           */
@@ -160,25 +156,20 @@ extern AMINO_PROP_STRUCT amino_prop;
 extern MENU_STRUCT Z_menu;
 
 extern char *title;
-extern char last_base;
 
 extern long int ncod[65];
 extern long int naa[23];
 extern long int din[3][16];
 extern long int codon_tot;
-extern long int master_ic;
-extern long int fl_pos_start;
-extern long int fl_pos_curr;
 extern long int num_sequence;
 extern long int num_seq_int_stop;
 extern long int tot;
 extern int last_aa;
-extern int reg;
 extern int valid_stops;
-extern int valid_start;
 extern int fram;
 extern int *da;
 extern int *ds;
+
 extern int NumGeneticCodes;
 extern int NumFopSpecies;
 extern int NumCaiSpecies;

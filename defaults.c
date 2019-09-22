@@ -33,21 +33,15 @@
 #include "codonW.h"
 
 char *title;
-char last_base;
 long int ncod[65];
 long int naa[23];
 long int din[3][16];
 long int codon_tot;
-long int master_ic;
-long int fl_pos_start;
-long int fl_pos_curr;
 extern long int num_sequence = 0;
 long int num_seq_int_stop = 0;
 long int tot;
 int last_aa = 0;
-int reg = 1;
 int valid_stops = 0;
-int valid_start;
 int fram;
 int *da;
 int *ds;
@@ -266,7 +260,7 @@ MENU_STRUCT Z_menu = {
     'X',   /*This default is set in proc_commline to CU        */
     false, /*totals                                            */
     true,  /*warnings about sequence data are to be displayed  */
-    false, /*codons                                            */
+
     false, /*fop                                               */
     false, /*cai                                               */
     false, /*cbi                                               */

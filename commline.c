@@ -356,7 +356,6 @@ int proc_comm_line(int *pargc, char ***pargv)
     if (p = garg(0, NULL, "-noblk", GARG_EXACT))
         pm->bulk = 'X';
 
-    pm->codonW = true;
     if (pm->bulk == 'X')
         pm->bulk = 'C';
 
@@ -400,7 +399,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     }
 
     /* The third which only occurs if the programme is running as CodonW      */
-    if (pm->codonW && (p = garg(0, NULL, "", GARG_THERE)))
+    if ((p = garg(0, NULL, "", GARG_THERE)))
     {
         if ((pm->tidyoutfile = open_file(p, "w")) == NULL)
         {
