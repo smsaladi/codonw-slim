@@ -26,8 +26,8 @@
 /* This file contains most of the codon usage analysis subroutines        */
 /* except for the COA analysis                                            */
 /* Internal subroutines and functions                                     */
-/* initilize_point    assigns genetic code dependent parameters to structs*/
-/* initilize_coa      decides which cod/AA to include in a COA by default */
+/* initialize_point    assigns genetic code dependent parameters to structs*/
+/* initialize_coa      decides which cod/AA to include in a COA by default */
 /* codon_usage_tot    Counts codon and amino acid usage                   */
 /* ident_codon        Converts codon into a numerical value in range 1-64 */
 /* codon_usage_out    Write out Codon Usage to file                       */
@@ -92,7 +92,7 @@ static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
 /* pcoa               points to a struct that describes columns to be     */
 /*                    included/excluded from any COA analysis             */
 /**************************************************************************/
-int initilize_point(char code, char fop_species, char cai_species)
+int initialize_point(char code, char fop_species, char cai_species)
 {
    paa = &amino_acids;
    pap = &amino_prop;
@@ -154,14 +154,14 @@ static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
 /*                    included/excluded from any COA analysis             */
 /*                    structure contains AA and Codon information         */
 /**************************************************************************/
-int initilize_coa(char code)
+int initialize_coa(char code)
 {
-   static char initilized;
+   static char initialized;
    static char oldcode;
    int i;
 
    /* if called a second time return unless the genetic code has changed  */
-   if (initilized && (oldcode == code))
+   if (initialized && (oldcode == code))
       return 1;
 
    for (i = 0; i < 22; i++)      /* for each amino acid                */
@@ -176,7 +176,7 @@ int initilize_coa(char code)
       else
          pcoa->codons[i] = true;
 
-   initilized = true; /* we have been called  ...           */
+   initialized = true; /* we have been called  ...           */
    return 1;
 }
 /****************** Codon Usage Counting      *****************************/

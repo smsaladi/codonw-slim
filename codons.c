@@ -27,8 +27,8 @@
 /*                                                                        */
 /* External subroutines and functions                                     */
 /* proc_comm_line     process command line arguments                      */
-/* initilize_point    assigns genetic code dependent parameters to structs*/
-/* initilize_coa      selects the default codons to exclude from the      */
+/* initialize_point    assigns genetic code dependent parameters to structs*/
+/* initialize_coa      selects the default codons to exclude from the      */
 /*                    Correspondence Analysis                             */
 /* clean_up           Re-zeros various internal counters and arrays       */
 /* open_file          Open files, checks for existing files               */
@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
   pm = &Z_menu;
   pm->my_err = stderr;
 
-  initilize_point(pm->code, pm->f_type, pm->c_type);
-  initilize_coa(pm->code);
+  initialize_point(pm->code, pm->f_type, pm->c_type);
+  initialize_coa(pm->code);
 
   fprintf(stderr, "Welcome to CodonW\n");
   proc_comm_line(&argc, &argv);

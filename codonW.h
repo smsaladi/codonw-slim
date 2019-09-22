@@ -188,8 +188,8 @@ FILE *open_file(char *filename, char *mode);
 
 // defined in codon_us.c
 int clean_up(long int *ncod, long int *naa);
-int initilize_point(char code, char fop_type, char cai_type);
-int initilize_coa(char code);
+int initialize_point(char code, char fop_type, char cai_type);
+int initialize_coa(char code);
 
 long int codon_error(int last_aa, int valid_stops, char *title,
                      char error_level);

@@ -128,7 +128,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
         {
             pm->code = (char)atoi(p); /* define genetic code */
-            initilize_point(pm->code, pm->f_type, pm->c_type);
+            initialize_point(pm->code, pm->f_type, pm->c_type);
         }
     }
 
@@ -152,7 +152,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
         {
             pm->f_type = (char)atoi(p); /* define organism type for Fop  */
-            initilize_point(pm->code, pm->f_type, pm->c_type);
+            initialize_point(pm->code, pm->f_type, pm->c_type);
         }
     }
 
@@ -175,7 +175,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
         {
             pm->c_type = (char)atoi(p); /* define organism type for CAI  */
-            initilize_point(pm->code, pm->f_type, pm->c_type);
+            initialize_point(pm->code, pm->f_type, pm->c_type);
         }
     }
 
