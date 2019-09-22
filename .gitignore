@@ -1,3 +1,9 @@
+bin
+.DS_Store
+
+# testing with pytest
+__pycache__
+
 # Prerequisites
 *.d
 
