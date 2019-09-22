@@ -82,6 +82,7 @@ static void editvalpro(FILE *ficlist, double *vp, int n, double s);
 static void DiagoComp(int n0, double **w, double *d, int *rang);
 static void selectcol(char *nfic, double *col, int numcol);
 static double inertot(void);
+static void sorted_by_axis1(double *ax1, int *sortax1, int lig);
 
 /*************** textbin          *****************************************/
 /* examines the struct pcoa to see which codons/amino acids are to be inc */
@@ -1866,4 +1867,56 @@ static void lecvalpro(double *v1, char *nfic)
         }
     }
     fileclose(&fic);
+}
+
+/**********  sorted_by_axis1    *******************************************/
+/* After the position of the genes on the first axis                      */
+/* has been computed the genes are sorted according to there ordination   */
+/* this allows us to identify gene positioned at either end of the first  */
+/* trend. Then the codon usage of these genes is used to determine the CU */
+/* of these two groups. This information is used to identify optimal codon*/
+/* calculated putative CAI adaptive values and for the Chi squared con-   */
+/* tingency test, used to identify the optimal and non-optimal codons     */
+/* The position of each gene on axis 1 is passed via the ax1 pointer      */
+/* The integer rank of each sequence is stored in sortax1                 */
+/* The number of genes is passed by the integer value lig                 */
+/**************************************************************************/
+static void sorted_by_axis1(double *ax1, int *sortax1, int lig)
+{
+   double min;
+   int nmin, *tagged;
+   int i, j;
+
+   /* allocated an array such that we can record which genes have been    */
+   /* processed already, and are in sortax1                               */
+   if ((tagged = (int *)calloc(lig + 1, sizeof(int))) == NULL)
+      my_exit(3, "sorted by axis 1");
+
+   /* blank the array, shouldn't have to do this for ANSI C compilers     */
+   for (i = 1; i <= lig; i++)
+      tagged[i] = false;
+
+   /* for each gene                                                       */
+   for (j = 1; j <= lig; j++)
+   {
+      i = 0;
+      while (tagged[++i])
+         ;          /* find the first gene not in sortax1 */
+      min = ax1[i]; /* assign it value to min             */
+      nmin = i;     /* assign it ordination to nmin       */
+
+      for (i = 1; i <= lig; i++)
+      { /* for each gene                      */
+         if (tagged[i])
+            continue; /* gene is already in sortax1 .. next */
+         if (ax1[i] < min)
+         {                /* find the min value among the rest  */
+            min = ax1[i]; /* assign it value to min             */
+            nmin = i;     /* assign it ordination to nmin       */
+         }
+      }
+      sortax1[j] = nmin;   /* gene with lowest ax1 position is   */
+      tagged[nmin] = true; /* assigned to sorax1 and tagged      */
+   }
+   free(tagged);
 }

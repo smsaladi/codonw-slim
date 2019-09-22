@@ -190,12 +190,10 @@ FILE *open_file(char *filename, char *mode);
 int clean_up(long int *ncod, long int *naa);
 int initilize_point(char code, char fop_type, char cai_type);
 int initilize_coa(char code);
-char *get_aa(int one_or_3_letter, char *the_dna_word);
 
 long int codon_error(int last_aa, int valid_stops, char *title,
                      char error_level);
 int dinuc_count(char *seq, long int tot);
-void sorted_by_axis1(double *ax1, int *sortax1, int lig);
 
 int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[]);
 int codon_usage_out(FILE *fblkout, long int *ncod, int last_aa,

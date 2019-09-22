@@ -41,7 +41,6 @@
 /* inertialig         analyse row inertia and records the results to file */
 /* inertiacol         analyse column inertia and record the results       */
 /* suprow             add supplementary genes into COA                    */
-/* get_aa             converts a three base codon into a 1 or 3 letter AA */
 /* codon_error        Called after all codons read, checks data was OK    */
 /* rscu_usage_out     Write out RSCU                                      */
 /* codon_usage_out    Write out Codon Usage                               */

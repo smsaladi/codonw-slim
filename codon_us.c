@@ -44,12 +44,10 @@
 /* fop_out            Write out Frequency of Optimal codons               */
 /* enc_out            Write out Effective Number of codons                */
 /* gc_out             Writes various analyses of base usage               */
-/* get_aa             converts a three base codon into a 1 or 3 letter AA */
 /* cutab_out          Write a nice tabulation of the RSCU+CU+AA           */
 /* dinuc_count        Count the dinucleotide usage                        */
 /* dinuc_out          Write out dinucleotide usage                        */
 /* coa_raw_out        Write out raw codon usage for use by COA analysis   */
-/* sorted_by_axis1    Sorts genes according to their axis one position    */
 /* gen_cusort_fop     COA specific, write out cu of genes by axis1 posit. */
 /* highlow            Used sorted cu to calculate high_low chi sq. contin */
 /* hydro_out          Write out Protein hydropathicity                    */
@@ -1203,26 +1201,6 @@ void dot(int y, long int period)
    return;
 }
 
-/**********************  get_aa    *****************************************/
-/* get_aa converts a numeric codon value (range 0-64 ) into a amino acid   */
-/* and returns that amino acid number                                      */
-/* pcu->ca converts the codon number into amino acid number                */
-/* paa->aa1 converts  amino acid code into letters                         */
-/***************************************************************************/
-char *get_aa(int which, char *codon)
-{
-   char *amino = NULL;
-   if (strlen(codon) == 3)
-   {
-      if (which == 1)
-         amino = paa->aa1[pcu->ca[ident_codon(codon)]];
-      else
-         amino = paa->aa3[pcu->ca[ident_codon(codon)]];
-   }
-   else
-      amino = paa->aa1[0];
-   return amino;
-}
 /**********************   cutab_out     ***********************************/
 /* Generates a formatted table of codon, RSCU and amino acid usage        */
 /* ds points to an array[64] of synonymous values                         */
@@ -1448,57 +1426,7 @@ char coa_raw_out(FILE *fcoaout, long *nncod, long *nnaa, char *ttitle)
    }
    return 1;
 }
-/**********  sorted_by_axis1    *******************************************/
-/* COA specific routine, after the position of the genes on the first axis*/
-/* has been computed the genes are sorted according to there ordination   */
-/* this allows us to identify gene positioned at either end of the first  */
-/* trend. Then the codon usage of these genes is used to determine the CU */
-/* of these two groups. This information is used to identify optimal codon*/
-/* calculated putative CAI adaptive values and for the Chi squared con-   */
-/* tingency test, used to identify the optimal and non-optimal codons     */
-/* The position of each gene on axis 1 is passed via the ax1 pointer      */
-/* The integer rank of each sequence is stored in sortax1                 */
-/* The number of genes is passed by the integer value lig                 */
-/**************************************************************************/
-void sorted_by_axis1(double *ax1, int *sortax1, int lig)
-{
-   double min;
-   int nmin, *tagged;
-   int i, j;
 
-   /* allocated an array such that we can record which genes have been    */
-   /* processed already, and are in sortax1                               */
-   if ((tagged = (int *)calloc(lig + 1, sizeof(int))) == NULL)
-      my_exit(3, "sorted by axis 1");
-
-   /* blank the array, shouldn't have to do this for ANSI C compilers     */
-   for (i = 1; i <= lig; i++)
-      tagged[i] = false;
-
-   /* for each gene                                                       */
-   for (j = 1; j <= lig; j++)
-   {
-      i = 0;
-      while (tagged[++i])
-         ;          /* find the first gene not in sortax1 */
-      min = ax1[i]; /* assign it value to min             */
-      nmin = i;     /* assign it ordination to nmin       */
-
-      for (i = 1; i <= lig; i++)
-      { /* for each gene                      */
-         if (tagged[i])
-            continue; /* gene is already in sortax1 .. next */
-         if (ax1[i] < min)
-         {                /* find the min value among the rest  */
-            min = ax1[i]; /* assign it value to min             */
-            nmin = i;     /* assign it ordination to nmin       */
-         }
-      }
-      sortax1[j] = nmin;   /* gene with lowest ax1 position is   */
-      tagged[nmin] = true; /* assigned to sorax1 and tagged      */
-   }
-   free(tagged);
-}
 /***********  gen_cusort_fop                 ******************************/
 /* COA specific routine, takes the sorted array of axis 1 positions from  */
 /* sort_by_axis1 and passed via the sortax1 pointer. The array contains   */
