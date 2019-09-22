@@ -44,7 +44,6 @@
 /* fop_out            Write out Frequency of Optimal codons               */
 /* enc_out            Write out Effective Number of codons                */
 /* gc_out             Writes various analyses of base usage               */
-/* dot(,X)            prints a period every X times it is called          */
 /* get_aa             converts a three base codon into a 1 or 3 letter AA */
 /* cutab_out          Write a nice tabulation of the RSCU+CU+AA           */
 /* dinuc_count        Count the dinucleotide usage                        */
@@ -293,7 +292,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 
       if (!valid_start && pm->warn)
       {
-         dot(0, 10);
          fprintf(pm->my_err, "\nWarning: Sequence %3li \"%-20.20s\" does "
                              "not begin with a recognised start codon\n",
                  num_sequence, ttitle);
@@ -301,7 +299,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
 
       if (ns && pm->warn)
       {
-         dot(0, 10);
          if (pm->totals && pm->warn)
             fprintf(pm->my_err, "\nWarning: some sequences had internal stop"
                                 " codons (found %li such codons)\n",
@@ -314,7 +311,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
       }
       break;
    case 2:
-      dot(0, 10);
       if (ncod[0] == 1 && pcu->ca[x] != 11 && pm->warn)
       { /*  last codon was partial */
          fprintf(pm->my_err,
@@ -349,7 +345,6 @@ long int codon_error(int x, int y, char *ttitle, char error_level)
       break;
    case 3:
       /* Nc error routines see codon_us      */
-      dot(0, 10); /* dot resetting internal counter      */
       if (x == 3)
          x = 4; /* if x=3 there are no 3 or 4 fold AA  */
       if (pm->warn)
@@ -1183,7 +1178,6 @@ void gc_out(FILE *foutput, FILE *fblkout, int which)
 /********************     DOT    ******************************************/
 /*   Indicates the progress of a search                                   */
 /**************************************************************************/
-
 void dot(int y, long int period)
 {
    static long int xx;
@@ -1204,17 +1198,16 @@ void dot(int y, long int period)
    }
    return;
 }
+
 /**********************  get_aa    *****************************************/
 /* get_aa converts a numeric codon value (range 0-64 ) into a amino acid   */
 /* and returns that amino acid number                                      */
 /* pcu->ca converts the codon number into amino acid number                */
 /* paa->aa1 converts  amino acid code into letters                         */
 /***************************************************************************/
-
 char *get_aa(int which, char *codon)
 {
    char *amino = NULL;
-
    if (strlen(codon) == 3)
    {
       if (which == 1)
@@ -1223,10 +1216,7 @@ char *get_aa(int which, char *codon)
          amino = paa->aa3[pcu->ca[ident_codon(codon)]];
    }
    else
-   {
-      amino = amino;
       amino = paa->aa1[0];
-   }
    return amino;
 }
 /**********************   cutab_out     ***********************************/
@@ -1613,7 +1603,6 @@ void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary)
       for (j = 1, stops = 0; j < 65; j++)
          if (pcu->ca[j] == 11)
             stops += (int)ncod[j];
-      dot(1, 10);
       codon_usage_out(fcusort, ncod, 11, stops, pm->junk);
    }
    fileclose(&fcusort);

@@ -255,7 +255,6 @@ void inertialig(char *inertia_out, char *filen, FILE *summary);
 void inertiacol(char *inertia_out, FILE *summary);
 void selectcol(char *nfic, double *col, int numcol);
 void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *summ);
-void dot(int y, long int period);
 void DiagoComp(int n0, double **w, double *d, int *rang);
 void suprow(int num_seq, char *nficvp, char *nfictasup,
             char *nficlisup, char *option, FILE *summary);

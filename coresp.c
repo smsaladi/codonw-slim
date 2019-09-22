@@ -713,8 +713,6 @@ void DiagoRC(FILE *summary)
     /*  prodmatAAtB and prodmatAtAB calc product of the scaled distance matrix */
     /*  DiagoComp diagnolises the product matrix ctab                          */
     /*  editvalpro output the eigen values                                     */
-
-    dot(1, 10);
     if (pcoa->rows < pcoa->colm)
     {
 
@@ -882,19 +880,14 @@ void prodmatAAtB(double **a, double **b)
     col = (int)a[1][0];
 
     for (j = 1; j <= lig; j++)
-    {
-        dot(1, 10);
         for (k = j; k <= lig; k++)
         {
             s = 0;
             for (i = 1; i <= col; i++)
-            {
                 s = s + a[j][i] * a[k][i];
-            }
             b[j][k] = s;
             b[k][j] = s;
         }
-    }
 }
 
 /************** prodmatABC          ***************************************/
@@ -911,18 +904,13 @@ void prodmatABC(double **a, double **b, double **c)
     col2 = (int)b[1][0];
 
     for (i = 1; i <= lig; i++)
-    {
-        dot(1, 10);
         for (k = 1; k <= col2; k++)
         {
             s = 0;
             for (j = 1; j <= col; j++)
-            {
                 s = s + a[i][j] * b[j][k];
-            }
             c[i][k] = s;
         }
-    }
 }
 
 /************** prodmatAtAB         ***************************************/
@@ -937,19 +925,14 @@ void prodmatAtAB(double **a, double **b)
     col = (int)a[1][0];
 
     for (j = 1; j <= col; j++)
-    {
-        dot(1, 100);
         for (k = j; k <= col; k++)
         {
             s = 0;
             for (i = 1; i <= lig; i++)
-            {
                 s = s + a[i][k] * a[i][j];
-            }
             b[j][k] = s;
             b[k][j] = s;
         }
-    }
 }
 
 /**************  editvalpro         ***************************************/
@@ -1176,7 +1159,6 @@ void DiagoComp(int n0, double **w, double *d, int *rang)
 
     for (i = 1; i <= n0; i++)
     {
-        dot(1, 100);
         k = i - 1;
         if (d[i] == 0.0)
             goto Et4;
@@ -1184,13 +1166,9 @@ void DiagoComp(int n0, double **w, double *d, int *rang)
         {
             q = 0.0;
             for (l = 1; l <= k; l++)
-            {
                 q = q + w[i][l] * w[l][m];
-            }
             for (l = 1; l <= k; l++)
-            {
                 w[l][m] = w[l][m] - q * w[l][i];
-            }
         }
 
     Et4:
@@ -1208,9 +1186,7 @@ void DiagoComp(int n0, double **w, double *d, int *rang)
     }
 
     for (i = 2; i <= n0; i++)
-    {
         s[i - 1] = s[i];
-    }
     s[n0] = 0.0;
     for (k = 1; k <= n0; k++)
     {
@@ -1219,7 +1195,6 @@ void DiagoComp(int n0, double **w, double *d, int *rang)
     Et6:
         for (j = k; j <= n0; j++)
         {
-            dot(1, 100);
             if (j == n0)
                 goto Et7;
             ab = fabs((double)s[j]);
@@ -1257,7 +1232,6 @@ void DiagoComp(int n0, double **w, double *d, int *rang)
         jk = j - k;
         for (ijk = 1; ijk <= jk; ijk++)
         {
-            dot(1, 100);
             i = j - ijk;
             xp = u * s[i];
             b = v * s[i];
@@ -1310,22 +1284,17 @@ void DiagoComp(int n0, double **w, double *d, int *rang)
 
     for (ij = 2; ij <= n0; ij++)
     {
-        dot(1, 300);
         i = ij - 1;
         l = i;
         h = d[i];
         for (m = ij; m <= n0; m++)
-        {
             if (d[m] >= h)
             {
                 l = m;
                 h = d[m];
             }
-        }
         if (l == i)
-        {
             goto Etb;
-        }
         else
         {
             d[l] = d[i];
@@ -1424,14 +1393,11 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
     fprintf(summary, "----------Absolute contributions----------\n");
     fprintf(summary, "Short_Gene_Name|Num  |");
     for (k = 1; k <= f1; k++)
-    {
         fprintf(summary, "Fac%2d|", k);
-    }
     fprintf(summary, "\n");
     fprintf(inert_out, "\n");
     for (i = 1; i <= l1; i++)
     {
-
         fgets(pm->junk, BUFSIZ, fnam);
         pm->junk[35] = '\0';
         for (j = 35; j >= 0; j--)
@@ -1470,16 +1436,13 @@ void inertialig(char *inertia_out, char *ncout, FILE *summary)
     fprintf(summary, "----------Relative contributions----------\n");
     fprintf(summary, "Short_gene_name|Num  |");
     for (k = 1; k <= f1; k++)
-    {
         fprintf(summary, "Fac%2d|", k);
-    }
     fprintf(summary, "|Remains| Weight | Cont.|");
     fprintf(summary, "\n");
     fprintf(inert_out, "\n");
 
     for (i = 1; i <= l1; i++)
     {
-
         fgets(pm->junk, BUFSIZ, fnam);
         pm->junk[35] = '\0';
         for (j = 35; j >= 0; j--)

@@ -34,7 +34,6 @@
 /* open_file          Open files, checks for existing files               */
 /* fileclose          Closes files and returns a NULL pointer or exits    */
 /* textbin            Converts codon usage to binary data file            */
-/* dot(,X)            prints a period every X times it is called          */
 /* PrepAFC            Prepare for the COA                                 */
 /* DiagoRC            This routine generates the COA                      */
 /* colmout            write the output from COA to file                   */
@@ -145,7 +144,6 @@ int main(int argc, char *argv[])
 
   if (pm->coa) {
     printf("Generating correspondence analysis\n");
-    dot(0, 10);
     run_coa_summary();
   }
 
