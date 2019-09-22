@@ -29,6 +29,8 @@
 
 #include "codonW.h"
 
+static char *garg(int argc, char *argv[], const char *targ, int mode);
+
 /************** process_command_line  *************************************/
 /* The command line is passed to this function for processing. The name of*/
 /* the programme is read, and based on this, CodonW will emulate several  */
@@ -440,7 +442,7 @@ int proc_comm_line(int *pargc, char ***pargv)
 /* GARG_NEXT            The next argument after targ is returned           */
 /* else                 return NULL                                        */
 /***************************************************************************/
-char *garg(int argc, char *argv[], const char *targ, int mode)
+static char *garg(int argc, char *argv[], const char *targ, int mode)
 {
     static char *argw[MAX_ARGS];
     static int done[MAX_ARGS];

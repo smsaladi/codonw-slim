@@ -74,6 +74,12 @@
 
 #include "codonW.h"
 
+static int ident_codon(char *codon);
+static void highlow(long int *low, long int *high, FILE *ssummary);
+static int* how_synon(GENETIC_CODE_STRUCT *pcu);
+static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
+
+
 /********************* Initilize Pointers**********************************/
 /* Various pointers to structures are assigned here dependent on the      */
 /* genetic code chosen.                                                   */
@@ -109,7 +115,7 @@ int initilize_point(char code, char fop_species, char cai_species)
 /* Calculate how synonymous a codon is by comparing with all other codons */
 /* to see if they encode the same AA                                      */
 /**************************************************************************/
-int* how_synon(GENETIC_CODE_STRUCT *pcu)
+static int* how_synon(GENETIC_CODE_STRUCT *pcu)
 {
    static int dds[65];
    int x, i;
@@ -128,7 +134,7 @@ int* how_synon(GENETIC_CODE_STRUCT *pcu)
 /* Calculate how synonymous an amino acid is by checking all codons if    */
 /* they encode this same AA                                               */
 /**************************************************************************/
-int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
+static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
 {
    static int dda[22];
    int x;
@@ -214,7 +220,7 @@ int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int na
 /* array into a numerical value in the range 0-64, zero is reserved for   */
 /* codons that contain at least one unrecognised base                     */
 /**************************************************************************/
-int ident_codon(char *codon)
+static int ident_codon(char *codon)
 {
    int icode = 0;
    int x;
@@ -1624,7 +1630,7 @@ void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary)
 /* tingency test, used to identify the optimal and non-optimal codons     */
 /**************************************************************************/
 
-void highlow(long int *low, long int *high, FILE *ssummary)
+static void highlow(long int *low, long int *high, FILE *ssummary)
 {
 
    int *last_row, icode, outer, i, j, x;

@@ -60,6 +60,29 @@
 
 #include "codonW.h"
 
+static void vecalloc(double **vec, int n);
+static void writevec(double *v1, FILE *fic);
+static void lecmat(double **tab, char *nfic);
+static void freetab(double **tab);
+static void freevec(double *vec);
+static void taballoc(double ***tab, int l1, int c1);
+static void lecvec(double *v1, char *nfic);
+static void ecrmat(double **tab, char *nfic);
+static void ecrvec(double *v1, char *nfic);
+static void scalmat(double **tab, double r);
+static void scalvec(double *v1, double r);
+static void sqrvec(double *v1);
+static void prodmatAAtB(double **a, double **b);
+static void prodmatABC(double **a, double **b, double **c);
+static void prodmatAtAB(double **a, double **b);
+static void ecrmatred(double **tab, int c1, char *nfic);
+static void readvec(double *v1, FILE *fic);
+static void lecvalpro(double *v1, char *nfic);
+static void editvalpro(FILE *ficlist, double *vp, int n, double s);
+static void DiagoComp(int n0, double **w, double *d, int *rang);
+static void selectcol(char *nfic, double *col, int numcol);
+static double inertot(void);
+
 /*************** textbin          *****************************************/
 /* examines the struct pcoa to see which codons/amino acids are to be inc */
 /* in the analysis. It then writes this data to a binary file             */
@@ -338,7 +361,7 @@ void rowout(char *nfice, char *nfics, char *ncout, FILE *summary)
 /* Allocate memory for a vector of size n and assign that memory to the   */
 /* pointer to a pointer vac                                               */
 /**************************************************************************/
-void vecalloc(double **vec, int n)
+static void vecalloc(double **vec, int n)
 {
     if ((*vec = (double *)calloc(n + 1, sizeof(double))) != NULL)
     {
@@ -352,7 +375,7 @@ void vecalloc(double **vec, int n)
 /************** writevec          *****************************************/
 /* Write out the value of the vector v1 to a binary file fic              */
 /**************************************************************************/
-void writevec(double *v1, FILE *fic)
+static void writevec(double *v1, FILE *fic)
 {
     float v2;
     int i, c1;
@@ -441,7 +464,7 @@ void PrepAFC(char *nfic)
 /* Calculate total data inertia                                            */
 /***************************************************************************/
 
-double inertot(void)
+static double inertot(void)
 {
     int i, j;
     double **tab;
@@ -475,7 +498,7 @@ double inertot(void)
 /* Opens binary file nfic, reads the values it contains and records them  */
 /* in the matrix pointed to by tab                                        */
 /**************************************************************************/
-void lecmat(double **tab, char *nfic)
+static void lecmat(double **tab, char *nfic)
 {
     int i, j, l1, c1;
     float v2;
@@ -505,7 +528,7 @@ void lecmat(double **tab, char *nfic)
 /************** freetab           *****************************************/
 /* Releases memory dynamically allocated to a table tab(x,y)              */
 /**************************************************************************/
-void freetab(double **tab)
+static void freetab(double **tab)
 {
     int i, n;
     n = (int)*(*(tab)); /* number of rows in table        */
@@ -519,7 +542,7 @@ void freetab(double **tab)
 /************** freevec           *****************************************/
 /* Releases memory dynamically allocated to a vector                      */
 /**************************************************************************/
-void freevec(double *vec)
+static void freevec(double *vec)
 {
     free((char *)vec);
 }
@@ -527,7 +550,7 @@ void freevec(double *vec)
 /************** taballoc          *****************************************/
 /* Dynamically allocates memory to the table tab(l1,c1)                   */
 /**************************************************************************/
-void taballoc(double ***tab, int l1, int c1)
+static void taballoc(double ***tab, int l1, int c1)
 {
     int i;
 
@@ -555,7 +578,7 @@ void taballoc(double ***tab, int l1, int c1)
 /**************   lecvec          *****************************************/
 /* Reads vectors from filename *nfic and assigns them to a vector         */
 /**************************************************************************/
-void lecvec(double *v1, char *nfic)
+static void lecvec(double *v1, char *nfic)
 {
     float v2;
     int i, c1;
@@ -580,7 +603,7 @@ void lecvec(double *v1, char *nfic)
 /************** ecrmat           ******************************************/
 /* Writes the table pointed to by **tab to the binary filename *nfic      */
 /**************************************************************************/
-void ecrmat(double **tab, char *nfic)
+static void ecrmat(double **tab, char *nfic)
 {
     int i, j, l1, c1;
     float v2;
@@ -610,7 +633,7 @@ void ecrmat(double **tab, char *nfic)
 /************** ecrvec           ******************************************/
 /* Writes the pointer pointed to by *v1 to the binary file *nfic          */
 /**************************************************************************/
-void ecrvec(double *v1, char *nfic)
+static void ecrvec(double *v1, char *nfic)
 {
     float v2;
     int i, c1;
@@ -637,7 +660,7 @@ void ecrvec(double *v1, char *nfic)
 /************** scalmat          ******************************************/
 /* Scale the matrix pointed to by **tab by r                              */
 /**************************************************************************/
-void scalmat(double **tab, double r)
+static void scalmat(double **tab, double r)
 {
     int l1, c1, i, j;
 
@@ -655,7 +678,7 @@ void scalmat(double **tab, double r)
 /************** scalvec          ******************************************/
 /* Scale the vector pointed to by *v1 by r                                */
 /**************************************************************************/
-void scalvec(double *v1, double r)
+static void scalvec(double *v1, double r)
 {
     int i, c1;
 
@@ -848,7 +871,7 @@ fin:
 /************** sqrvec           ******************************************/
 /* This function calculates the square root of a vector                   */
 /**************************************************************************/
-void sqrvec(double *v1)
+static void sqrvec(double *v1)
 {
     int i, c1;
     double v2;
@@ -871,7 +894,7 @@ void sqrvec(double *v1)
 /************** prodmatAAtB         ***************************************/
 /* Calculate the product of matrix a*a and return it as matrix b          */
 /**************************************************************************/
-void prodmatAAtB(double **a, double **b)
+static void prodmatAAtB(double **a, double **b)
 {
     int j, k, i, lig, col;
     double s;
@@ -893,7 +916,7 @@ void prodmatAAtB(double **a, double **b)
 /************** prodmatABC          ***************************************/
 /* Calculate the product of matrix a*b and return it as matrix c          */
 /**************************************************************************/
-void prodmatABC(double **a, double **b, double **c)
+static void prodmatABC(double **a, double **b, double **c)
 {
     int j, k, i, lig, col, col2;
     double s;
@@ -916,7 +939,7 @@ void prodmatABC(double **a, double **b, double **c)
 /************** prodmatAtAB         ***************************************/
 /* Calculate the product of matrix a*A and return it as matrix b          */
 /**************************************************************************/
-void prodmatAtAB(double **a, double **b)
+static void prodmatAtAB(double **a, double **b)
 {
     int j, k, i, lig, col;
     double s;
@@ -939,7 +962,7 @@ void prodmatAtAB(double **a, double **b)
 /* Calculate eigenvalues, relative inertia and Sum of inertia for each    */
 /* factor and record this to eigen.coa and summary.coa                    */
 /**************************************************************************/
-void editvalpro(FILE *ficlist, double *vp, int n, double s)
+static void editvalpro(FILE *ficlist, double *vp, int n, double s)
 {
     double sc1, sc2;
     int i, n1;
@@ -999,7 +1022,7 @@ void editvalpro(FILE *ficlist, double *vp, int n, double s)
 /**************  ecrmatred        *****************************************/
 /* Output c1 columns of matrix tab to filename *nfic                      */
 /**************************************************************************/
-void ecrmatred(double **tab, int c1, char *nfic)
+static void ecrmatred(double **tab, int c1, char *nfic)
 {
     int i, j, l1;
     float v2;
@@ -1029,7 +1052,7 @@ void ecrmatred(double **tab, int c1, char *nfic)
 /**************  readvec            ***************************************/
 /* read vector v1 from filehandle fic                                     */
 /**************************************************************************/
-void readvec(double *v1, FILE *fic)
+static void readvec(double *v1, FILE *fic)
 {
     float v2;
     int i, c1;
@@ -1054,7 +1077,7 @@ void readvec(double *v1, FILE *fic)
 /* de LEBART et coll.                                                    */
 /* Lots of nasty goto jumps ... ported from Fortran                      */
 /*************************************************************************/
-void DiagoComp(int n0, double **w, double *d, int *rang)
+static void DiagoComp(int n0, double **w, double *d, int *rang)
 {
     double *s;
     double a, b, c, x, xp, q, bp, ab, ep, h, t, u, v;
@@ -1659,7 +1682,7 @@ void inertiacol(char *inertia_out, FILE *summary)
 /* number of genes. If these disagree it will about. Col is the number of*/
 /* the column to extract.                                                */
 /*************************************************************************/
-void selectcol(char *nfic, double *col, int numcol)
+static void selectcol(char *nfic, double *col, int numcol)
 {
     FILE *fic = NULL;
     int i, c1, l1;
@@ -1818,7 +1841,7 @@ void suprow(int num_seq, char *nficvp, char *nfictasup, char *nficlisup,
 /**************  lecvalpro         ***************************************/
 /* Read a vector from a binary formatted file                            */
 /*************************************************************************/
-void lecvalpro(double *v1, char *nfic)
+static void lecvalpro(double *v1, char *nfic)
 {
     float v2;
     int i, c1;

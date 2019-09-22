@@ -176,17 +176,33 @@ extern int NumCaiSpecies;
 
 /****************** Function type declarations *****************************/
 
+// defined in commline.c
+int proc_comm_line(int *argc, char ***arg_list);
+
+// defined in codons.c
+int tidy(FILE *finput, FILE *foutput, FILE *fblkout,
+         FILE *fcoaout);
+int my_exit(int exit_value, char *message);
+int fileclose(FILE **file_pointer);
 FILE *open_file(char *filename, char *mode);
 
-int* how_synon(GENETIC_CODE_STRUCT *pcu);
-int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
+// defined in codon_us.c
+int clean_up(long int *ncod, long int *naa);
+int initilize_point(char code, char fop_type, char cai_type);
+int initilize_coa(char code);
+char *get_aa(int one_or_3_letter, char *the_dna_word);
+
+long int codon_error(int last_aa, int valid_stops, char *title,
+                     char error_level);
+int dinuc_count(char *seq, long int tot);
+void sorted_by_axis1(double *ax1, int *sortax1, int lig);
 
 int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[]);
-int ident_codon(char *codon);
 int codon_usage_out(FILE *fblkout, long int *ncod, int last_aa,
                     int valid_stops, char *info);
 int rscu_usage_out(FILE *fblkout, long int *ncod, long int *naa);
 int raau_usage_out(FILE *fblkout, long int *naa);
+char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title);
 int aa_usage_out(FILE *fblkout, long int *naa);
 int cai_out(FILE *foutput, long int *ncod);
 int cbi_out(FILE *foutput, long int *ncod, long int *naa);
@@ -195,64 +211,18 @@ int hydro_out(FILE *foutput, long int *naa);
 int aromo_out(FILE *foutput, long int *naa);
 int cutab_out(FILE *fblkout, long *ncod, long *naa);
 int dinuc_out(FILE *fblkout, char *title);
-int fileclose(FILE **file_pointer);
-int clean_up(long int *ncod, long int *naa);
-int initilize_point(char code, char fop_type, char cai_type);
-int initilize_coa(char code);
-int proc_comm_line(int *argc, char ***arg_list);
-int my_exit(int exit_value, char *message);
-
-int dinuc_count(char *seq, long int tot);
-int tidy(FILE *finput, FILE *foutput, FILE *fblkout,
-         FILE *fcoaout);
-
-long int codon_error(int last_aa, int valid_stops, char *title,
-                     char error_level);
-
 float enc_out(FILE *foutput, long int *ncod, long int *naa);
-double inertot(void);
 
-char *get_aa(int one_or_3_letter, char *the_dna_word);
-char *garg(int argc, char *argv[], const char *targ, int mode);
-char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title);
-
-void sorted_by_axis1(double *ax1, int *sortax1, int lig);
-void highlow(long int *low, long int *high, FILE *summ);
-
-void asummary(void);
-void vecalloc(double **vec, int n);
-void vecalloc(double **vec, int n);
-void writevec(double *v1, FILE *fic);
-void lecmat(double **tab, char *nfic);
-void freetab(double **tab);
-void freevec(double *vec);
-void taballoc(double ***tab, int l1, int c1);
-void lecvec(double *v1, char *nfic);
-void ecrmat(double **tab, char *nfic);
-void ecrvec(double *v1, char *nfic);
-void scalmat(double **tab, double r);
-void scalvec(double *v1, double r);
-void sqrvec(double *v1);
-void prodmatAAtB(double **a, double **b);
-void prodmatABC(double **a, double **b, double **c);
-void prodmatAtAB(double **a, double **b);
-void ecrmatred(double **tab, int c1, char *nfic);
-void readvec(double *v1, FILE *fic);
-void lecvalpro(double *v1, char *nfic);
-void editvalpro(FILE *ficlist, double *vp, int n, double s);
+// defined in coresp.c
 void DiagoRC(FILE *summary);
 void gc_out(FILE *foutput, FILE *fblkout, int which);
 void base_sil_us_out(FILE *foutput, long int *ncod, long int *naa);
-void bintext(char *nfice, char *nfics);
-void select_coa(char choice);
 void textbin(char *filein, char *fileout);
 void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary);
 void rowout(char *nfice, char *nfics, char *ncout, FILE *summary);
 void PrepAFC(char *nfic);
 void inertialig(char *inertia_out, char *filen, FILE *summary);
 void inertiacol(char *inertia_out, FILE *summary);
-void selectcol(char *nfic, double *col, int numcol);
 void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *summ);
-void DiagoComp(int n0, double **w, double *d, int *rang);
 void suprow(int num_seq, char *nficvp, char *nfictasup,
             char *nficlisup, char *option, FILE *summary);
