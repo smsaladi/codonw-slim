@@ -96,8 +96,8 @@ int initilize_point(char code, char fop_species, char cai_species)
    pfop = &fop[fop_species];
    pcbi = &fop[fop_species];
    pcu = &cu[code];
-   ds = how_synon();
-   da = how_synon_aa();
+   ds = how_synon(pcu);
+   da = how_synon_aa(pcu);
    pcoa = &coa;
 
    if (pm->codonW)
@@ -107,11 +107,10 @@ int initilize_point(char code, char fop_species, char cai_species)
 }
 
 /*******************How Synonymous is this codon  *************************/
-/* This function discovers at run time how synonymous a codon is by check-*/
-/* ing all other codons to see if they encode the same AA                 */
-/* This saves a lot of time when new genetic codes are added              */
+/* Calculate how synonymous a codon is by comparing with all other codons */
+/* to see if they encode the same AA                                      */
 /**************************************************************************/
-int *how_synon(void)
+int* how_synon(GENETIC_CODE_STRUCT *pcu)
 {
    static int dds[65];
    int x, i;
@@ -123,14 +122,14 @@ int *how_synon(void)
       for (i = 1; i < 65; i++)
          if (pcu->ca[x] == pcu->ca[i])
             dds[x]++;
-   return dds; /* return a structure          */
+
+   return dds;
 }
 /*******************How Synonymous is this AA     *************************/
-/* This function discovers at run time how synonymous an amino acid is by */
-/* checking all codons to see if they encode this same AA                 */
-/* This saves a lot of time when new genetic codes are added              */
+/* Calculate how synonymous an amino acid is by checking all codons if    */
+/* they encode this same AA                                               */
 /**************************************************************************/
-int *how_synon_aa(void)
+int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
 {
    static int dda[22];
    int x;
@@ -140,7 +139,8 @@ int *how_synon_aa(void)
 
    for (x = 1; x < 65; x++)
       dda[pcu->ca[x]]++;
-   return dda; /* return a structure          */
+
+   return dda;
 }
 /********************* Initialise COA     *********************************/
 /* Decides which codons or amino acids are to be included in a COA if only*/

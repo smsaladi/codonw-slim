@@ -178,10 +178,8 @@ extern int NumCaiSpecies;
 
 FILE *open_file(char *filename, char *mode);
 
-int *how_synon(void);
-int *how_synon_aa(void);
-int *how_synon(void);
-int *how_synon_aa(void);
+int* how_synon(GENETIC_CODE_STRUCT *pcu);
+int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
 
 int codon_usage_tot(char *seq);
 int ident_codon(char *codon);
