@@ -269,7 +269,7 @@ static int strtoupper(char *str)
   return 0;
 }
 
-/**********************  Subroutines     **********************************/
+/**********************  process_sequence_input  **************************/
 /*  reads input data from a fasta/q formatted sequence file               */
 /**************************************************************************/
 
@@ -282,7 +282,7 @@ int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fco
     // strtoupper(seq->seq.s);
 
     if (pm->totals) /* accumulate sequence          */        
-      codon_usage_tot(seq->seq.s);
+      codon_usage_tot(seq->seq.s, &codon_tot, ncod, naa);
     else
       print_output(seq->seq.s, seq->name.s, foutput, fblkout, fcoaout);
 
@@ -301,7 +301,7 @@ int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fco
 //   return 0;
 // }
 
-/*************************  output       **********************************/
+/*************************  print_output  *********************************/
 /* Called from after subroutine tidy has read the sequence into memory    */
 /* or  more accurately counted the codon and amino acid usage. This sub-  */
 /* routine, via a switch checks which parameters and indices have been    */
@@ -315,7 +315,8 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fco
   clean_title(title, pm->separator);
 
   valid_stops = 0;
-  last_aa = codon_usage_tot(seq);
+  last_aa = codon_usage_tot(seq, &codon_tot, ncod, naa);
+
   /* codon_error, if 4th parameter is 1, then checks for valid start and  */
   /* internal stop codon, if 4th parmater is 2, checks that the last codon*/
   /* is a stop or was partial, and for non-translatable codons            */

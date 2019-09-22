@@ -181,7 +181,7 @@ FILE *open_file(char *filename, char *mode);
 int* how_synon(GENETIC_CODE_STRUCT *pcu);
 int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
 
-int codon_usage_tot(char *seq);
+int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[]);
 int ident_codon(char *codon);
 int codon_usage_out(FILE *fblkout, long int *ncod, int last_aa,
                     int valid_stops, char *info);

@@ -100,8 +100,7 @@ int initilize_point(char code, char fop_species, char cai_species)
    da = how_synon_aa(pcu);
    pcoa = &coa;
 
-   if (pm->codonW)
-      printf("Genetic code is currently set to %s %s\n\n", pcu->des, pcu->typ);
+   fprintf(pm->my_err, "Genetic code set to %s %s\n", pcu->des, pcu->typ);
 
    return 1;
 }
@@ -182,7 +181,7 @@ int initilize_coa(char code)
 /* pcu->ca contains codon to amino acid translations for the current code */
 /* and is assigned in initialise point                                    */
 /**************************************************************************/
-int codon_usage_tot(char *seq)
+int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[])
 {
    char codon[4];
    int icode;
@@ -195,7 +194,7 @@ int codon_usage_tot(char *seq)
       icode = ident_codon(codon);
       ncod[icode]++;         /*increment the codon count */
       naa[pcu->ca[icode]]++; /*increment the AA count    */
-      codon_tot++;           /*increment the codon total */
+      (*codon_tot)++;
    }
 
    if (seqlen % 3)
@@ -214,7 +213,6 @@ int codon_usage_tot(char *seq)
 /* Converts each codon into a numerical array (codon) and converts this   */
 /* array into a numerical value in the range 0-64, zero is reserved for   */
 /* codons that contain at least one unrecognised base                     */
-/*                                                                        */
 /**************************************************************************/
 int ident_codon(char *codon)
 {
