@@ -652,7 +652,7 @@ int cai_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
          x = 0;
          strcpy(user_cai.des, "User supplied CAI adaptation values ");
          strcpy(user_cai.ref, "No reference");
-         user_cai.cai_val[x++] = (float)0.0;
+         user_cai.cai_val[x++] = 0.0F;
 
          while ((fscanf(pm->caifile, "%f ", &ftemp)) != EOF)
          {
@@ -686,7 +686,7 @@ int cai_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
       if (pcu->ca[x] == 11 || *(ds + x) == 1)
          continue;
       if (pcai->cai_val[x] < 0.0001)     /* if value is effectively zero       */
-         pcai->cai_val[x] = (float)0.01; /* make it .01 */
+         pcai->cai_val[x] = 0.01F;       /* make it .01 */
       sigma += (double)*(nncod + x) * log((double)pcai->cai_val[x]);
       totaa += *(nncod + x);
    }
@@ -728,7 +728,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
 
    long int tot_cod = 0;
    long int opt = 0;
-   float exp_cod = (float)0.0;
+   float exp_cod = 0.0F;
    float fcbi;
    int c, x;
    char str[2];
@@ -826,7 +826,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
    if (tot_cod - exp_cod)
       fcbi = (opt - exp_cod) / (tot_cod - exp_cod);
    else
-      fcbi = (float)0.0;
+      fcbi = 0.0F;
 
    fprintf(foutput, "%5.3f%c", fcbi, sp); /* CBI     QED     */
 
@@ -1662,7 +1662,7 @@ static void highlow(long int *low, long int *high, FILE *ssummary, MENU_STRUCT *
    }
    for (x = 0; x < 65; x++)
    {
-      x2[x] = (float)0.0;
+      x2[x] = 0.0F;
       flag[x] = 0;
       last_row[x] = 0;
    }
@@ -1718,7 +1718,7 @@ static void highlow(long int *low, long int *high, FILE *ssummary, MENU_STRUCT *
       if (e * f * h * g)
          x2[i] = ((a * d - c * b) * (a * d - c * b)) * total / (e * f * g * h);
       else
-         x2[i] = (float)-99.0; /*if 0 assign nonsense value*/
+         x2[i] = -99.0F; /*if 0 assign nonsense value*/
 
       if (g * h)
       {
@@ -1940,7 +1940,7 @@ static void highlow(long int *low, long int *high, FILE *ssummary, MENU_STRUCT *
          if (left[i])
             w = (float)left[i] / (float)highest_x[pcu->ca[i]];
          else
-            w = (float)0.5 / (float)highest_x[pcu->ca[i]];
+            w = 0.5F / (float)highest_x[pcu->ca[i]];
          fprintf(fcai, "%9.7f \n", w); /* output CAI W    */
          fprintf(ssummary, "%s %s %6.1f %9.7f\t",
                  paa->cod[i], paa->aa3[pcu->ca[i]],
@@ -1991,7 +1991,7 @@ int hydro_out(FILE *foutput, long int *nnaa, MENU_STRUCT *pm)
    AMINO_PROP_STRUCT *pap = pm->pap;
 
    long int a2_tot = 0;
-   float hydro = (float)0.0;
+   float hydro = 0.0F;
    int i;
    char sp = pm->separator;
 
@@ -2026,7 +2026,7 @@ int aromo_out(FILE *foutput, long int *nnaa, MENU_STRUCT *pm)
    AMINO_PROP_STRUCT *pap = pm->pap;
 
    long int a1_tot = 0;
-   float aromo = (float)0.0;
+   float aromo = 0.0F;
    int i;
    char sp = pm->separator;
 
