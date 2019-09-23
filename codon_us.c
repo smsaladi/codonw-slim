@@ -386,7 +386,7 @@ int codon_usage_out(FILE *fblkout, long int *nncod, int last_aa,
    for (x = 1; x < 65; x++)
    {
 
-      fprintf(fblkout, "%i%c", nncod[x], sp);
+      fprintf(fblkout, "%ld%c", nncod[x], sp);
 
       switch (x)
       {
@@ -811,11 +811,11 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
          break;
       default:
          sprintf(message, " Serious error in CBI information found"
-                               " an illegal CBI value of %f for codon %i"
-                               " permissible values are \n 1 for non-optimal"
-                               " codons\n 2 for common codons\n"
-                               " 3 for optimal codons\n"
-                               " EXITING ",
+                           " an illegal CBI value of %c for codon %i"
+                           " permissible values are \n 1 for non-optimal"
+                           " codons\n 2 for common codons\n"
+                           " 3 for optimal codons\n"
+                           " EXITING ",
                  pcbi->fop_cod[x], x);
 
          my_exit(99, message);
@@ -960,14 +960,14 @@ int fop_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
          nonopt += *(nncod + x);
          break;
       default:
-         sprintf(message, " Serious error in fop information found"
-                               " an illegal fop value of %f for codon %l"
-                               " permissible values are \n 1 for non-optimal"
-                               " codons\n 2 for common codons\n"
-                               " 3 for optimal codons\n"
-                               " EXITING ",
+         sprintf(message,  " Serious error in fop information found"
+                           " an illegal fop value of %c for codon %i"
+                           " permissible values are \n 1 for non-optimal"
+                           " codons\n 2 for common codons\n"
+                           " 3 for optimal codons\n"
+                           " EXITING ",
                  pfop->fop_cod[x], x);
-         printf("opt %l, std %l, nonopt %l\n", opt, std, nonopt);
+         printf("opt %ld, std %ld, nonopt %ld\n", opt, std, nonopt);
          my_exit(99, message);
          break;
       }
@@ -1175,7 +1175,7 @@ void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
          fprintf(fblkout,
                   "Gene_description%cLen_aa%cLen_sym%cGC%cGC3s%cGCn3s%cGC1%cGC2"
                   "%cGC3%cT1%cT2%cT3%cC1%cC2%cC3%cA1%cA2%cA3%cG1%cG2%cG3\n",
-                  sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp);
+                  sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp, sp);
          header = true;
       }
       /* now print the information          */

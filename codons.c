@@ -135,11 +135,11 @@ int main(int argc, char *argv[])
   {
     if (pm->totals && (num_seq_int_stop >= valid_stops))
       fprintf(pm->my_err, "\tWARNING\t At least one sequence in your"
-                          " input file has\ninternal stop codons (found %i"
+                          " input file has\ninternal stop codons (found %ld"
                           " internal stops) \tWARNING\n",
               num_seq_int_stop);
     else
-      fprintf(pm->my_err, "\tWARNING\t %i sequences had internal "
+      fprintf(pm->my_err, "\tWARNING\t %ld sequences had internal "
                           "stop codons \tWARNING\n",
               num_seq_int_stop);
   }
