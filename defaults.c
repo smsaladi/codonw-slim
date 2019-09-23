@@ -37,39 +37,28 @@ long int ncod[65];
 long int naa[23];
 long int din[3][16];
 long int codon_tot;
-extern long int num_sequence = 0;
+long int num_sequence = 0;
 long int num_seq_int_stop = 0;
 long int tot;
 int last_aa = 0;
 int valid_stops = 0;
 int fram;
-int *da;
-int *ds;
-
-AMINO_STRUCT *paa; /* pointer to structs   */
-GENETIC_CODE_STRUCT *pcu;
-FOP_STRUCT *pfop;
-FOP_STRUCT *pcbi;
-CAI_STRUCT *pcai;
-MENU_STRUCT *pm;
-COA_STRUCT *pcoa;
-AMINO_PROP_STRUCT *pap;
 
 /* declare default values */
-COA_STRUCT coa = {
+static COA_STRUCT coa = {
     'n',        /* level                  */
     4,          /* axis                   */
-    0,          /* rows  or genes         */
+    0,          /* rows or genes         */
     64,         /* colms                  */
     -5,         /* fop_gene (if number is negative implies a percentage)*/
     "",         /* add_row                */
-    (float)0.00 /* inertia                */
+    (float)0.00, /* inertia                */
+    NULL,
+    NULL
 };
 
-int NumGeneticCodes = 8;
-
 /* define genetic codes   */
-GENETIC_CODE_STRUCT cu[] = {
+static GENETIC_CODE_STRUCT cu[] = {
     "Universal Genetic code",
     "TGA=* TAA=* TAG=*",
     0,
@@ -127,7 +116,7 @@ GENETIC_CODE_STRUCT cu[] = {
     3, 8, 14, 6, 3, 8, 14, 6, 3, 8, 14, 6, 4, 8, 15, 6,
     5, 9, 16, 21, 5, 9, 16, 21, 5, 9, 17, 21, 5, 9, 17, 21};
 /* define amino acid info     */
-AMINO_STRUCT amino_acids = {
+static AMINO_STRUCT amino_acids = {
     "X",
     "F", "L", "I", "M", "V",
     "S", "P", "T", "A", "Y",
@@ -156,8 +145,7 @@ AMINO_STRUCT amino_acids = {
     "GUA", "GCA", "GAA", "GGA",
     "GUG", "GCG", "GAG", "GGG"};
 
-int NumFopSpecies = 8; 
-FOP_STRUCT fop[] = {
+static FOP_STRUCT fop[] = {
     "Escherichia coli",
     "Ikemura (1985) Mol. Biol. Evol. 2:13-34 (updated by INCBI 1991)",
     0, 2, 3, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -207,8 +195,7 @@ FOP_STRUCT fop[] = {
     2, 3, 2, 2, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
     2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 3, 2};
 
-int NumCaiSpecies = 3;
-CAI_STRUCT cai[] = {   
+static CAI_STRUCT cai[] = {   
                     "Escherichia coli",
                     "No reference",
                     0.000F,
@@ -243,7 +230,7 @@ CAI_STRUCT cai[] = {
                     1.000F, 1.000F, 0.554F, 1.000F, 0.831F, 0.316F, 1.000F, 0.020F,
                     0.002F, 0.015F, 1.000F, 0.002F, 0.018F, 0.001F, 0.016F, 0.004F};
 
-AMINO_PROP_STRUCT amino_prop = {/* amino acid properties */
+static AMINO_PROP_STRUCT amino_prop = {/* amino acid properties */
                                 0.00F,
                                 2.80F, 3.80F, 4.50F, 1.90F, 4.20F, /* hydropathicity values */
                                 -0.8F, -1.6F, -0.7F, 1.80F, -1.3F,
@@ -303,5 +290,25 @@ MENU_STRUCT Z_menu = {
     NULL, /* Null pointer the logfile name                    */
     NULL, /* error to stderr                                */
     NULL, /* Null pointer fcoa_in                             */
-    NULL  /* Null pointer fcoa_out                            */
+    NULL, /* Null pointer fcoa_out                            */
+
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
+REF_STRUCT Z_ref = {
+    cu,
+    fop,
+    cai,
+
+    &coa,
+    &amino_acids,
+    &amino_prop
 };

@@ -75,15 +75,20 @@
 #include <errno.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "kseq.h"
-KSEQ_INIT(int, read)  
+KSEQ_INIT(int, read)
 
 #include "codonW.h"
 
 #if defined(__MWERKS__)
 #include <console.h>
 #endif
+
+int run_coa_summary(MENU_STRUCT *pm);
+int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout, MENU_STRUCT *pm);
+int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout, MENU_STRUCT *pm);
 
 /**************************   MAIN   **************************************/
 /* The main function processes commandline arguments to decide analysis to*/
@@ -105,14 +110,14 @@ int main(int argc, char *argv[])
   argc = ccommand(&argv);
 #endif
 
-  pm = &Z_menu;
+  MENU_STRUCT *pm = &Z_menu;
   pm->my_err = stderr;
 
-  initialize_point(pm->code, pm->f_type, pm->c_type);
-  initialize_coa(pm->code);
+  initialize_point(pm->code, pm->f_type, pm->c_type, pm, &Z_ref);
+  initialize_coa(pm->pcoa, pm->pcu, pm->ds);
 
   fprintf(stderr, "Welcome to CodonW\n");
-  proc_comm_line(&argc, &argv);
+  proc_comm_line(&argc, &argv, pm);
 
   finput = pm->inputfile;
   foutput = pm->outputfile;
@@ -124,8 +129,7 @@ int main(int argc, char *argv[])
       my_exit(1, "coa_raw");
   fcoaout = pm->fcoa_out;
 
-  fprintf(stderr, "%s", finput);
-  num_sequence = process_sequence_input(finput, foutput, fblkout, fcoaout);
+  num_sequence = process_sequence_input(finput, foutput, fblkout, fcoaout, pm);
 
   /* num_seq_int_stop value is calculated in codon_usage_out               */
   if (num_seq_int_stop > 0 && pm->warn)
@@ -143,15 +147,18 @@ int main(int argc, char *argv[])
 
   if (pm->coa) {
     printf("Generating correspondence analysis\n");
-    run_coa_summary();
+    run_coa_summary(pm);
   }
 
   my_exit(0, "");
   return 0;
 }
 
-int run_coa_summary()
+int run_coa_summary(MENU_STRUCT *pm)
 {
+  AMINO_STRUCT *paa = pm->paa;
+  COA_STRUCT *pcoa = pm->pcoa;
+
   FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
   FILE *fcoaout = NULL;
   FILE *fsummary = NULL;
@@ -165,7 +172,7 @@ int run_coa_summary()
   /* if COA has been selected then during the reading in phase raw codon usag*/
   /* will have been written to the file coa_raw                              */
   /* text bin converts this to binary data for the COA analysis program      */
-  textbin("coa_raw", "cbrawin");
+  textbin("coa_raw", "cbrawin", pm, pm->pcoa, pm->pcu, pm->ds);
 
   fprintf(fsummary, "\t\tSummary of Correspondence Analysis \n\n"
                     "The input file was %s it contained %i genes\n"
@@ -190,19 +197,19 @@ int run_coa_summary()
 
   /* allocate memory for the rows and columns, scale both, and write out the*/
   /* resulting matrix to the file cbrawin                                   */
-  PrepAFC("cbrawin");
+  PrepAFC("cbrawin", pm->pcoa);
 
   /* Now do the analysis, calculate the data inertia and all the vectors    */
-  DiagoRC(fsummary);
+  DiagoRC(fsummary, pm, pm->pcoa);
 
   /* colmout records the position of the columns on each of the factors/axes*/
   if (pm->coa == 'a')
-    colmout("cbfcco", "amino.coa", paa, fsummary);
+    colmout("cbfcco", "amino.coa", paa, fsummary, pm);
   else
-    colmout("cbfcco", "codon.coa", paa, fsummary);
+    colmout("cbfcco", "codon.coa", paa, fsummary, pm);
 
   /* rowout records the position of the genes on each of the axis           */
-  rowout("cbfcli", "genes.coa", "coa_raw", fsummary);
+  rowout("cbfcli", "genes.coa", "coa_raw", pm->separator, fsummary, pm, pm->pcoa);
 
   /* pcoa->level == e for exhaustive analysis of inertia                    */
   if (pcoa->level == 'e')
@@ -213,12 +220,12 @@ int run_coa_summary()
             (pm->coa == 'a') ? "amino acids" : "codons");
     /* inertialig must preceed inertiacol, records inertia of genes to file   */
     /* it opens the raw codon usage file and loads the raw data to memory     */
-    inertialig("inertia.coa", "coa_raw", fsummary);
+    inertialig("inertia.coa", "coa_raw", fsummary, pm, pm->pcoa);
     /* uses the preloaded raw codon usage, to calculate inertia and other data*/
     /* such as contribution of each column to each factor and to the extent   */
     /* each column is explained by each factor and what the residual variation*/
     /* is                                                                     */
-    inertiacol("inertia.coa", fsummary);
+    inertiacol("inertia.coa", fsummary, pm, pm->pcoa, pm->paa);
   }
 
   /* if pcoa->add_row is real string, then it will be the name of the file  */
@@ -233,19 +240,19 @@ int run_coa_summary()
     if ((fcoaout = open_file("coa1_raw", "w")) == NULL)
       my_exit(1, "coa1_raw");
 
-    int num_seq = process_sequence_input(finput, NULL, NULL, fcoaout); /* write only fcoaout */
+    int num_seq = process_sequence_input(finput, NULL, NULL, fcoaout, pm); /* write only fcoaout */
 
     /* close the files now we are finished                                    */
     fileclose(&fcoaout);
     fileclose(&finput);
 
     /* covert to binary, use additional raw data file, note not coa_raw this  */
-    textbin("coa1_raw", "cb1raw");
+    textbin("coa1_raw", "cb1raw", pm, pm->pcoa, pm->pcu, pm->ds);
     
     /* now call the routine suprow and add these additional genes, we will    */
     /* process this data for inertia and append the gene and col. coordinates */
     /* to the original gene.coa and codon.coa (or amino.coa)                  */
-    suprow(num_seq, "cbfcvp", "cb1raw", "genes.coa", "coa1_raw", fsummary);
+    suprow(num_seq, "cbfcvp", "cb1raw", "genes.coa", "coa1_raw", pm->separator, fsummary, pm->pcoa);
     fileclose(&fsummary);
 
   }
@@ -272,7 +279,7 @@ static int strtoupper(char *str)
 /*  reads input data from a fasta/q formatted sequence file               */
 /**************************************************************************/
 
-int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout)
+int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fcoaout, MENU_STRUCT *pm)
 {
 	int l;
 
@@ -281,16 +288,16 @@ int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fco
     // strtoupper(seq->seq.s);
 
     if (pm->totals) /* accumulate sequence          */        
-      codon_usage_tot(seq->seq.s, &codon_tot, ncod, naa);
+      codon_usage_tot(seq->seq.s, &codon_tot, ncod, naa, pm);
     else
-      print_output(seq->seq.s, seq->name.s, foutput, fblkout, fcoaout);
+      print_output(seq->seq.s, seq->name.s, foutput, fblkout, fcoaout, pm);
 
     num_sequence++;
   }
 	kseq_destroy(seq);
 
   if (pm->totals)
-    print_output("", "", foutput, fblkout, fcoaout);
+    print_output("", "", foutput, fblkout, fcoaout, pm);
 
   return (int)num_sequence;
 }
@@ -307,20 +314,28 @@ int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, FILE *fco
 /* requested and write these to file, it handles all output except for COA*/
 /**************************************************************************/
 
-int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout)
+int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fcoaout, MENU_STRUCT *pm)
 {
+  AMINO_STRUCT *paa = pm->paa;
+  GENETIC_CODE_STRUCT *pcu = pm->pcu; 
+  FOP_STRUCT *pfop = pm->pfop;
+  FOP_STRUCT *pcbi = pm->pcbi;
+  CAI_STRUCT *pcai = pm->pcai;
+  COA_STRUCT *pcoa = pm->pcoa;
+  AMINO_PROP_STRUCT *pap = pm->pap;
+
   char sp = pm->separator;
 
   clean_title(title, pm->separator);
 
   valid_stops = 0;
-  last_aa = codon_usage_tot(seq, &codon_tot, ncod, naa);
+  last_aa = codon_usage_tot(seq, &codon_tot, ncod, naa, pm);
 
   /* codon_error, if 4th parameter is 1, then checks for valid start and  */
   /* internal stop codon, if 4th parmater is 2, checks that the last codon*/
   /* is a stop or was partial, and for non-translatable codons            */
-  codon_error(last_aa, valid_stops, title, (char)1);
-  codon_error(last_aa, valid_stops, title, (char)2);
+  codon_error(last_aa, valid_stops, title, (char)1, pm);
+  codon_error(last_aa, valid_stops, title, (char)2, pm);
 
   /* if we are concatenating sequences then change the title to avger_of  */
   if (pm->totals)
@@ -331,26 +346,26 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fco
     switch ((int)pm->bulk)
     {
     case 'S':
-      rscu_usage_out(fblkout, ncod, naa);
+      rscu_usage_out(fblkout, ncod, naa, pm);
       break;
     case 'C':
-      codon_usage_out(fblkout, ncod, last_aa, valid_stops, title);
+      codon_usage_out(fblkout, ncod, last_aa, valid_stops, title, pm);
       break;
     case 'L':
-      raau_usage_out(fblkout, naa);
+      raau_usage_out(fblkout, naa, pm);
       break;
     case 'D':
       dinuc_count(seq, tot);
-      dinuc_out(fblkout, title);
+      dinuc_out(fblkout, title, pm->separator);
       break;
     case 'A':
-      aa_usage_out(fblkout, naa);
+      aa_usage_out(fblkout, naa, pm);
       break;
     case 'B':
-      gc_out(foutput, fblkout, 1);
+      gc_out(foutput, fblkout, 1, pm);
       break;
     case 'O':
-      cutab_out(fblkout, ncod, naa);
+      cutab_out(fblkout, ncod, naa, pm);
       break;
     }
   }
@@ -400,29 +415,29 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fco
     /*Need to use if statements as we allow more than one index to be calc*/
     /* per sequence read in                                               */
     if (pm->sil_base)
-      base_sil_us_out(foutput, ncod, naa);
+      base_sil_us_out(foutput, ncod, naa, pm);
     if (pm->cai)
-      cai_out(foutput, ncod);
+      cai_out(foutput, ncod, pm);
     if (pm->cbi)
-      cbi_out(foutput, ncod, naa);
+      cbi_out(foutput, ncod, naa, pm);
     if (pm->fop)
-      fop_out(foutput, ncod);
+      fop_out(foutput, ncod, pm);
     if (pm->enc)
-      enc_out(foutput, ncod, naa);
+      enc_out(foutput, ncod, naa, pm);
     if (pm->gc3s)
-      gc_out(foutput, fblkout, 3);
+      gc_out(foutput, fblkout, 3, pm);
     if (pm->gc)
-      gc_out(foutput, fblkout, 2);
+      gc_out(foutput, fblkout, 2, pm);
     if (pm->L_sym)
-      gc_out(foutput, fblkout, 4);
+      gc_out(foutput, fblkout, 4, pm);
     if (pm->L_aa)
-      gc_out(foutput, fblkout, 5);
+      gc_out(foutput, fblkout, 5, pm);
     if (pm->hyd)
-      hydro_out(foutput, naa);
+      hydro_out(foutput, naa, pm);
     if (pm->aro)
-      aromo_out(foutput, naa);
+      aromo_out(foutput, naa ,pm);
     if (pm->coa)
-      coa_raw_out(fcoaout, ncod, naa, title);
+      coa_raw_out(fcoaout, ncod, naa, title, pm);
 
     fprintf(foutput, "\n");
   }
@@ -442,58 +457,58 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, FILE *fco
 int my_exit(int error_num, char *message)
 {
 
-  fileclose(&pm->inputfile);
-  fileclose(&pm->outputfile);
-  fileclose(&pm->tidyoutfile);
+  // fileclose(&pm->inputfile);
+  // fileclose(&pm->outputfile);
+  // fileclose(&pm->tidyoutfile);
 
-  fileclose(&pm->cuout);
-  fileclose(&pm->fopfile);
-  fileclose(&pm->cbifile);
-  fileclose(&pm->caifile);
-  fileclose(&pm->logfile);
-  fileclose(&pm->fcoa_in);
-  fileclose(&pm->fcoa_out);
+  // fileclose(&pm->cuout);
+  // fileclose(&pm->fopfile);
+  // fileclose(&pm->cbifile);
+  // fileclose(&pm->caifile);
+  // fileclose(&pm->logfile);
+  // fileclose(&pm->fcoa_in);
+  // fileclose(&pm->fcoa_out);
 
-  if (pm->inputfile = fopen("cbrawin", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbrawin");
-  }
-  if (pm->inputfile = fopen("cbfcco", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbfcco");
-  }
-  if (pm->inputfile = fopen("cbfcli", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbfcli");
-  }
-  if (pm->inputfile = fopen("cbfcpc", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbfcpc");
-  }
-  if (pm->inputfile = fopen("cbfcpl", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbfcpl");
-  }
-  if (pm->inputfile = fopen("cbfcta", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbfcta");
-  }
-  if (pm->inputfile = fopen("cbfcvp", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cbfcvp");
-  }
-  if (pm->inputfile = fopen("cb1rawin", "r"))
-  {
-    fclose(pm->inputfile);
-    remove("cb1rawin");
-  }
+  // if (pm->inputfile = fopen("cbrawin", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbrawin");
+  // }
+  // if (pm->inputfile = fopen("cbfcco", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbfcco");
+  // }
+  // if (pm->inputfile = fopen("cbfcli", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbfcli");
+  // }
+  // if (pm->inputfile = fopen("cbfcpc", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbfcpc");
+  // }
+  // if (pm->inputfile = fopen("cbfcpl", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbfcpl");
+  // }
+  // if (pm->inputfile = fopen("cbfcta", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbfcta");
+  // }
+  // if (pm->inputfile = fopen("cbfcvp", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cbfcvp");
+  // }
+  // if (pm->inputfile = fopen("cb1rawin", "r"))
+  // {
+  //   fclose(pm->inputfile);
+  //   remove("cb1rawin");
+  // }
 
   switch ((int)error_num)
   {

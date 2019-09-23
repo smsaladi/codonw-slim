@@ -37,6 +37,10 @@
 #define MAX_ARGS 100                 /* used in function gargs  */
 #define MAX_FILENAME_LEN 90 /* max filename             */
 
+#define NUM_GENETIC_CODES 8
+#define NUM_FOP_SPECIES 8
+#define NUM_CAI_SPECIES 3
+
 /* define the structures used within codonW                               */
 typedef struct
 {
@@ -132,31 +136,34 @@ typedef struct
   FILE *cbifile;     /* cbi input values         */
   FILE *logfile;     /* log file name            */
   FILE *my_err;      /* pointer for err stream   */
-
   FILE *fcoa_in;
   FILE *fcoa_out;
+
+  AMINO_STRUCT *paa;        /* Settings for indicies */
+  GENETIC_CODE_STRUCT *pcu;  
+  FOP_STRUCT *pfop;
+  FOP_STRUCT *pcbi;
+  CAI_STRUCT *pcai;
+  COA_STRUCT *pcoa;
+  AMINO_PROP_STRUCT *pap;
+  int *da;
+  int *ds;
 } MENU_STRUCT;
 
-extern AMINO_STRUCT *paa;
-extern GENETIC_CODE_STRUCT *pcu;
-extern FOP_STRUCT *pfop;
-extern FOP_STRUCT *pcbi;
-extern CAI_STRUCT *pcai;
-extern MENU_STRUCT *pm;
-extern COA_STRUCT *pcoa;
-extern AMINO_PROP_STRUCT *pap;
+typedef struct {
+  GENETIC_CODE_STRUCT *cu;
+  FOP_STRUCT *fop;
+  CAI_STRUCT *cai;
 
-extern CAI_STRUCT cai[];
-extern GENETIC_CODE_STRUCT cu[];
-extern FOP_STRUCT fop[];
+  COA_STRUCT *coa;
+  AMINO_STRUCT *amino_acids;
+  AMINO_PROP_STRUCT *amino_prop;
+} REF_STRUCT;
 
-extern COA_STRUCT coa;
-extern AMINO_STRUCT amino_acids;
-extern AMINO_PROP_STRUCT amino_prop;
+extern REF_STRUCT Z_ref;
 extern MENU_STRUCT Z_menu;
 
 extern char *title;
-
 extern long int ncod[65];
 extern long int naa[23];
 extern long int din[3][16];
@@ -167,17 +174,11 @@ extern long int tot;
 extern int last_aa;
 extern int valid_stops;
 extern int fram;
-extern int *da;
-extern int *ds;
-
-extern int NumGeneticCodes;
-extern int NumFopSpecies;
-extern int NumCaiSpecies;
 
 /****************** Function type declarations *****************************/
 
 // defined in commline.c
-int proc_comm_line(int *argc, char ***arg_list);
+int proc_comm_line(int *argc, char ***arg_list, MENU_STRUCT *pm);
 
 // defined in codons.c
 int tidy(FILE *finput, FILE *foutput, FILE *fblkout,
@@ -188,39 +189,39 @@ FILE *open_file(char *filename, char *mode);
 
 // defined in codon_us.c
 int clean_up(long int *ncod, long int *naa);
-int initialize_point(char code, char fop_type, char cai_type);
-int initialize_coa(char code);
+int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
+int initialize_coa(COA_STRUCT *pcoa, GENETIC_CODE_STRUCT *pcu, int ds[]);
 
 long int codon_error(int last_aa, int valid_stops, char *title,
-                     char error_level);
+                     char error_level, MENU_STRUCT *pm);
 int dinuc_count(char *seq, long int tot);
 
-int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[]);
+int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[], MENU_STRUCT *pm);
 int codon_usage_out(FILE *fblkout, long int *ncod, int last_aa,
-                    int valid_stops, char *info);
-int rscu_usage_out(FILE *fblkout, long int *ncod, long int *naa);
-int raau_usage_out(FILE *fblkout, long int *naa);
-char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title);
-int aa_usage_out(FILE *fblkout, long int *naa);
-int cai_out(FILE *foutput, long int *ncod);
-int cbi_out(FILE *foutput, long int *ncod, long int *naa);
-int fop_out(FILE *foutput, long int *ncod);
-int hydro_out(FILE *foutput, long int *naa);
-int aromo_out(FILE *foutput, long int *naa);
-int cutab_out(FILE *fblkout, long *ncod, long *naa);
-int dinuc_out(FILE *fblkout, char *title);
-float enc_out(FILE *foutput, long int *ncod, long int *naa);
+                    int valid_stops, char *info, MENU_STRUCT *pm);
+int rscu_usage_out(FILE *fblkout, long int *ncod, long int *naa, MENU_STRUCT *pm);
+int raau_usage_out(FILE *fblkout, long int *naa, MENU_STRUCT *pm);
+char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title, MENU_STRUCT *pm);
+int aa_usage_out(FILE *fblkout, long int *naa, MENU_STRUCT *pm);
+int cai_out(FILE *foutput, long int *ncod, MENU_STRUCT *pm);
+int cbi_out(FILE *foutput, long int *ncod, long int *naa, MENU_STRUCT *pm);
+int fop_out(FILE *foutput, long int *ncod, MENU_STRUCT *pm);
+int hydro_out(FILE *foutput, long int *naa, MENU_STRUCT *pm);
+int aromo_out(FILE *foutput, long int *naa, MENU_STRUCT *pm);
+int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm);
+int dinuc_out(FILE *fblkout, char *title, char sep);
+float enc_out(FILE *foutput, long int *ncod, long int *naa, MENU_STRUCT *pm);
+void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
+void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *summ, MENU_STRUCT *pm);
+void base_sil_us_out(FILE *foutput, long int *ncod, long int *naa, MENU_STRUCT *pm);
 
 // defined in coresp.c
-void DiagoRC(FILE *summary);
-void gc_out(FILE *foutput, FILE *fblkout, int which);
-void base_sil_us_out(FILE *foutput, long int *ncod, long int *naa);
-void textbin(char *filein, char *fileout);
-void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary);
-void rowout(char *nfice, char *nfics, char *ncout, FILE *summary);
-void PrepAFC(char *nfic);
-void inertialig(char *inertia_out, char *filen, FILE *summary);
-void inertiacol(char *inertia_out, FILE *summary);
-void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *summ);
+void DiagoRC(FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
+void textbin(char *filein, char *fileout, MENU_STRUCT *pm, COA_STRUCT *pcoa, GENETIC_CODE_STRUCT *pcu, int *ds);
+void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary, MENU_STRUCT *pm);
+void rowout(char *nfice, char *nfics, char *ncout, char sp, FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
+void PrepAFC(char *nfic, COA_STRUCT *pcoa);
+void inertialig(char *inertia_out, char *filen, FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
+void inertiacol(char *inertia_out, FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa, AMINO_STRUCT *paa);
 void suprow(int num_seq, char *nficvp, char *nfictasup,
-            char *nficlisup, char *option, FILE *summary);
+            char *nficlisup, char *option, char sp, FILE *summary, COA_STRUCT *pcoa);

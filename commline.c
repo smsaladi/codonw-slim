@@ -39,8 +39,16 @@ static char *garg(int argc, char *argv[], const char *targ, int mode);
 /* reported to the user, arguments not preceded by a dash are assumed to  */
 /* be filenames. The input, output and bulk output files to be precise    */
 /**************************************************************************/
-int proc_comm_line(int *pargc, char ***pargv)
+int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
 {
+    AMINO_STRUCT *paa = pm->paa;
+    GENETIC_CODE_STRUCT *pcu = pm->pcu; 
+    FOP_STRUCT *pfop = pm->pfop;
+    FOP_STRUCT *pcbi = pm->pcbi;
+    CAI_STRUCT *pcai = pm->pcai;
+    COA_STRUCT *pcoa = pm->pcoa;
+    AMINO_PROP_STRUCT *pap = pm->pap;
+
     char *p;
     char c;
     int n;
@@ -119,7 +127,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         n = 0;
         while (isdigit((int)pm->junk[n]) && pm->junk[n] != '\0')
             n++;
-        if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 || atoi(pm->junk) > NumGeneticCodes)
+        if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 || atoi(pm->junk) > NUM_GENETIC_CODES)
         {
             printf("FATAL: The value for genetic code %s is invalid\n",
                    pm->junk);
@@ -128,13 +136,13 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
         {
             pm->code = (char)atoi(p); /* define genetic code */
-            initialize_point(pm->code, pm->f_type, pm->c_type);
+            initialize_point(pm->code, pm->f_type, pm->c_type, pm, &Z_ref);
         }
     }
 
     /* -f_type selects which of the predefined fop values to use               */
     /* NB. The fop is selected with the integer value corresponding to the menu*/
-    /* choice under the defaults menu. It must be in the range 1-NumFopSpecies */
+    /* choice under the defaults menu. It must be in the range 1-NUM_FOP_SPECIES */
 
     if (p = garg(0, NULL, "-f_type", GARG_NEXT | GARG_EXACT))
     {
@@ -143,7 +151,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         while (isdigit((int)pm->junk[n]) && pm->junk[n] != '\0')
             n++;
         if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 ||
-            atoi(pm->junk) >= NumFopSpecies)
+            atoi(pm->junk) >= NUM_FOP_SPECIES)
         {
             printf("FATAL: The value for fop_type %s is not valid\n",
                    pm->junk);
@@ -152,13 +160,13 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
         {
             pm->f_type = (char)atoi(p); /* define organism type for Fop  */
-            initialize_point(pm->code, pm->f_type, pm->c_type);
+            initialize_point(pm->code, pm->f_type, pm->c_type, pm, &Z_ref);
         }
     }
 
     /* -d_type selects which of the predefined CAI values to use               */
     /* NB. The CAI is selected with the integer value corresponding to the menu*/
-    /* choice under the defaults menu. It must be in the range 1-NumCAISpecies */
+    /* choice under the defaults menu. It must be in the range 1-NUM_CAI_SPECIES */
     if (p = garg(0, NULL, "-c_type", GARG_NEXT | GARG_EXACT))
     {
         strcpy(pm->junk, p);
@@ -166,7 +174,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         while (isdigit((int)pm->junk[n]) && pm->junk[n] != '\0')
             n++;
         if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 ||
-            atoi(pm->junk) >= NumCaiSpecies)
+            atoi(pm->junk) >= NUM_CAI_SPECIES)
         {
             printf("FATAL: The value for cai_type %s is not valid\n",
                    pm->junk);
@@ -175,7 +183,7 @@ int proc_comm_line(int *pargc, char ***pargv)
         else
         {
             pm->c_type = (char)atoi(p); /* define organism type for CAI  */
-            initialize_point(pm->code, pm->f_type, pm->c_type);
+            initialize_point(pm->code, pm->f_type, pm->c_type, pm, &Z_ref);
         }
     }
 
@@ -276,7 +284,7 @@ int proc_comm_line(int *pargc, char ***pargv)
     if (p = garg(0, NULL, "-coa_aa", GARG_EXACT))
         pm->coa = 'a';
     if (p = garg(0, NULL, "-coa_expert", GARG_EXACT)) /* detailed inertia */
-        (coa.level = 'e');                            /* analysis         */
+        (pm->pcoa->level = 'e');                            /* analysis         */
 
     if (pm->coa && pm->totals) {
         pm->coa = false;
