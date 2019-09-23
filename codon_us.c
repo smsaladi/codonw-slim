@@ -733,6 +733,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
    int c, x;
    char str[2];
    char sp = pm->separator;
+   char message[MAX_MESSAGE_LEN];
 
    static char description[61];
    static char reference[61];
@@ -766,10 +767,10 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
 
          if (x != 65)
          { /*              wrong number of codons */
-            sprintf(pm->messages, "\nError in CBI file %i digits found,  "
+            sprintf(message, "\nError in CBI file %i digits found,  "
                                   "expected 64 EXITING\n",
                     x - 1);
-            my_exit(99, pm->messages);
+            my_exit(99, message);
          }
          pcbi = (&user_cbi);
       } /*             matches if(pm->cbifile)  */
@@ -809,7 +810,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
          tot_cod += *(nncod + x);
          break;
       default:
-         sprintf(pm->messages, " Serious error in CBI information found"
+         sprintf(message, " Serious error in CBI information found"
                                " an illegal CBI value of %f for codon %i"
                                " permissible values are \n 1 for non-optimal"
                                " codons\n 2 for common codons\n"
@@ -817,7 +818,7 @@ int cbi_out(FILE *foutput, long int *nncod, long int *nnaa, MENU_STRUCT *pm)
                                " EXITING ",
                  pcbi->fop_cod[x], x);
 
-         my_exit(99, pm->messages);
+         my_exit(99, message);
          break;
       } /*                   end of switch     */
    }    /*                   for (    )        */
@@ -861,8 +862,9 @@ int fop_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
    float ffop;
    int c, x;
    char nonopt_codons = false;
-
+   
    char str[2];
+   char message[MAX_MESSAGE_LEN];
 
    char sp = pm->separator;
 
@@ -899,10 +901,10 @@ int fop_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
 
          if (x != 65)
          { /*             wrong number of codons */
-            sprintf(pm->messages, "\nError in Fop file %i values found,  "
+            sprintf(message, "\nError in Fop file %i values found,  "
                                   "expected 64 EXITING\n",
                     x - 1);
-            my_exit(99, pm->messages);
+            my_exit(99, message);
          }
          pfop = &user_fop; /*  assigns pointer to user fop values*/
       }
@@ -958,7 +960,7 @@ int fop_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
          nonopt += *(nncod + x);
          break;
       default:
-         sprintf(pm->messages, " Serious error in fop information found"
+         sprintf(message, " Serious error in fop information found"
                                " an illegal fop value of %f for codon %l"
                                " permissible values are \n 1 for non-optimal"
                                " codons\n 2 for common codons\n"
@@ -966,7 +968,7 @@ int fop_out(FILE *foutput, long int *nncod, MENU_STRUCT *pm)
                                " EXITING ",
                  pfop->fop_cod[x], x);
          printf("opt %l, std %l, nonopt %l\n", opt, std, nonopt);
-         my_exit(99, pm->messages);
+         my_exit(99, message);
          break;
       }
    }
@@ -1447,13 +1449,14 @@ char coa_raw_out(FILE *fcoaout, long *nncod, long *nnaa, char *ttitle, MENU_STRU
 
    static int count = 0;
    int i;
+   char junk[BUFSIZ + 1];
 
    for (i = 0; i < (int)strlen(ttitle); i++) /* don't take any chances  */
       if (isspace((int)*(ttitle + i)))
          *(ttitle + i) = '_';
 
-   strncpy(pm->junk, ttitle, 20); /* sequence name           */
-   fprintf(fcoaout, "%i_%s ", ++count, pm->junk);
+   strncpy(junk, ttitle, 20); /* sequence name           */
+   fprintf(fcoaout, "%i_%s ", ++count, junk);
 
    switch (pm->coa)
    {
@@ -1497,6 +1500,7 @@ void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary, MENU_STRU
    float v2;
    FILE *fcusort = NULL;
    int j;
+   char junk[BUFSIZ + 1];
 
    /* first open the original raw codon usage file                        */
    if ((fcusort = open_file("cusort.coa", "w")) == NULL)
@@ -1555,8 +1559,8 @@ void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary, MENU_STRU
       clean_up(ncod, naa); /* blank the codon usage array        */
       j = 1;
       while (j++ != sortax1[i])         /* find the rank of gene i            */
-         fgets(pm->junk, BUFSIZ, fnam); /* by scanning for lines of CU in     */
-      fscanf(fnam, "%s", pm->junk);     /* now we know the name of seq i      */
+         fgets(junk, BUFSIZ, fnam); /* by scanning for lines of CU in     */
+      fscanf(fnam, "%s", junk);     /* now we know the name of seq i      */
 
       for (j = 1; j < 64; j++)
       {                              /* now read in the cu of each codon   */
@@ -1583,7 +1587,7 @@ void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary, MENU_STRU
       for (j = 1, stops = 0; j < 65; j++)
          if (pcu->ca[j] == 11)
             stops += (int)ncod[j];
-      codon_usage_out(fcusort, ncod, 11, stops, pm->junk, pm);
+      codon_usage_out(fcusort, ncod, 11, stops, junk, pm);
    }
    fileclose(&fcusort);
    highlow(low, high, ssummary, pm); /* now we call highlow           */

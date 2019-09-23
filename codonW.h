@@ -35,7 +35,8 @@
 #define GARG_THERE 0x2000            /* used in function gargs  */
 #define GARG_SUBSQ 0x4000            /* used in function gargs  */
 #define MAX_ARGS 100                 /* used in function gargs  */
-#define MAX_FILENAME_LEN 90 /* max filename             */
+#define MAX_FILENAME_LEN 90
+#define MAX_MESSAGE_LEN 300
 
 #define NUM_GENETIC_CODES 8
 #define NUM_FOP_SPECIES 8
@@ -114,18 +115,6 @@ typedef struct
   char code;   /* which genetic code       */
   char f_type; /* which predefined fop val */
   char c_type; /* which predefined CAI val */
-
-  char seq_type;                           /* DNA or Protein or CU     */
-  char curr_infilename[MAX_FILENAME_LEN];  /* input filename           */
-  char curr_outfilename[MAX_FILENAME_LEN]; /* .out filename            */
-  char curr_tidyoutname[MAX_FILENAME_LEN]; /* .blk filename            */
-  char fop_filen[MAX_FILENAME_LEN];        /* user fop filename        */
-  char cai_filen[MAX_FILENAME_LEN];        /* user CAI filename        */
-  char cbi_filen[MAX_FILENAME_LEN];        /* user CBI filename        */
-  char curr_logfilename[MAX_FILENAME_LEN]; /* used for logging errors  */
-
-  char junk[BUFSIZ + 1]; /* used to store char info  */
-  char messages[300];    /* used to constuct messgs  */
 
   FILE *inputfile;   /* input file               */
   FILE *outputfile;  /* .out file                */

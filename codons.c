@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
 {
   FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
   FILE *fcoaout = NULL;
-  FILE *fsummary = NULL;
 
   clean_up(ncod, naa); /* zero count of codons and amino acids   */
 
@@ -175,7 +174,7 @@ int run_coa_summary(MENU_STRUCT *pm)
   textbin("coa_raw", "cbrawin", pm, pm->pcoa, pm->pcu, pm->ds);
 
   fprintf(fsummary, "\t\tSummary of Correspondence Analysis \n\n"
-                    "The input file was %s it contained %i genes\n"
+                    "The input file contained %i genes\n"
                     "The number of axes generated was %i\n"
                     "A COA was requested of %s%s usage\n\n\n"
                     "Most of the output presented in this file "
@@ -184,7 +183,6 @@ int run_coa_summary(MENU_STRUCT *pm)
                     "first %i axis\n"
                     "%s.coa\tThe position of the %i %s on the %i "
                     "principle axes\n\n\n",
-          pm->curr_infilename,
           pcoa->rows,
           ((pcoa->rows < pcoa->colm) ? pcoa->rows : pcoa->colm) - 1,
           (pm->coa == 'r') ? "relative synonymous " : "",

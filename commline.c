@@ -53,6 +53,7 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
     char c;
     int n;
     char root[MAX_FILENAME_LEN];
+    char junk[BUFSIZ + 1];
 
     /* first call to garg initialises the function  with the command line*/
     /* parameters and the number of arguments, subsequent calls strip    */
@@ -123,14 +124,14 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
     /* -code determines the genetic code                                       */
     if (p = garg(0, NULL, "-code", GARG_NEXT | GARG_EXACT))
     {
-        strcpy(pm->junk, p);
+        strcpy(junk, p);
         n = 0;
-        while (isdigit((int)pm->junk[n]) && pm->junk[n] != '\0')
+        while (isdigit((int)junk[n]) && junk[n] != '\0')
             n++;
-        if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 || atoi(pm->junk) > NUM_GENETIC_CODES)
+        if (n != (int)strlen(junk) || atoi(junk) < 0 || atoi(junk) > NUM_GENETIC_CODES)
         {
             printf("FATAL: The value for genetic code %s is invalid\n",
-                   pm->junk);
+                   junk);
             my_exit(99, "Fatal error in genetic code value");
         }
         else
@@ -146,15 +147,15 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
 
     if (p = garg(0, NULL, "-f_type", GARG_NEXT | GARG_EXACT))
     {
-        strcpy(pm->junk, p);
+        strcpy(junk, p);
         n = 0;
-        while (isdigit((int)pm->junk[n]) && pm->junk[n] != '\0')
+        while (isdigit((int)junk[n]) && junk[n] != '\0')
             n++;
-        if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 ||
-            atoi(pm->junk) >= NUM_FOP_SPECIES)
+        if (n != (int)strlen(junk) || atoi(junk) < 0 ||
+            atoi(junk) >= NUM_FOP_SPECIES)
         {
             printf("FATAL: The value for fop_type %s is not valid\n",
-                   pm->junk);
+                   junk);
             my_exit(99, "Fatal error in Fop value");
         }
         else
@@ -169,15 +170,15 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
     /* choice under the defaults menu. It must be in the range 1-NUM_CAI_SPECIES */
     if (p = garg(0, NULL, "-c_type", GARG_NEXT | GARG_EXACT))
     {
-        strcpy(pm->junk, p);
+        strcpy(junk, p);
         n = 0;
-        while (isdigit((int)pm->junk[n]) && pm->junk[n] != '\0')
+        while (isdigit((int)junk[n]) && junk[n] != '\0')
             n++;
-        if (n != (int)strlen(pm->junk) || atoi(pm->junk) < 0 ||
-            atoi(pm->junk) >= NUM_CAI_SPECIES)
+        if (n != (int)strlen(junk) || atoi(junk) < 0 ||
+            atoi(junk) >= NUM_CAI_SPECIES)
         {
             printf("FATAL: The value for cai_type %s is not valid\n",
-                   pm->junk);
+                   junk);
             my_exit(99, "Fatal error in CAI type value");
         }
         else
@@ -243,8 +244,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             printf("Could not open Fop file - %s\n", p);
             my_exit(1, "commline open fop file");
         }
-        else
-            strncpy(pm->fop_filen, pm->junk, MAX_FILENAME_LEN - 1);
         /* idiot catch, if you load personal fop values you want to calculate fop */
         pm->fop = true;
     }
@@ -257,8 +256,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             printf("Could not open CAI file - %s\n", p);
             my_exit(1, "commline failed error");
         }
-        else
-            strncpy(pm->cai_filen, pm->junk, MAX_FILENAME_LEN - 1);
         pm->cai = true; /* idiot catch          */
     }
     /* CBI                                                                     */
@@ -269,8 +266,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             printf("Could not open CBI file - %s\n", p);
             my_exit(1, "Commline failed to open file");
         }
-        else
-            strncpy(pm->cbi_filen, pm->junk, MAX_FILENAME_LEN - 1);
         pm->cbi = true; /* idiot catch            */
     }
 
@@ -321,15 +316,15 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
     /* Select the size of dataset to use to identify optimal codons            */
     if (p = garg(0, NULL, "-coa_num", GARG_NEXT | GARG_EXACT))
     {
-        strcpy(pm->junk, p);
-        if ((p = strchr(pm->junk, '%')) != NULL)
+        strcpy(junk, p);
+        if ((p = strchr(junk, '%')) != NULL)
         {
             p = '\0';
-            pcoa->fop_gene = atoi(pm->junk) * -1;
+            pcoa->fop_gene = atoi(junk) * -1;
         }
         else
         {
-            pcoa->fop_gene = atoi(pm->junk);
+            pcoa->fop_gene = atoi(junk);
         }
     }
 
@@ -377,8 +372,8 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             continue;
         else {
             /* if we are running without a menu then abort this run         */
-            sprintf(pm->junk, "Unrecognised argument %s", p);
-            my_exit(99, pm->junk);
+            sprintf(junk, "Unrecognised argument %s", p);
+            my_exit(99, junk);
         }
 
     /* Anything remaining should be file names                                */
@@ -391,8 +386,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             printf("Could not open input file - %s\n", p);
             my_exit(1, "failed to open file in proc_commline");
         }
-        else
-            strncpy(pm->curr_infilename, pm->junk, MAX_FILENAME_LEN - 1);
     }
     /* The second should be the output filename                               */
     if (p = garg(0, NULL, "", GARG_THERE))
@@ -404,8 +397,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             printf("Could not open output file - %s\n", p);
             my_exit(1, "commline out file");
         }
-        else
-            strncpy(pm->curr_outfilename, pm->junk, MAX_FILENAME_LEN - 1);
     }
 
     /* The third which only occurs if the programme is running as CodonW      */
@@ -416,8 +407,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             printf("Could not open blkoutput file - %s\n", p);
             my_exit(1, "commline blk outfile");
         }
-        else
-            strncpy(pm->curr_tidyoutname, pm->junk, MAX_FILENAME_LEN - 1);
     }
 
     /* Now check the command line is empty ... it should be at this point     */

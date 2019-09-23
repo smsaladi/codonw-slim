@@ -269,17 +269,6 @@ MENU_STRUCT Z_menu = {
     0, /* type of fop_species                              */
     0, /* type of cai_species                              */
 
-    false, /* sequence type                                    */
-    "",    /* current input file name                          */
-    "",    /* current output file name                         */
-    "",    /* current tidy outfile name                        */
-    "",    /* current fop input file name                      */
-    "",    /* current cai input file name                      */
-    "",    /* current sbi input file name                      */
-    "",    /* log all stderr output to a file                  */
-    "",    /* Null the string junk                             */
-    "",    /* Null the string messages                         */
-
     NULL, /* Null pointer input file                          */
     NULL, /* Null pointer outputfile                          */
     NULL, /* Null pointer tidyout file                        */
