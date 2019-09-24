@@ -153,13 +153,13 @@ extern REF_STRUCT Z_ref;
 extern MENU_STRUCT Z_menu;
 
 extern char *title;
-extern long int ncod[65];
-extern long int naa[23];
-extern long int din[3][16];
-extern long int codon_tot;
-extern long int num_sequence;
-extern long int num_seq_int_stop;
-extern long int tot;
+extern long ncod[65];
+extern long naa[23];
+extern long din[3][16];
+extern long codon_tot;
+extern long num_sequence;
+extern long num_seq_int_stop;
+extern long tot;
 extern int last_aa;
 extern int valid_stops;
 extern int fram;
@@ -177,32 +177,32 @@ int fileclose(FILE **file_pointer);
 FILE *open_file(char *filename, char *mode);
 
 // defined in codon_us.c
-int clean_up(long int *ncod, long int *naa);
+int clean_up(long *ncod, long *naa);
 int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
 int initialize_coa(COA_STRUCT *pcoa, GENETIC_CODE_STRUCT *pcu, int ds[]);
 
-long int codon_error(int last_aa, int valid_stops, char *title,
+long codon_error(int last_aa, int valid_stops, char *title,
                      char error_level, MENU_STRUCT *pm);
-int dinuc_count(char *seq, long int tot);
+int dinuc_count(char *seq, long tot);
 
-int codon_usage_tot(char *seq, long int *codon_tot, long int ncod[], long int naa[], MENU_STRUCT *pm);
-int codon_usage_out(FILE *fblkout, long int *ncod, int last_aa,
+int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_STRUCT *pm);
+int codon_usage_out(FILE *fblkout, long *ncod, int last_aa,
                     int valid_stops, char *info, MENU_STRUCT *pm);
-int rscu_usage_out(FILE *fblkout, long int *ncod, long int *naa, MENU_STRUCT *pm);
-int raau_usage_out(FILE *fblkout, long int *naa, MENU_STRUCT *pm);
+int rscu_usage_out(FILE *fblkout, long *ncod, long *naa, MENU_STRUCT *pm);
+int raau_usage_out(FILE *fblkout, long *naa, MENU_STRUCT *pm);
 char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title, MENU_STRUCT *pm);
-int aa_usage_out(FILE *fblkout, long int *naa, MENU_STRUCT *pm);
-int cai_out(FILE *foutput, long int *ncod, MENU_STRUCT *pm);
-int cbi_out(FILE *foutput, long int *ncod, long int *naa, MENU_STRUCT *pm);
-int fop_out(FILE *foutput, long int *ncod, MENU_STRUCT *pm);
-int hydro_out(FILE *foutput, long int *naa, MENU_STRUCT *pm);
-int aromo_out(FILE *foutput, long int *naa, MENU_STRUCT *pm);
+int aa_usage_out(FILE *fblkout, long *naa, MENU_STRUCT *pm);
+int cai_out(FILE *foutput, long *ncod, MENU_STRUCT *pm);
+int cbi_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
+int fop_out(FILE *foutput, long *ncod, MENU_STRUCT *pm);
+int hydro_out(FILE *foutput, long *naa, MENU_STRUCT *pm);
+int aromo_out(FILE *foutput, long *naa, MENU_STRUCT *pm);
 int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm);
 int dinuc_out(FILE *fblkout, char *title, char sep);
-float enc_out(FILE *foutput, long int *ncod, long int *naa, MENU_STRUCT *pm);
+float enc_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
 void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *summ, MENU_STRUCT *pm);
-void base_sil_us_out(FILE *foutput, long int *ncod, long int *naa, MENU_STRUCT *pm);
+void base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 
 // defined in coresp.c
 void DiagoRC(FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
