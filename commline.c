@@ -46,7 +46,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
     FOP_STRUCT *pfop = pm->pfop;
     FOP_STRUCT *pcbi = pm->pcbi;
     CAI_STRUCT *pcai = pm->pcai;
-    COA_STRUCT *pcoa = pm->pcoa;
     AMINO_PROP_STRUCT *pap = pm->pap;
 
     char *p;
@@ -89,14 +88,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             " -cai_file  {file}\tUser input file of CAI values\n"
             " -cbi_file  {file}\tUser input file of CBI values\n"
             " -fop_file  {file}\tUser input file of Fop values\n"
-            "\nCorrespondence analysis (COA) options \n"
-            " -coa_cu \tCOA of codon usage frequencies\n"
-            " -coa_rscu\tCOA of Relative Synonymous Codon Usage\n"
-            " -coa_aa\tCOA of amino acid usage frequencies\n"
-            " -coa_expert\tGenerate detailed(expert) statistics on COA\n"
-            " -coa_axes N\tSelect number of axis to record\n"
-            " -coa_num N\tSelect number of genes to use to identify "
-            "optimal codons\n"
             "\t\tvalues can be whole numbers or a percentage (5 or 10%%)\n"
             "\nBulk output options | only one can be selected per analysis\n"
             " -aau\t\tAmino Acid Usage (AAU)\n"
@@ -267,65 +258,6 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
             my_exit(1, "Commline failed to open file");
         }
         pm->cbi = true; /* idiot catch            */
-    }
-
-    /* This section changes the default correspondence menu choices normally   */
-    /* set in menu menu 5.                                                     */
-    /* Note only one of -coa_cu -coa_rscu -coa_aa can be chosen                */
-    if (p = garg(0, NULL, "-coa_cu", GARG_EXACT))
-        pm->coa = 'c';
-    if (p = garg(0, NULL, "-coa_rscu", GARG_EXACT))
-        pm->coa = 'r';
-    if (p = garg(0, NULL, "-coa_aa", GARG_EXACT))
-        pm->coa = 'a';
-    if (p = garg(0, NULL, "-coa_expert", GARG_EXACT)) /* detailed inertia */
-        (pm->pcoa->level = 'e');                            /* analysis         */
-
-    if (pm->coa && pm->totals) {
-        pm->coa = false;
-        fprintf(pm->my_err, "COA analysis of concatenated sequences is nonsensical."
-                            "Ignoring `-coa_*`");
-    }
-
-
-    /* These are options selectable under the advanced COA menu                */
-    /* This first option -coa_axes changes the number of axis recorded to file */
-    if (p = garg(0, NULL, "-coa_axes", GARG_NEXT | GARG_EXACT))
-    {
-        if (isdigit((int)*p))
-        {
-            n = (char)atoi(p);
-            /* just check that correspondence analysis has been selected         */
-            if (pm->coa == 'a' && (n > 20 || n < 0) || (n < 0 || n > 59))
-            {
-                fprintf(pm->my_err, "Value %d is out of range for Number COA Axis "
-                                    "adjusting to max value\n",
-                        n);
-                if (pm->coa == 'a')
-                    pcoa->axis = 20;
-                else
-                    pcoa->axis = 59;
-            }
-            else
-            {
-                pcoa->axis = (char)n;
-            }
-        }
-    }
-
-    /* Select the size of dataset to use to identify optimal codons            */
-    if (p = garg(0, NULL, "-coa_num", GARG_NEXT | GARG_EXACT))
-    {
-        strcpy(junk, p);
-        if ((p = strchr(junk, '%')) != NULL)
-        {
-            p = '\0';
-            pcoa->fop_gene = atoi(junk) * -1;
-        }
-        else
-        {
-            pcoa->fop_gene = atoi(junk);
-        }
     }
 
     /* These option are mutually exclusive and are normally selected using the */

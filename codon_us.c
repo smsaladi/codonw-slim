@@ -27,7 +27,6 @@
 /* except for the COA analysis                                            */
 /* Internal subroutines and functions                                     */
 /* initialize_point    assigns genetic code dependent parameters to structs*/
-/* initialize_coa      decides which cod/AA to include in a COA by default */
 /* codon_usage_tot    Counts codon and amino acid usage                   */
 /* ident_codon        Converts codon into a numerical value in range 1-64 */
 /* codon_usage_out    Write out Codon Usage to file                       */
@@ -47,9 +46,6 @@
 /* cutab_out          Write a nice tabulation of the RSCU+CU+AA           */
 /* dinuc_count        Count the dinucleotide usage                        */
 /* dinuc_out          Write out dinucleotide usage                        */
-/* coa_raw_out        Write out raw codon usage for use by COA analysis   */
-/* gen_cusort_fop     COA specific, write out cu of genes by axis1 posit. */
-/* highlow            Used sorted cu to calculate high_low chi sq. contin */
 /* hydro_out          Write out Protein hydropathicity                    */
 /* aromo_out          Write out Protein aromaticity                       */
 /*                                                                        */
@@ -73,7 +69,6 @@
 #include "codonW.h"
 
 static int ident_codon(char *codon);
-static void highlow(long *low, long *high, FILE *ssummary, MENU_STRUCT *pm);
 static int* how_synon(GENETIC_CODE_STRUCT *pcu);
 static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
 
@@ -88,7 +83,6 @@ static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
 /* pcu                points to data which has the translation of codons  */
 /* ds                 is a struct describing how synonymous a codon is    */
 /* da                 is a struct describing the size of each AA family   */
-/* pcoa               points to a struct that describes columns to be     */
 /*                    included/excluded from any COA analysis             */
 /**************************************************************************/
 int initialize_point(char code, char fop_species, char cai_species, MENU_STRUCT *pm, REF_STRUCT *ref)
@@ -101,7 +95,6 @@ int initialize_point(char code, char fop_species, char cai_species, MENU_STRUCT 
    pm->pcu = &(ref->cu[code]);
    pm->ds = how_synon(pm->pcu);
    pm->da = how_synon_aa(pm->pcu);
-   pm->pcoa = ref->coa;
 
    fprintf(pm->my_err, "Genetic code set to %s %s\n", pm->pcu->des, pm->pcu->typ);
 
@@ -143,33 +136,6 @@ static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
       dda[pcu->ca[x]]++;
 
    return dda;
-}
-/********************* Initialise COA     *********************************/
-/* Decides which codons or amino acids are to be included in a COA if only*/
-/* the default choice is used. For an amino acid COA, only stops are excl */
-/* but for a codon usage COA stop codons and non-synonymous codons are    */
-/* excluded                                                               */
-/* pcoa               points to a struct that describes columns to be     */
-/*                    included/excluded from any COA analysis             */
-/*                    structure contains AA and Codon information         */
-/**************************************************************************/
-int initialize_coa(COA_STRUCT *pcoa, GENETIC_CODE_STRUCT *pcu, int ds[])
-{
-   int i;
-
-   for (i = 0; i < 22; i++)      /* for each amino acid                */
-      if (i == 11 || i == 0)     /* stop codons have the value 11      */
-         pcoa->amino[i] = false; /* see RECODING file for more details */
-      else
-         pcoa->amino[i] = true;
-
-   for (i = 0; i < 65; i++) /* for each codon                     */
-      if (*(ds + i) == 1 || pcu->ca[i] == 11 || i == 0)
-         pcoa->codons[i] = false;
-      else
-         pcoa->codons[i] = true;
-
-   return 1;
 }
 
 /****************** Codon Usage Counting      *****************************/
@@ -721,7 +687,6 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
    FOP_STRUCT *pfop = pm->pfop;
    FOP_STRUCT *pcbi = pm->pcbi;
    CAI_STRUCT *pcai = pm->pcai;
-   COA_STRUCT *pcoa = pm->pcoa;
    AMINO_PROP_STRUCT *pap = pm->pap;
    int *ds = pm->ds;
    int *da = pm->da;
@@ -852,7 +817,6 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
    FOP_STRUCT *pfop = pm->pfop;
    FOP_STRUCT *pcbi = pm->pcbi;
    CAI_STRUCT *pcai = pm->pcai;
-   COA_STRUCT *pcoa = pm->pcoa;
    AMINO_PROP_STRUCT *pap = pm->pap;
    int *ds = pm->ds;
 
@@ -1109,7 +1073,6 @@ void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
    FOP_STRUCT *pfop = pm->pfop;
    FOP_STRUCT *pcbi = pm->pcbi;
    CAI_STRUCT *pcai = pm->pcai;
-   COA_STRUCT *pcoa = pm->pcoa;
    AMINO_PROP_STRUCT *pap = pm->pap;
    int *ds = pm->ds;
 
@@ -1436,544 +1399,7 @@ int dinuc_out(FILE *fblkout, char *ttitle, char sp)
    }
    return 1;
 }
-/************* Coa_raw_out            *************************************/
-/* Write out codon usage in a format compatible with the format required  */
-/* by text2bin, i.e. part of the COA analysis suite of subroutines        */
-/* rather than storing this data in memory, we first write raw codon usage*/
-/* to disk, and then read it in as necessary, the file handle for this    */
-/* data is passed via the fcoaout pointer. By default it writes to the    */
-/* files coa_raw and coa1_raw                                             */
-/**************************************************************************/
-char coa_raw_out(FILE *fcoaout, long *nncod, long *nnaa, char *ttitle, MENU_STRUCT *pm)
-{
 
-   static int count = 0;
-   int i;
-   char junk[BUFSIZ + 1];
-
-   for (i = 0; i < (int)strlen(ttitle); i++) /* don't take any chances  */
-      if (isspace((int)*(ttitle + i)))
-         *(ttitle + i) = '_';
-
-   strncpy(junk, ttitle, 20); /* sequence name           */
-   fprintf(fcoaout, "%i_%s ", ++count, junk);
-
-   switch (pm->coa)
-   {
-      case 'c':
-      case 'r': /* if rscu or codon usage   */
-         for (i = 1; i < 65; i++)
-            fprintf(fcoaout, "%i\t", (int)nncod[i]);
-         fprintf(fcoaout, "\n");
-         break;
-      case 'a': /* if amino acid usage      */
-         for (i = 1; i < 22; i++)
-            fprintf(fcoaout, "%i\t", (int)nnaa[i]);
-         fprintf(fcoaout, "\n");
-         break;
-   }
-   return 1;
-}
-
-/***********  gen_cusort_fop                 ******************************/
-/* COA specific routine, takes the sorted array of axis 1 positions from  */
-/* sort_by_axis1 and passed via the sortax1 pointer. The array contains   */
-/* the genes in order of occurrence in the original input file, but the   */
-/* ranked order of each gene is recorded as the array value               */
-/* This allows us to identify genes position at either end of the main    */
-/* trend. Then the codon usage of these genes is used to write out a file */
-/* with the genes in a axis1 position order                               */
-/* the codon usage of the two groups at either end of the principle axis  */
-/* are also counted. This information is then passed to highlow()         */
-/* The position of each gene on axis 1 is passed via the ax1 pointer      */
-/* The integer rank of each sequence is stored in sortax1                 */
-/* The number of genes is passed by the interger value lig                */
-/**************************************************************************/
-void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *ssummary, MENU_STRUCT *pm)
-{
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   COA_STRUCT *pcoa = pm->pcoa;
-
-   int stops;
-   long *low, *high;
-   int min, max, i;
-   float v2;
-   FILE *fcusort = NULL;
-   int j;
-   char junk[BUFSIZ + 1];
-
-   /* first open the original raw codon usage file                        */
-   if ((fcusort = open_file("cusort.coa", "w")) == NULL)
-      my_exit(1, "gen_cusort_fop");
-
-   /* calloc enough memory for the codon usage of the low group of genes  */
-   if ((low = (long *)calloc(65, sizeof(long))) == NULL)
-      my_exit(3, "low gen_cusort_fop");
-   /* calloc enought memory for the codon usage of the high group of genes*/
-   if ((high = (long *)calloc(65, sizeof(long))) == NULL)
-      my_exit(3, "high gen_cusort_fop");
-
-   /*pcoa->fop_gene is set in the advanced correspondence menu and is used*/
-   /*to set the No of genes at either end of the principle axis that are  */
-   /*to be used to create the low and high codon bias subsets of genes    */
-   if (pcoa->fop_gene < 0)
-   { /* the number represent a percentage  */
-      min = (int)((float)lig * ((float)pcoa->fop_gene * -0.01));
-      max = lig - (int)((float)lig * ((float)pcoa->fop_gene * -0.01));
-   }
-   else
-   { /*  the value is an absolute number    */
-      min = pcoa->fop_gene;
-      max = lig - pcoa->fop_gene;
-   }
-
-   if (min <= 0)
-   {           /* error catch in case % is too low    */
-      min = 1; /* or fop_gene is set too high         */
-      fprintf(pm->my_err, "Problems with the number genes used for"
-                          " fop adjusting to 1 gene\n");
-   }
-   if (max <= 0)
-   { /* ditto                               */
-      max = 1;
-      fprintf(pm->my_err, "Problems with the number genes used for"
-                          " fop adjusting to one gene\n");
-   }
-   for (j = 1; j < 65; j++)
-   { /* initialise the blank array          */
-      low[j] = 0;
-      high[j] = 0;
-   }
-
-   /* write explanation about what we are doing to summary.coa            */
-   fprintf(ssummary, "\ncusort.coa (not shown here) contains CU of "
-                     "genes sorted by their\n"
-                     "ordination on the principle axis or factor\n"
-                     "Genes used to calculate fop were 1 to %i and %i to %i\n"
-                     "these gene numbers REFER ONLY to the file cusort.coa\n",
-           min, max + 1, pcoa->rows);
-
-   for (i = 1; i <= lig; i++)
-   {                       /* foreach gene                       */
-      rewind(fnam);        /* go to start of codon_raw           */
-      clean_up(ncod, naa); /* blank the codon usage array        */
-      j = 1;
-      while (j++ != sortax1[i])         /* find the rank of gene i            */
-         fgets(junk, BUFSIZ, fnam); /* by scanning for lines of CU in     */
-      fscanf(fnam, "%s", junk);     /* now we know the name of seq i      */
-
-      for (j = 1; j < 64; j++)
-      {                              /* now read in the cu of each codon   */
-         fscanf(fnam, "%f", &v2);    /* assign it initially to v2          */
-         ncod[j] = (long)v2;     /* then place this value in ncod      */
-         if (min >= i)               /* remember the codon usage of the    */
-            low[j] += (long)v2;  /* two groups of genes at either end  */
-         if (max < i)                /* of the axis, containing min and    */
-            high[j] += (long)v2; /* max genes                          */
-      }
-
-      fscanf(fnam, "%f\n", &v2); /* now read the last codon in         */
-      ncod[64] = (long)v2;
-      if (min >= i)
-         low[64] += (long)v2;
-      if (max < i)
-         high[64] += (long)v2; /* as above                           */
-
-      /* we want to use codon_us_out to write out the sorted list of CU   */
-      /* to cusort.coa. But if we have any internal stops etc, it will    */
-      /* generate error messages, but we have already seen this messages  */
-      /* on the first pass, so we fool it by saying all the stops are     */
-      /* valid stops and not to complain again                            */
-      for (j = 1, stops = 0; j < 65; j++)
-         if (pcu->ca[j] == 11)
-            stops += (int)ncod[j];
-      codon_usage_out(fcusort, ncod, 11, stops, junk, pm);
-   }
-   fileclose(&fcusort);
-   highlow(low, high, ssummary, pm); /* now we call highlow           */
-                                 /* to use the sorted cu output   */
-   free(low);                    /* release the memory to the OS  */
-   free(high);
-}
-
-/************ highlow          ********************************************/
-/* The codon usage of the two groups on either end of the axis is assigned*/
-/* to low and high ... perhaps these would be better called left and right*/
-/* as when they are passed to this function it is not know which group is */
-/* lowly or highly biased. This is decided within highlow, by calculating */
-/* the enc (a measure of bias) for each group and assigning the group with*/
-/* the lowest enc as the higher biased genes. This works if the trend     */
-/* represented by axis1 is truly selection for optimal translation        */
-/* IT'S THE USERS RESPONSIBILITY TO ASSERTAIN IF THIS IS VALID            */
-/* This information is used to identify optimal codons, as well as        */
-/* calculate  putative CAI adaptive values and for the Chi squared con-   */
-/* tingency test, used to identify the optimal and non-optimal codons     */
-/**************************************************************************/
-
-static void highlow(long *low, long *high, FILE *ssummary, MENU_STRUCT *pm)
-{
-   AMINO_STRUCT *paa = pm->paa;
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   int *ds = pm->ds;
-
-   int *last_row, icode, outer, i, j, x;
-
-   long *aa_low, *aa_high, *left, *right, *left_aa, *right_aa;
-   long *highest_x;
-   long right_tot = 0, left_tot = 0;
-
-   float enc_low, enc_high;
-   float a, b, c, d, e, f, g, h, total, hr, br, *x2;
-   float w;
-   char *flag, sp;
-
-   FILE *fcai = NULL, *fhilo = NULL, *ffop = NULL;
-   FILE *fcbi = NULL;
-
-   /*calloc to the pointers the required storage                          */
-   if ((fhilo = open_file("hilo.coa", "w")) == NULL)
-      my_exit(1, "hilo.coa");
-   if ((ffop = open_file("fop.coa", "w")) == NULL)
-      my_exit(1, "fop.coa");
-   if ((aa_low = (long *)calloc(22, sizeof(long))) == NULL)
-      my_exit(3, "aa_low");
-   if ((aa_high = (long *)calloc(22, sizeof(long))) == NULL)
-      my_exit(3, "aa_high");
-   if ((highest_x = (long *)calloc(22, sizeof(long))) == NULL)
-      my_exit(3, "last_row");
-   if ((x2 = (float *)calloc(65, sizeof(float))) == NULL)
-      my_exit(3, "x2");
-   if ((flag = (char *)calloc(65, sizeof(char))) == NULL)
-      my_exit(3, "flag");
-   if ((last_row = (int *)calloc(65, sizeof(int))) == NULL)
-      my_exit(3, "last_row");
-
-   sp = '\t';
-
-   /* initialize the various arrays                                       */
-   for (x = 0; x < 4; x++)
-      last_row[x] = 0;
-
-   for (x = 0; x < 22; x++)
-   {
-      highest_x[x] = 0;
-      aa_low[x] = 0;
-      aa_high[x] = 0;
-   }
-   for (x = 0; x < 65; x++)
-   {
-      x2[x] = 0.0F;
-      flag[x] = 0;
-      last_row[x] = 0;
-   }
-
-   /*count the amino acid usage for the two datasets, initially we only   */
-   /*have the codon usage of the two groups                               */
-   for (i = 1; i < 65; i++)
-   {
-      aa_low[pcu->ca[i]] += low[i];
-      aa_high[pcu->ca[i]] += high[i];
-      flag[i] = ' '; /*flag is used to identify opt codons */
-   }
-
-   enc_low = enc_out(fhilo, low, aa_low, pm);    /*calc enc for each  of */
-   enc_high = enc_out(fhilo, high, aa_high, pm); /*datasets              */
-   fprintf(fhilo, "\n");
-
-   fprintf(ssummary, "\nenc_left %f enc_right %f\n", enc_low, enc_high);
-
-   for (i = 1; i < 65; i++)
-   {
-      if (*(ds + i) == 1 || pcu->ca[i] == 11) /*skip stop and nonsynon*/
-         continue;
-
-      if (enc_low < enc_high)
-      {                      /*decide which is more   */
-         left = low;         /*biased                 */
-         right = high;       /*left and right refer   */
-         left_aa = aa_low;   /*the columns of outputed*/
-         right_aa = aa_high; /*hilow table            */
-         a = (float)low[i];
-         b = (float)high[i];
-         g = (float)aa_low[pcu->ca[i]];
-         h = (float)aa_high[pcu->ca[i]];
-      }
-      else
-      {
-         left = high;
-         right = low;
-         left_aa = aa_high;
-         right_aa = aa_low;
-         a = (float)high[i];
-         b = (float)low[i];
-         g = (float)aa_high[pcu->ca[i]];
-         h = (float)aa_low[pcu->ca[i]];
-      }
-      /* calculate the chi squared contingency value                      */
-      c = g - a;
-      d = h - b;
-      e = a + b;
-      f = c + d;
-      total = a + b + c + d;
-      if (e * f * h * g)
-         x2[i] = ((a * d - c * b) * (a * d - c * b)) * total / (e * f * g * h);
-      else
-         x2[i] = -99.0F; /*if 0 assign nonsense value*/
-
-      if (g * h)
-      {
-         hr = a / g;
-         br = b / h;
-         if (hr > br && x2[i] > 6.635) /* if significant at p<.99  */
-            flag[i] = '*';
-         else if (hr > br && x2[i] > 3.841) /* if significant at p<0.05 */
-            flag[i] = '@';
-      }
-   }
-   fprintf(ssummary, "Chi squared contingency test of genes from both\n"
-                     "extremes of axis 1\n");
-   /* this created the hi-low codon usage table                              */
-   /* Sample output truncated (***********************************************/
-   /*Asp   GAU   0.10 ( 10) 1.68 ( 53)   Gly   GGU   0.21 ( 12) 0.85 ( 11)   */
-   /*      GAC*  1.90 (184) 0.32 ( 10)         GGC*  3.13 (176) 2.00 ( 26)   */
-   /*Glu   GAA   0.00 (  0) 1.34 ( 55)         GGA   0.05 (  3) 0.69 (  9)   */
-   /*      GAG*  2.00 (255) 0.66 ( 27)         GGG   0.60 ( 34) 0.46 (  6)   */
-   /*                                                                        */
-   /*                                                                        */
-   /*        Number of codons in high bias dataset 2825                      */
-   /*        Number of codons in low  bias dataset 1194                      */
-   /*Note: high bias was assigned to the dataset with the lower average Nc   */
-   /*NO Chi could be calculated for UGU                                      */
-   /*Codon UUC (Phe) chi value was 70.175                                    */
-   /*Codon UCC (Ser) chi value was 48.030                                    */
-   /*Codon UAC (Tyr) chi value was 86.069                                    */
-   /**************************************************************************/
-
-   for (outer = 1; outer <= 3; outer += 2)
-   {
-      for (x = 1; x < 5; x++)
-      {
-         for (j = 1; j < 5; j++)
-         {
-            icode = ((x - 1) * 16) + ((j - 1) * 4) + outer;
-
-            for (i = icode; i <= icode + 1; i++)
-            { /*loop twice             */
-               /* if the previous entry in this column codes for the same AA */
-               if (last_row[i % 2] != pcu->ca[i])
-               {
-                  fprintf(fhilo, "%s%c%s%c%c", paa->aa3[pcu->ca[i]],
-                          sp, paa->cod[i], flag[i], sp);
-                  fprintf(ssummary, "%s%c%s%c%c", paa->aa3[pcu->ca[i]],
-                          sp, paa->cod[i], flag[i], sp);
-               }
-               else
-               {
-                  fprintf(fhilo, "%c%s%c%c", sp, paa->cod[i], flag[i], sp);
-                  fprintf(ssummary, "   %c%s%c%c", sp, paa->cod[i], flag[i], sp);
-               }
-               /* write out Codon usage, RSCU and significance for both data */
-               fprintf(fhilo, "%4.2f (%3i) %4.2f (%3i)%c",
-                       (left[i]) ? ((float)left[i] / (float)left_aa[pcu->ca[i]]) * (float)(*(ds + i))
-                                 : 0.0,
-                       (int)left[i],
-                       (right[i]) ? ((float)right[i] / (float)right_aa[pcu->ca[i]]) * (float)(*(ds + i))
-                                  : 0.0,
-                       (int)right[i], sp); /*       end of fprintf  */
-               fprintf(ssummary, "%4.2f (%3i) %4.2f (%3i)%c",
-                       (left[i]) ? ((float)left[i] / (float)left_aa[pcu->ca[i]]) * (float)(*(ds + i))
-                                 : 0.0,
-                       (int)left[i],
-                       (right[i]) ? ((float)right[i] / (float)right_aa[pcu->ca[i]]) * (float)(*(ds + i))
-                                  : 0.0,
-                       (int)right[i], sp);   /*        end of fprintf */
-               last_row[i % 2] = pcu->ca[i]; /* remember the last row */
-            }
-            fprintf(fhilo, "\n");
-            fprintf(ssummary, "\n");
-         }
-         fprintf(ssummary, "\n");
-         fprintf(fhilo, "\n");
-      }
-      fprintf(ssummary, "\n");
-      fprintf(fhilo, "\n");
-   }
-
-   for (i = 1; i < 65; i++)
-   { /* count both datasets   */
-      right_tot += right[i];
-      left_tot += left[i];
-   }
-
-   fprintf(fhilo,
-           "\tNumber of codons in high bias dataset %li\n", left_tot);
-   fprintf(fhilo,
-           "\tNumber of codons in low  bias dataset %li\n", right_tot);
-   fprintf(fhilo,
-           "Note: high bias was assigned to the dataset with the lower"
-           " average Nc\n");
-
-   fprintf(ssummary,
-           "\tNumber of codons in high bias dataset %li\n", left_tot);
-   fprintf(ssummary,
-           "\tNumber of codons in low  bias dataset %li\n", right_tot);
-   fprintf(ssummary,
-           "Note high bias was assigned to the genes with the lower"
-           " overall Nc\n");
-
-   /* now printout the Chi Squared values for each significant comparison */
-   for (i = 1; i < 65; i++)
-   {
-      if (flag[i] == '*' || flag[i] == '@')
-      {
-         fprintf(fhilo, "Codon %s (%s) chi value was %.3f\n", paa->cod[i],
-                 paa->aa3[pcu->ca[i]], x2[i]);
-         fprintf(ssummary, "Codon %s (%s) chi value was %.3f\n", paa->cod[i],
-                 paa->aa3[pcu->ca[i]], x2[i]);
-      }
-      if (x2[i] == -99) /* there were no codons in one of the groups*/
-         fprintf(fhilo, "NO Chi could be calculated for %s\n", paa->cod[i]);
-   }
-   fprintf(fhilo, "\n");
-   fprintf(ssummary, "\n");
-
-   /* now write out the optimal codons as PUTATIVELY identified by codonW */
-   fprintf(ssummary, "These are the PUTATIVE optimal codons\n"
-                     "This is the format required for Menu 4 option 2 (Fop) "
-                     "and option 3 (CBI)\n"
-                     "This data is also duplicated in the files \"fop.coa\" "
-                     "and \"cbi.coa\"\n"
-                     "The format of these files is that required for input "
-                     "as a personal choice\n"
-                     "of optimal codons for these indexes\n");
-
-   for (i = 1; i < 65; i++)
-   {
-      if (left[i] > highest_x[pcu->ca[i]]) /* used for calculating CAI */
-         highest_x[pcu->ca[i]] = left[i];
-
-      if (*(ds + i) == 1 || pcu->ca[i] == 11)
-      {
-         fprintf(ffop, "2");
-         fprintf(ssummary, "2");
-      }
-      else if (flag[i] == '*')
-      {
-         fprintf(ffop, "3");
-         fprintf(ssummary, "3");
-      }
-      else if (((left[i]) ? ((float)left[i] / (float)left_aa[pcu->ca[i]]) * (float)(*(ds + i))
-                          : 0.0) < 0.1)
-      { /* if RSCU <0.1 its rare */
-         fprintf(ffop, "1");
-         fprintf(ssummary, "1");
-      }
-      else
-      {
-         fprintf(ffop, "2");
-         fprintf(ssummary, "2");
-      }
-
-      if (!(i % 16))
-      { /* handle line wrapping  */
-         fprintf(ffop, "\n");
-         fprintf(ssummary, "\n");
-      }
-      else
-      {
-         fprintf(ffop, ",");
-         fprintf(ssummary, ",");
-      }
-   }
-   fileclose(&ffop); /*   close the Fop file  */
-
-   if ((fcbi = open_file("cbi.coa", "w")) == NULL)
-      my_exit(1, "cbi.coa"); /*    open cbi.coa       */
-
-   for (i = 1; i < 65; i++)
-   { /* write values 2 cbi.coa*/
-
-      if (flag[i] == '*') /* Only report optimal codons */
-         fprintf(fcbi, "3");
-      else
-         fprintf(fcbi, "2"); /* ignore non optimal codons  */
-
-      if (!(i % 16))
-         fprintf(fcbi, "\n");
-      else
-         fprintf(fcbi, ",");
-   }
-
-   fileclose(&fcbi);
-
-   fprintf(ssummary, "\n\n");
-
-   /* now calculate and write out CAI adaptiveness values                 */
-   fprintf(ssummary, "These are PUTATIVE CAI adaptiveness values "
-                     "identified by this programme\n"
-                     "This data is also duplicated in the file \"cai.coa\"\n"
-                     "The format of this file is compatible with the format\n"
-                     "of the file used to input a personal selection of CAI values\n"
-                     "That is, the format required for Menu 4 option 1\n"
-                     "cai.coa\tinput file to be used for CAI calculations\n"
-                     "\n\nCod AA    Xi\tWi\t\tCod AA    Xi\tWi\n");
-
-   if ((fcai = open_file("cai.coa", "w")) == NULL)
-      my_exit(1, "cai.coa");
-
-   for (i = 1, x = true; i < 65 && x; i++)
-   {
-
-      /* if a stop or a non-synonymous codon w = 1                          */
-      if (*(ds + i) == 1 || pcu->ca[i] == 11)
-      {
-         fprintf(fcai, "1.0000000 \n");
-         fprintf(ssummary, "%s %s %6.1f %9.7f\t",
-                 paa->cod[i],
-                 paa->aa3[pcu->ca[i]],
-                 (float)left[i], 1.0000000);
-      }
-      else if (highest_x[pcu->ca[i]])
-      {
-
-         /* if a codon is absent then adjust its frequecy to 0.5             */
-         if (left[i])
-            w = (float)left[i] / (float)highest_x[pcu->ca[i]];
-         else
-            w = 0.5F / (float)highest_x[pcu->ca[i]];
-         fprintf(fcai, "%9.7f \n", w); /* output CAI W    */
-         fprintf(ssummary, "%s %s %6.1f %9.7f\t",
-                 paa->cod[i], paa->aa3[pcu->ca[i]],
-                 (left[i]) ? (float)left[i] : 0.5, w);
-         /* either strange amino acid composition or data sets where too small */
-      }
-      else
-      {
-         fprintf(pm->my_err,
-                 "WARNING An attempt to calculate CAI relative "
-                 "adaptivnesss FAILED\n no %s amino acids found"
-                 " in the high bias dataset \n",
-                 paa->aa3[pcu->ca[i]]);
-         fprintf(ssummary,
-                 "\nWARNING An attempt to calculate CAI relative adaptiveness "
-                 "FAILED\n no %s amino acids found in the high bias dataset \n",
-                 paa->aa3[pcu->ca[i]]);
-         x = false;
-      }
-      if (!(i % 2))
-         fprintf(ssummary, "\n");
-   } /* matches for (i = 1, x = true ; i < 65 && x ; i++)                 */
-
-   fileclose(&fcai); /* close files           */
-   fileclose(&fhilo);
-   free(aa_low); /* free memory           */
-   free(aa_high);
-   free(highest_x);
-   free(x2);
-   free(flag);
-   free(last_row);
-   return;
-}
 /*********************  hydro_out        **********************************/
 /* The general average hydropathicity or (GRAVY) score, for the hypothet- */
 /* ical translated gene product. It is calculated as the arithmetic mean  */

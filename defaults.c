@@ -44,19 +44,6 @@ int last_aa = 0;
 int valid_stops = 0;
 int fram;
 
-/* declare default values */
-static COA_STRUCT coa = {
-    'n',        /* level                  */
-    4,          /* axis                   */
-    0,          /* rows or genes         */
-    64,         /* colms                  */
-    -5,         /* fop_gene (if number is negative implies a percentage)*/
-    "",         /* add_row                */
-    0.00F,      /* inertia                */
-    NULL,
-    NULL
-};
-
 /* define genetic codes   */
 static GENETIC_CODE_STRUCT cu[] = {
     {
@@ -362,8 +349,6 @@ MENU_STRUCT Z_menu = {
 
     ',', /* default seperator                                */
 
-    false, /* coa                                              */
-
     0, /* genetic code                                     */
     0, /* type of fop_species                              */
     0, /* type of cai_species                              */
@@ -377,8 +362,6 @@ MENU_STRUCT Z_menu = {
     NULL, /* Null pointer cbifile                             */
     NULL, /* Null pointer the logfile name                    */
     NULL, /* error to stderr                                */
-    NULL, /* Null pointer fcoa_in                             */
-    NULL, /* Null pointer fcoa_out                            */
 
     NULL,
     NULL,
@@ -396,7 +379,6 @@ REF_STRUCT Z_ref = {
     fop,
     cai,
 
-    &coa,
     &amino_acids,
     &amino_prop
 };

@@ -79,19 +79,6 @@ typedef struct
 
 typedef struct
 {
-  char level;                     /* either expert or standard*/
-  int axis;                       /* how many axis to generate*/
-  int rows;                       /* how many genes in dataset*/
-  int colm;                       /* how many columns in data */
-  int fop_gene;                   /* No of genes to use to ident opt codon*/
-  char add_row[MAX_FILENAME_LEN]; /* file with supp sequences */
-  float inertia;                  /* total data inertia       */
-  char codons[65];                /* codon to be analysed     */
-  char amino[22];                 /* amino acids to be COA'ed */
-} COA_STRUCT;
-
-typedef struct
-{
   char bulk;    /* used to ident blk output */
   char totals;  /* concatenate genes ?      */
   char warn;    /* show sequence warning    */
@@ -110,7 +97,6 @@ typedef struct
   char aro;      /* calc aromaticity         */
 
   char separator; /* column separator         */
-  char coa;       /* calculate a COA or not ? */
 
   char code;   /* which genetic code       */
   char f_type; /* which predefined fop val */
@@ -125,15 +111,12 @@ typedef struct
   FILE *cbifile;     /* cbi input values         */
   FILE *logfile;     /* log file name            */
   FILE *my_err;      /* pointer for err stream   */
-  FILE *fcoa_in;
-  FILE *fcoa_out;
 
   AMINO_STRUCT *paa;        /* Settings for indicies */
   GENETIC_CODE_STRUCT *pcu;  
   FOP_STRUCT *pfop;
   FOP_STRUCT *pcbi;
   CAI_STRUCT *pcai;
-  COA_STRUCT *pcoa;
   AMINO_PROP_STRUCT *pap;
   int *da;
   int *ds;
@@ -144,7 +127,6 @@ typedef struct {
   FOP_STRUCT *fop;
   CAI_STRUCT *cai;
 
-  COA_STRUCT *coa;
   AMINO_STRUCT *amino_acids;
   AMINO_PROP_STRUCT *amino_prop;
 } REF_STRUCT;
@@ -170,8 +152,7 @@ extern int fram;
 int proc_comm_line(int *argc, char ***arg_list, MENU_STRUCT *pm);
 
 // defined in codons.c
-int tidy(FILE *finput, FILE *foutput, FILE *fblkout,
-         FILE *fcoaout);
+int tidy(FILE *finput, FILE *foutput, FILE *fblkout);
 int my_exit(int exit_value, char *message);
 int fileclose(FILE **file_pointer);
 FILE *open_file(char *filename, char *mode);
@@ -179,7 +160,6 @@ FILE *open_file(char *filename, char *mode);
 // defined in codon_us.c
 int clean_up(long *ncod, long *naa);
 int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
-int initialize_coa(COA_STRUCT *pcoa, GENETIC_CODE_STRUCT *pcu, int ds[]);
 
 long codon_error(int last_aa, int valid_stops, char *title,
                      char error_level, MENU_STRUCT *pm);
@@ -190,7 +170,6 @@ int codon_usage_out(FILE *fblkout, long *ncod, int last_aa,
                     int valid_stops, char *info, MENU_STRUCT *pm);
 int rscu_usage_out(FILE *fblkout, long *ncod, long *naa, MENU_STRUCT *pm);
 int raau_usage_out(FILE *fblkout, long *naa, MENU_STRUCT *pm);
-char coa_raw_out(FILE *fcoaout, long *ncod, long *naa, char *title, MENU_STRUCT *pm);
 int aa_usage_out(FILE *fblkout, long *naa, MENU_STRUCT *pm);
 int cai_out(FILE *foutput, long *ncod, MENU_STRUCT *pm);
 int cbi_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
@@ -201,16 +180,4 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm);
 int dinuc_out(FILE *fblkout, char *title, char sep);
 float enc_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
-void gen_cusort_fop(int *sortax1, int lig, FILE *fnam, FILE *summ, MENU_STRUCT *pm);
 void base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
-
-// defined in coresp.c
-void DiagoRC(FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
-void textbin(char *filein, char *fileout, MENU_STRUCT *pm, COA_STRUCT *pcoa, GENETIC_CODE_STRUCT *pcu, int *ds);
-void colmout(char *nfice, char *nfics, AMINO_STRUCT *paa, FILE *summary, MENU_STRUCT *pm);
-void rowout(char *nfice, char *nfics, char *ncout, char sp, FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
-void PrepAFC(char *nfic, COA_STRUCT *pcoa);
-void inertialig(char *inertia_out, char *filen, FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa);
-void inertiacol(char *inertia_out, FILE *summary, MENU_STRUCT *pm, COA_STRUCT *pcoa, AMINO_STRUCT *paa);
-void suprow(int num_seq, char *nficvp, char *nfictasup,
-            char *nficlisup, char *option, char sp, FILE *summary, COA_STRUCT *pcoa);
