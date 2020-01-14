@@ -959,7 +959,7 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 /* needed when calculating this index. Initially the homozygosity for each*/
 /* amino acid is estimated from the squared codon frequencies.            */
 /**************************************************************************/
-float enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 {
    GENETIC_CODE_STRUCT *pcu = pm->pcu; 
    int *da = pm->da;
