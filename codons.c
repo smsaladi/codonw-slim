@@ -443,7 +443,7 @@ int fileclose(FILE **file_pointer)
     }
     *file_pointer = NULL; /* make sure file_pointer is null*/
   }
-  return 1;
+  return 0;
 }
 
 

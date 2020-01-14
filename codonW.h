@@ -179,5 +179,5 @@ int aromo_out(FILE *foutput, long *naa, MENU_STRUCT *pm);
 int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm);
 int dinuc_out(FILE *fblkout, char *title, char sep);
 float enc_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
-void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
-void base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
+int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
+int base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);

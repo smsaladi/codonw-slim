@@ -98,7 +98,7 @@ int initialize_point(char code, char fop_species, char cai_species, MENU_STRUCT 
 
    fprintf(pm->my_err, "Genetic code set to %s %s\n", pm->pcu->des, pm->pcu->typ);
 
-   return 1;
+   return 0;
 }
 
 /*******************How Synonymous is this codon  *************************/
@@ -372,7 +372,7 @@ int codon_usage_out(FILE *fblkout, long *nncod, int last_aa,
          break;
       }
    }
-   return 1;
+   return 0;
 }
 /******************  RSCU  Usage out          *****************************/
 /* Writes Relative synonymous codon usage output to file. Note this subrou*/
@@ -405,7 +405,7 @@ int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
       if (!(x % 16))
          fprintf(fblkout, "\n");
    }
-   return 1;
+   return 0;
 }
 /******************   RAAU output             *****************************/
 /* Writes Relative amino acid usage output to file. Amino Acid usage is   */
@@ -446,7 +446,7 @@ int raau_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
          fprintf(fblkout, "%c%c", sp, sp);
 
    fprintf(fblkout, "\n");
-   return 1;
+   return 0;
 }
 /******************   AA usage output         *****************************/
 /* Writes amino acid usage output to file.                                */
@@ -475,7 +475,7 @@ int aa_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
       fprintf(fblkout, "%c%li", sp, nnaa[i]);
 
    fprintf(fblkout, "\n");
-   return 1;
+   return 0;
 }
 /******************  Base Silent output     *******************************/
 /* Calculates and write the base composition at silent sites              */
@@ -485,7 +485,7 @@ int aa_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
 /* option to use any base at the third position                           */
 /* All synonymous AA can select between a G or C though                   */
 /**************************************************************************/
-void base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 {
    GENETIC_CODE_STRUCT *pcu = pm->pcu; 
    int *ds = pm->ds;
@@ -548,7 +548,8 @@ void base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
       else
          fprintf(foutput, "0.0000%c", sp);
    }
-   return;
+
+   return 0;
 }
 /******************  Clean up               *******************************/
 /* Called after each sequence has been completely read from disk          */
@@ -573,7 +574,7 @@ int clean_up(long *nncod, long *nnaa)
 
    dinuc_count(" ", 1);
    valid_stops = codon_tot = fram = 0;
-   return 1;
+   return 0;
 }
 /*****************Codon Adaptation Index output   *************************/
 /* Codon Adaptation Index (CAI) (Sharp and Li 1987). CAI is a measurement */
@@ -666,7 +667,7 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
       sigma = 0;
 
    fprintf(foutput, "%5.3f%c", sigma, sp);
-   return 1;
+   return 0;
 }
 /*****************Codon Bias Index output        **************************/
 /* Codon bias index is a measure of directional codon bias, it measures   */
@@ -795,7 +796,7 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 
    fprintf(foutput, "%5.3f%c", fcbi, sp); /* CBI     QED     */
 
-   return 1;
+   return 0;
 }
 
 /****************** Frequency of OPtimal codons output  ********************/
@@ -947,7 +948,7 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 
    fprintf(foutput, "%5.3f%c", ffop, sp);
 
-   return 1;
+   return 0;
 }
 
 /***************  Effective Number of Codons output   *********************/
@@ -1048,7 +1049,7 @@ float enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
    else
       fprintf(foutput, "61.00%c", sp);
 
-   return enc_tot;
+   return 0;
 }
 
 /*******************   G+C output          *******************************/
@@ -1066,7 +1067,7 @@ float enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* number of values reported changes as it is assumed the user has access*/
 /* to a spreadsheet type programme if they are requesting tabular output */
 /*************************************************************************/
-void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
+int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
 {
    AMINO_STRUCT *paa = pm->paa;
    GENETIC_CODE_STRUCT *pcu = pm->pcu; 
@@ -1128,7 +1129,7 @@ void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
    {
       fprintf(pm->my_err, "Warning %.20s appear to be too short\n", title);
       fprintf(pm->my_err, "No output was written to file   \n");
-      return;
+      return 1;
    }
    switch ((int)which)
    {
@@ -1181,7 +1182,8 @@ void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
       fprintf(foutput, "%3li%c", totalaa, sp);
       break;
    }
-   return;
+
+   return 0;
 }
 
 /**********************   cutab_out     ***********************************/
@@ -1229,7 +1231,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
    }
    fprintf(fblkout, "%li codons in %16.16s (used %22.22s)\n\n",
            (long)codon_tot, title, pcu->des);
-   return 1;
+   return 0;
 }
 /********************  Dinuc_count    *************************************/
 /* Count the frequency of all 16 dinucleotides in all three possible      */
@@ -1278,7 +1280,7 @@ int dinuc_count(char *seq, long ttot)
       if (++fram == 3)
          fram = 0; /* resets the frame to zero           */
    }
-   return 1;
+   return 0;
 }
 /***************** Dinuc_out           ************************************/
 /* Outputs the frequency of dinucleotides, either in fout rows per seq    */
@@ -1373,7 +1375,7 @@ int dinuc_out(FILE *fblkout, char *ttitle, char sp)
       if (x == 3)
          fprintf(fblkout, "\n");
    }
-   return 1;
+   return 0;
 }
 
 /*********************  hydro_out        **********************************/
@@ -1414,7 +1416,7 @@ int hydro_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
 
    fprintf(foutput, "%8.6f%c", hydro, sp);
 
-   return 1;
+   return 0;
 }
 /**************** Aromo_out ***********************************************/
 /* Aromaticity score of protein. This is the frequency of aromatic amino  */
@@ -1447,5 +1449,5 @@ int aromo_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
          aromo += ((float)nnaa[i] / (float)a1_tot) * (float)pap->aromo[i];
 
    fprintf(foutput, "%8.6f%c", aromo, sp);
-   return 1;
+   return 0;
 }

@@ -356,7 +356,7 @@ int proc_comm_line(int *pargc, char ***pargv, MENU_STRUCT *pm)
     if (!pm->tidyoutfile)
         my_exit(1, "Please provide bulk file as argument");
 
-    return 1;
+    return 0;
 }
 /****************** Garg     ***********************************************/
 /* This subroutine strips of the commandline arguments and passes them back*/
