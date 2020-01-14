@@ -1184,30 +1184,6 @@ void gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
    return;
 }
 
-/********************     DOT    ******************************************/
-/*   Indicates the progress of a search                                   */
-/**************************************************************************/
-void dot(int y, long period)
-{
-   static long xx;
-   static char dott = 0;
-
-   if (!y)
-      dott = 0; /* re-zero the width counter          */
-
-   if (++xx % period == 0)
-   { /* every period calls print a .       */
-      fprintf(stderr, ".");
-      dott++;
-   }
-   if (dott == 50)
-   { /* every 50 dots wrap the line        */
-      fprintf(stderr, "\n");
-      dott = 0;
-   }
-   return;
-}
-
 /**********************   cutab_out     ***********************************/
 /* Generates a formatted table of codon, RSCU and amino acid usage        */
 /* ds points to an array[64] of synonymous values                         */
