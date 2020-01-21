@@ -19,18 +19,25 @@ with open(os.devnull, 'w') as devnull:
     # run test file
     subprocess.check_call(
         "{}/../bin/codonw {}/input.dat test blk "
-        "-enc -gc -gc3s -L_aa -cai -dinuc -aau -coa_expert > {}/test.out".format(path, path, path),
+        "-all_indices -aro -hyd -nomenu -silent -nowarn -dinuc -machine > {}/test.out".format(path, path, path),
         shell=True, stderr=devnull)
 
 def test_regression():
     # read ref and test output
-    df_ref = pd.read_csv("{}/ref/out.txt".format(path), index_col="title")
+    df_ref = pd.read_csv("{}/ref/out.txt".format(path), index_col="title",
+                         sep='[\\s,]+', engine='python')
     df_ref.index = df_ref.index.str.split(' ').str[0]
     df_ref.dropna(axis=1, inplace=True)
 
     df_test = pd.read_csv("{}/test.out".format(path), index_col="title")
 
     # compare
+    print("Checking...", end=" ")
     for c in df_ref.columns:
         assert np.array_equal(df_ref[c], df_test[c])
+        print(c, end=", ")
+    print()
+
+    return
+
 
