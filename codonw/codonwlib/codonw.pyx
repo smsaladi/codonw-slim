@@ -13,7 +13,7 @@ cimport codonwlib
 cpdef np.ndarray[dtype=float, ndim=1, mode="c"] rscu(char* seq, int genetic_code=0):
     """Calculates Relative Synonymous Codon Usage
     """
-    cdef codonwlib.GENETIC_CODE_STRUCT ref_code = codonwlib.Z_ref.cu[genetic_code]
+    cdef codonwlib.GENETIC_CODE_STRUCT ref_code = codonwlib.cu_ref[genetic_code]
 
     cdef long codon_tot = 0
     cdef int valid_stops = 0
@@ -32,8 +32,8 @@ cpdef np.ndarray[dtype=float, ndim=1, mode="c"] rscu(char* seq, int genetic_code
 cpdef double cai(char* seq, int genetic_code=0, int cai_ref=0):
     """Calculates Codon Adaptation Index
     """
-    cdef codonwlib.GENETIC_CODE_STRUCT ref_code = codonwlib.Z_ref.cu[genetic_code]
-    cdef codonwlib.CAI_STRUCT ref_cai = codonwlib.Z_ref.cai[cai_ref]
+    cdef codonwlib.GENETIC_CODE_STRUCT ref_code = codonwlib.cu_ref[genetic_code]
+    cdef codonwlib.CAI_STRUCT ref_cai = codonwlib.cai_ref[cai_ref]
 
     cdef long codon_tot = 0
     cdef int valid_stops = 0

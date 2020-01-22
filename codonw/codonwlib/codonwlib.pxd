@@ -29,15 +29,11 @@ cdef extern from "include/codonW.h":
         float hydro[22]
         int aromo[22]
 
-    ctypedef struct REF_STRUCT:
-        GENETIC_CODE_STRUCT *cu
-        FOP_STRUCT *fop
-        CAI_STRUCT *cai
-
-        AMINO_STRUCT *amino_acids
-        AMINO_PROP_STRUCT *amino_prop
-
-    REF_STRUCT Z_ref
+    GENETIC_CODE_STRUCT *cu_ref
+    FOP_STRUCT *fop_ref
+    CAI_STRUCT *cai_ref
+    AMINO_STRUCT *amino_acids
+    AMINO_PROP_STRUCT *amino_prop
 
     int ident_codon(char *codon)
     int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu)
