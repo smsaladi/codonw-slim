@@ -777,49 +777,32 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* codons are used). When calculating the modified Fop index, any negative */
 /* values are adjusted to zero.                                            */
 /***************************************************************************/
-int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop)
+// factor_in_rare
+// If non-optimal codons are identified in the set of optimal codons selected, use
+// in the calculation of a modified Fop, (Fop=(opt-rare)/total). Otherwise, the original
+// formulae (Fop=opt/total) is used.
+int fop(long *nncod, float *ffop, int *ds, bool factor_in_rare, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop)
 {
    long nonopt = 0;
    long std = 0;
    long opt = 0;
    int x;
    
-   static char first_call = true;
-   static char factor_in_rare = false;
-   static char has_opt_info[22];
+   /* initilise has_opt_info             */
+   bool has_opt_info[22];
+   for (x = 1; x < 22; x++)
+      has_opt_info[x] = false;
+   for (x = 1; x < 65; x++)
+   {
+      if (pcu->ca[x] == 11 || *(ds + x) == 1)
+         continue;
 
-   if (first_call)
-   { /* have I been called previously      */
+      if (pfop->fop_cod[x] == 3)
+         has_opt_info[pcu->ca[x]] = true;
 
-      /* initilise has_opt_info             */
-      for (x = 1; x < 22; x++)
-         has_opt_info[x] = 0;
-
-      for (x = 1; x < 65; x++)
-      {
-         if (pcu->ca[x] == 11 || *(ds + x) == 1)
-            continue;
-         if (pfop->fop_cod[x] == 3)
-            has_opt_info[pcu->ca[x]]++;
-
-         if (pfop->fop_cod[x] == 1)
-         {
-            // FIX: MODIFIED FOP OPTION
-            // This should be a global option
-            //  In the set of optimal codons you have selected,
-            //  non-optimal codons have been identified\nThey can be 
-            //  used in the calculation of a modified Fop,
-            //  (Fop=(opt-rare)/total)\n else the original formulae
-            //   will be used (Fop=opt/total)\n\n\t\tDo you wish
-            /// calculate a modified fop (y/n) [n] ");
-            //  Y: factor_in_rare = true;
-
-            if (factor_in_rare == true)
-               has_opt_info[pcu->ca[x]]++;
-         }
-      } /*    matches for (x=1           */
-      first_call = false;
-   } /*    matches if ( !first_call ) */
+      if (pfop->fop_cod[x] == 1 && factor_in_rare == true)
+         has_opt_info[pcu->ca[x]] = true;
+   }
 
    for (x = 1; x < 65; x++)
    {
@@ -844,7 +827,7 @@ int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT 
                          " codons\n 2 for common codons\n"
                          " 3 for optimal codons\n",
                  pfop->fop_cod[x], x);
-         fprintf("opt %ld, std %ld, nonopt %ld\n", opt, std, nonopt);
+         fprintf(stderr, "opt %ld, std %ld, nonopt %ld\n", opt, std, nonopt);
          return 1;
       }
    }
@@ -866,7 +849,8 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm) {
    fprintf(stderr, "Using %s (%s)\noptimal codons to calculate Fop\n",
             pm->pfop->des, pm->pfop->ref);
 
-   int retval = fop(nncod, &ffop, pm->ds, pm->pcu, pm->pfop);
+   bool factor_in_rare = false;
+   int retval = fop(nncod, &ffop, pm->ds, factor_in_rare, pm->pcu, pm->pfop);
 
    char sp = pm->separator;
    fprintf(foutput, "%5.3f%c", ffop, sp);
