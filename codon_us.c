@@ -637,57 +637,11 @@ int clean_up(long *nncod, long *nnaa)
 /* adaptiveness value of zero, which could result in a CAI of zero;       */
 /* these codons have fitness of zero (<.0001) are adjusted to 0.01        */
 /**************************************************************************/
-int cai(long *nncod, double *sigma, int *ds, CAI_STRUCT *pcai, GENETIC_CODE_STRUCT *pcu, FILE *caifile, MENU_STRUCT *pm)
+int cai(long *nncod, double *sigma, int *ds, CAI_STRUCT *pcai, GENETIC_CODE_STRUCT *pcu)
 {
    long totaa = 0;
-   float ftemp;
    int x;
-   static char cai_ttt = false;
-   static char description[61];
-   static char reference[61];
-
-   static CAI_STRUCT user_cai;
-
-   if (!cai_ttt)
-   {                              /* have we been called already   */
-      user_cai.des = description; /* assign an array to a pointer  */
-      user_cai.ref = reference;   /* as above                      */
-
-      if (caifile)
-      {
-         rewind(caifile); /* unlikely unless fopfile = caifile   */
-         x = 0;
-         strcpy(user_cai.des, "User supplied CAI adaptation values ");
-         strcpy(user_cai.ref, "No reference");
-         user_cai.cai_val[x++] = 0.0F;
-
-         while ((fscanf(caifile, "%f ", &ftemp)) != EOF)
-         {
-            /* if any bad CAI values are read EXIT*/
-            if (ftemp < 0 || ftemp > 1.0)
-            {
-               printf("\nError CAI %f value out of range\nEXITING", ftemp);
-               my_exit(99, "cai_out");
-            }
-            user_cai.cai_val[x++] = ftemp; /* assign value */
-         }                                 /* end of while */
-         if (x != 65)
-         { /*             wrong number of codons */
-            fprintf(pm->my_err, "\nError in CAI file, found %i values"
-                                " expected 64 values EXITING\n",
-                    x - 1);
-            my_exit(99, "cai_out");
-         }
-         pcai = &user_cai; /* assigns pointer to user CAI values */
-      }                    /*        matches if( pm->caifile...  */
-
-      fprintf(stderr, "Using %s (%s) w values to calculate "
-                      "CAI \n",
-              pcai->des, pcai->ref);
-      cai_ttt = true; /*stops this "if" from being entered  */
-
-   } /* matches if (!cai_ttt )             */
-
+   
    for (x = 1, *sigma = 0; x < 65; x++)
    {
       if (pcu->ca[x] == 11 || *(ds + x) == 1)
@@ -713,7 +667,10 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 {
    double sigma;
 
-   cai(nncod, &sigma, pm->ds, pm->pcai, pm->pcu, pm->caifile, pm);
+   fprintf(stderr, "Using %s (%s) w values to calculate CAI\n",
+           pm->pcai->des, pm->pcai->ref);
+
+   cai(nncod, &sigma, pm->ds, pm->pcai, pm->pcu);
 
    char sp = pm->separator;
    fprintf(foutput, "%5.3f%c", sigma, sp);
@@ -733,59 +690,17 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 /* This results in a negative value for CBI.                              */
 /* ( Bennetzen and Hall 1982 )                                            */
 /**************************************************************************/
-int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, FILE *cbifile, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pcbi)
+int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pcbi)
 {
    long tot_cod = 0;
    long opt = 0;
    float exp_cod = 0.0F;
-   int c, x;
-   char str[2];
-   char message[MAX_MESSAGE_LEN];
-
-   static char description[61];
-   static char reference[61];
+   int x;
    static char first_call_cbi = true;
    static char has_opt_info[22];
-   static FOP_STRUCT user_cbi;
 
    if (first_call_cbi)
    { /* have we been called already   */
-
-      user_cbi.des = description; /* assign a pointer to array     */
-      user_cbi.ref = reference;
-
-      if (cbifile)
-      {
-         rewind(cbifile); /* fopfile can be the same as cbifile */
-         strcpy(user_cbi.des, "User supplied choice");
-         strcpy(user_cbi.ref, "No reference");
-         x = 0;
-         user_cbi.fop_cod[x++] = 0;
-
-         while ((c = fgetc(cbifile)) != EOF && x <= 66)
-         {
-            sprintf(str, "%c", c);
-            if (isdigit(c) && atoi(str) >= 0 && atoi(str) <= 3)
-            {
-               user_cbi.fop_cod[x++] = (char)atoi(str);
-
-            } /*                             isdigit */
-         }    /*                        end of while */
-
-         if (x != 65)
-         { /*              wrong number of codons */
-            sprintf(message, "\nError in CBI file %i digits found,  "
-                                  "expected 64 EXITING\n",
-                    x - 1);
-            my_exit(99, message);
-         }
-         pcbi = (&user_cbi);
-      } /*             matches if(cbifile)  */
-
-      fprintf(stderr, "Using %s (%s) \noptimal codons to calculate "
-             "CBI\n",
-             pcbi->des, pcbi->ref);
-
       /* initilise has_opt_info             */
       for (x = 1; x < 22; x++)
          has_opt_info[x] = 0;
@@ -799,7 +714,7 @@ int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, FILE *cbifile, G
       }
 
       first_call_cbi = false; /*      this won't be called again      */
-   }                          /*          matches if (first_call_cbi) */
+   }
 
    for (x = 1; x < 65; x++)
    {
@@ -817,16 +732,13 @@ int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, FILE *cbifile, G
          tot_cod += *(nncod + x);
          break;
       default:
-         sprintf(message, " Serious error in CBI information found"
-                           " an illegal CBI value of %c for codon %i"
-                           " permissible values are \n 1 for non-optimal"
-                           " codons\n 2 for common codons\n"
-                           " 3 for optimal codons\n"
-                           " EXITING ",
+         fprintf(stderr, " Serious error in CBI information found"
+                         " an illegal CBI value of %c for codon %i"
+                         " permissible values are \n 1 for non-optimal"
+                         " codons\n 2 for common codons\n"
+                         " 3 for optimal codons\n",
                  pcbi->fop_cod[x], x);
-
-         my_exit(99, message);
-         break;
+         return 1;
       } /*                   end of switch     */
    }    /*                   for (    )        */
 
@@ -842,7 +754,10 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 {
    float fcbi;
 
-   cbi(nncod, nnaa, &fcbi, pm->ds, pm->da, pm->cbifile, pm->pcu, pm->pcbi);
+   fprintf(stderr, "Using %s (%s) \noptimal codons to calculate CBI\n",
+           pm->pcbi->des, pm->pcbi->ref);
+
+   cbi(nncod, nnaa, &fcbi, pm->ds, pm->da, pm->pcu, pm->pcbi);
 
    char sp = pm->separator;
    fprintf(foutput, "%5.3f%c", fcbi, sp); /* CBI     QED     */
@@ -862,59 +777,19 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* codons are used). When calculating the modified Fop index, any negative */
 /* values are adjusted to zero.                                            */
 /***************************************************************************/
-int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop, MENU_STRUCT *pm)
+int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop)
 {
    long nonopt = 0;
    long std = 0;
    long opt = 0;
-   int c, x;
+   int x;
    
-   char str[2];
-   char message[MAX_MESSAGE_LEN];
-
    static char first_call = true;
-   static char description[61];
-   static char reference[61];
-   static char asked_about_fop = false;
    static char factor_in_rare = false;
    static char has_opt_info[22];
-   static FOP_STRUCT user_fop;
 
    if (first_call)
    { /* have I been called previously      */
-      user_fop.des = description;
-      user_fop.ref = reference;
-
-      if (pm->fopfile)
-      {
-         rewind(pm->fopfile); /*    possible for fopfile = cbifile */
-         strcpy(user_fop.des, "User supplied choice");
-         strcpy(user_fop.ref, "No reference");
-         x = 0;
-         user_fop.fop_cod[x++] = 0;
-
-         while ((c = fgetc(pm->fopfile)) != EOF && x <= 66)
-         {
-            sprintf(str, "%c", c);
-
-            if (isdigit(c) && atoi(str) >= 0 && atoi(str) <= 3)
-            {
-               user_fop.fop_cod[x++] = (char)atoi(str);
-            } /*                       test isdigit */
-         }    /*                       end of while */
-
-         if (x != 65)
-         { /*             wrong number of codons */
-            sprintf(message, "\nError in Fop file %i values found,  "
-                                  "expected 64 EXITING\n",
-                    x - 1);
-            my_exit(99, message);
-         }
-         pfop = &user_fop; /*  assigns pointer to user fop values*/
-      }
-
-      fprintf(stderr, "Using %s (%s)\noptimal codons to calculate Fop\n",
-             pfop->des, pfop->ref);
 
       /* initilise has_opt_info             */
       for (x = 1; x < 22; x++)
@@ -963,16 +838,14 @@ int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT 
          nonopt += *(nncod + x);
          break;
       default:
-         sprintf(message,  " Serious error in fop information found"
-                           " an illegal fop value of %c for codon %i"
-                           " permissible values are \n 1 for non-optimal"
-                           " codons\n 2 for common codons\n"
-                           " 3 for optimal codons\n"
-                           " EXITING ",
+         fprintf(stderr, " Serious error in fop information found"
+                         " an illegal fop value of %c for codon %i"
+                         " permissible values are \n 1 for non-optimal"
+                         " codons\n 2 for common codons\n"
+                         " 3 for optimal codons\n",
                  pfop->fop_cod[x], x);
-         printf("opt %ld, std %ld, nonopt %ld\n", opt, std, nonopt);
-         my_exit(99, message);
-         break;
+         fprintf("opt %ld, std %ld, nonopt %ld\n", opt, std, nonopt);
+         return 1;
       }
    }
    /* only ask this once  ...            */
@@ -990,7 +863,10 @@ int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT 
 int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm) {
    float ffop;
 
-   int retval = fop(nncod, &ffop, pm->ds, pm->pcu, pm->pfop, pm);
+   fprintf(stderr, "Using %s (%s)\noptimal codons to calculate Fop\n",
+            pm->pfop->des, pm->pfop->ref);
+
+   int retval = fop(nncod, &ffop, pm->ds, pm->pcu, pm->pfop);
 
    char sp = pm->separator;
    fprintf(foutput, "%5.3f%c", ffop, sp);
@@ -1006,7 +882,7 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm) {
 /* needed when calculating this index. Initially the homozygosity for each*/
 /* amino acid is estimated from the squared codon frequencies.            */
 /**************************************************************************/
-int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu, MENU_STRUCT *pm)
+int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu)
 {
    int numaa[9];
    int fold[9];
@@ -1075,8 +951,9 @@ int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *p
             /* special case                      */
             averb = (totb[2] / numaa[2] + totb[4] / numaa[4]) * 0.5;
          else
-         { /* write error to stderr             */
-            codon_error(z, numaa[z], title, 3, pm);
+         {
+            fprintf(stderr, "%i amino acids with %i synonymous codons\n", numaa[z], z);
+            fprintf(stderr, "\t -- Nc was not calculated\n");
             return 1;
          }
          *enc_tot += (float)fold[z] / (float)averb;
@@ -1092,7 +969,7 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
    char sp = pm->separator;
    float enc_tot;
 
-   int retval = enc(nncod, nnaa, &enc_tot, pm->da, pm->pcu, pm);
+   int retval = enc(nncod, nnaa, &enc_tot, pm->da, pm->pcu);
 
    if (retval == 1)
       fprintf(foutput, "*****%c", sp);
