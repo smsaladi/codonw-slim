@@ -48,6 +48,6 @@ cdef extern from "include/codonW.h":
     int fop(long *nncod, float *ffop, int *ds, bool factor_in_rare, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop)
     int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu)
     int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu)
-    int dinuc(long dinuc_tot[4])
+    int dinuc_count(char *seq, long din[3][16], long dinuc_tot[4], int *fram)
     int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap)
     int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap)
