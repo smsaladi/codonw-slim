@@ -566,13 +566,13 @@ int clean_up(long *nncod, long *nnaa)
    for (x = 0; x < 23; x++)
       nnaa[x] = 0;
    /* dinucleotide count remembers the   */
-   dinuc_count(" ", 1); /* last_base from the last fragment   */
+   dinuc_count(" "); /* last_base from the last fragment   */
                         /* this causes the last base to be "" */
    for (x = 0; x < 3; x++)
       for (i = 0; i < 16; i++)
          din[x][i] = 0;
 
-   dinuc_count(" ", 1);
+   dinuc_count(" ");
    valid_stops = codon_tot = fram = 0;
    return 0;
 }
@@ -1239,12 +1239,13 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* codon and amino acid usage arrays ncod and naa to measure the parameter*/
 /* rather they use the raw sequence data                                  */
 /**************************************************************************/
-int dinuc_count(char *seq, long ttot)
+int dinuc_count(char *seq)
 {
    char last_base;
    static char a = 0;
    int i;
 
+   long ttot = (long)strlen(seq);
    for (i = 0; i < ttot; i++)
    {
       last_base = a;

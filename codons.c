@@ -229,7 +229,7 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
       raau_usage_out(fblkout, naa, pm);
       break;
     case 'D':
-      dinuc_count(seq, tot);
+      dinuc_count(seq);
       dinuc_out(fblkout, title, pm->separator);
       break;
     case 'A':

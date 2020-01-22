@@ -163,7 +163,7 @@ int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, R
 
 long codon_error(int last_aa, int valid_stops, char *title,
                      char error_level, MENU_STRUCT *pm);
-int dinuc_count(char *seq, long tot);
+int dinuc_count(char *seq);
 
 int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_STRUCT *pm);
 int codon_usage_out(FILE *fblkout, long *ncod, int last_aa,
