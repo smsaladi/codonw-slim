@@ -33,7 +33,7 @@
 #include "../include/codonW.h"
 
 /* define genetic codes   */
-static GENETIC_CODE_STRUCT cu_ref[] = {
+GENETIC_CODE_STRUCT cu_ref[] = {
     {
         "Universal Genetic code",
         "TGA=* TAA=* TAG=*",
@@ -124,7 +124,7 @@ static GENETIC_CODE_STRUCT cu_ref[] = {
 };
 
 /* define amino acid info     */
-static AMINO_STRUCT amino_acids = {
+AMINO_STRUCT amino_acids = {
     {
         "X",
         "F", "L", "I", "M", "V",
@@ -148,7 +148,7 @@ static AMINO_STRUCT amino_acids = {
     }
 };
 
-static FOP_STRUCT fop_ref[] = {
+FOP_STRUCT fop_ref[] = {
     {
         "Escherichia coli",
         "Ikemura (1985) Mol. Biol. Evol. 2:13-34 (updated by INCBI 1991)",
@@ -239,7 +239,7 @@ static FOP_STRUCT fop_ref[] = {
     }
 };
 
-static CAI_STRUCT cai_ref[] = {  
+CAI_STRUCT cai_ref[] = {  
     {
         "Escherichia coli",
         "No reference",
@@ -287,7 +287,7 @@ static CAI_STRUCT cai_ref[] = {
     }
 };
 
-static AMINO_PROP_STRUCT amino_prop = {
+AMINO_PROP_STRUCT amino_prop = {
     { /* hydropathicity values */
         0.00F,
         2.80F, 3.80F, 4.50F, 1.90F, 4.20F, 

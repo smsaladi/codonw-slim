@@ -133,6 +133,11 @@ typedef struct {
 
 extern REF_STRUCT Z_ref;
 extern MENU_STRUCT Z_menu;
+extern GENETIC_CODE_STRUCT cu_ref[];
+extern FOP_STRUCT fop_ref[];
+extern CAI_STRUCT cai_ref[];
+extern AMINO_STRUCT amino_acids;
+extern AMINO_PROP_STRUCT amino_prop;
 
 /****************** Function type declarations *****************************/
 
