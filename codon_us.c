@@ -741,7 +741,7 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
          pcbi = (&user_cbi);
       } /*             matches if(pm->cbifile)  */
 
-      printf("Using %s (%s) \noptimal codons to calculate "
+      fprintf(stderr, "Using %s (%s) \noptimal codons to calculate "
              "CBI\n",
              pcbi->des, pcbi->ref);
 
@@ -874,7 +874,7 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
          pfop = &user_fop; /*  assigns pointer to user fop values*/
       }
 
-      printf("Using %s (%s)\noptimal codons to calculate Fop\n",
+      fprintf(stderr, "Using %s (%s)\noptimal codons to calculate Fop\n",
              pfop->des, pfop->ref);
 
       /* initilise has_opt_info             */
