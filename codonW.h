@@ -134,18 +134,6 @@ typedef struct {
 extern REF_STRUCT Z_ref;
 extern MENU_STRUCT Z_menu;
 
-extern char *title;
-extern long ncod[65];
-extern long naa[23];
-extern long din[3][16];
-extern long codon_tot;
-extern long num_sequence;
-extern long num_seq_int_stop;
-extern long tot;
-extern int last_aa;
-extern int valid_stops;
-extern int fram;
-
 /****************** Function type declarations *****************************/
 
 // defined in commline.c
@@ -158,28 +146,28 @@ int fileclose(FILE **file_pointer);
 FILE *open_file(char *filename, char *mode);
 
 // defined in codon_us.c
-int clean_up(long *ncod, long *naa);
+int clean_up(long *ncod, long *naa, long din[3][16], int *fram, int *valid_stops);
 int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
 
-long codon_error(int last_aa, int valid_stops, char *title,
-                     char error_level, MENU_STRUCT *pm);
-int dinuc_count(char *seq);
+int count_codons(long* ncod, long *loc_cod_tot);
+int codon_error(int last_aa, int valid_stops, char *title, long* ncod,
+                 char error_level, MENU_STRUCT *pm);
+int dinuc_count(char *seq, long din[3][16], int *fram);
 
-int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_STRUCT *pm);
-int codon_usage_out(FILE *fblkout, long *ncod, int last_aa,
-                    int valid_stops, char *info, MENU_STRUCT *pm);
-int rscu_usage_out(FILE *fblkout, long *ncod, long *naa, MENU_STRUCT *pm);
-int raau_usage_out(FILE *fblkout, long *naa, MENU_STRUCT *pm);
-int aa_usage_out(FILE *fblkout, long *naa, MENU_STRUCT *pm);
+int codon_usage_tot(char *seq, long *codon_tot, int *valid_stops, long ncod[], long naa[], GENETIC_CODE_STRUCT *pcu);
+int codon_usage_out(FILE *fblkout, long *ncod, char *info, MENU_STRUCT *pm);
+int rscu_usage_out(FILE *fblkout, long *ncod, long *naa, char* title, MENU_STRUCT *pm);
+int raau_usage_out(FILE *fblkout, long *naa, char* title, MENU_STRUCT *pm);
+int aa_usage_out(FILE *fblkout, long *naa, char* title, MENU_STRUCT *pm);
 int cai_out(FILE *foutput, long *ncod, MENU_STRUCT *pm);
 int cbi_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 int fop_out(FILE *foutput, long *ncod, MENU_STRUCT *pm);
-int hydro_out(FILE *foutput, long *naa, MENU_STRUCT *pm);
-int aromo_out(FILE *foutput, long *naa, MENU_STRUCT *pm);
-int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm);
-int dinuc_out(FILE *fblkout, char *title, char sep);
+int hydro_out(FILE *foutput, long *naa, char* title, MENU_STRUCT *pm);
+int aromo_out(FILE *foutput, long *naa, char* title, MENU_STRUCT *pm);
+int cutab_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STRUCT *pm);
+int dinuc_out(long din[3][16], FILE *fblkout, char *title, char sep);
 int enc_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
-int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
+int gc_out(FILE *foutput, FILE *fblkout, long *ncod, int which, char* title, MENU_STRUCT *pm);
 int base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 
 
@@ -190,7 +178,7 @@ int cai(long *nncod, double *sigma, int *ds, CAI_STRUCT *pcai, GENETIC_CODE_STRU
 int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pcbi);
 int fop(long *nncod, float *ffop, int *ds, bool factor_in_rare, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop);
 int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu);
-int gc(int *ds, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu);
-int dinuc(long dinuc_tot[4]);
+int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu);
+int dinuc(long din[3][16], long dinuc_tot[4]);
 int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap);
 int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap);

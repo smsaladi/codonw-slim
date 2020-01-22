@@ -86,6 +86,19 @@ KSEQ_INIT(int, read)
 int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, MENU_STRUCT *pm);
 int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRUCT *pm);
 
+long ncod[65];
+long naa[23];
+char *title;
+long din[3][16];
+
+long codon_tot;
+long num_sequence;
+long num_seq_int_stop;
+long tot;
+int last_aa;
+int valid_stops;
+int fram;
+
 /**************************   MAIN   **************************************/
 /* The main function processes commandline arguments to decide analysis to*/
 /* run. process_sequence_input() to read in the data files, and count codon usage*/
@@ -97,7 +110,7 @@ int main(int argc, char *argv[])
 {
   FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
 
-  clean_up(ncod, naa); /* zero count of codons and amino acids   */
+  clean_up(ncod, naa, din, &fram, &valid_stops); /* zero count of codons and amino acids   */
 
 #if defined(__MWERKS__) /* Macintosh code-warrior */
   argc = ccommand(&argv);
@@ -163,7 +176,7 @@ int process_sequence_input(FILE *finput, FILE *foutput, FILE *fblkout, MENU_STRU
     // strtoupper(seq->seq.s);
 
     if (pm->totals) /* accumulate sequence          */        
-      codon_usage_tot(seq->seq.s, &codon_tot, ncod, naa, pm);
+      codon_usage_tot(seq->seq.s, &codon_tot, &valid_stops, ncod, naa, pm->pcu);
     else
       print_output(seq->seq.s, seq->name.s, foutput, fblkout, pm);
 
@@ -203,13 +216,13 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
   clean_title(title, pm->separator);
 
   valid_stops = 0;
-  last_aa = codon_usage_tot(seq, &codon_tot, ncod, naa, pm);
+  last_aa = codon_usage_tot(seq, &codon_tot, &valid_stops, ncod, naa, pm->pcu);
 
   /* codon_error, if 4th parameter is 1, then checks for valid start and  */
   /* internal stop codon, if 4th parmater is 2, checks that the last codon*/
   /* is a stop or was partial, and for non-translatable codons            */
-  codon_error(last_aa, valid_stops, title, (char)1, pm);
-  codon_error(last_aa, valid_stops, title, (char)2, pm);
+  codon_error(last_aa, valid_stops, title, ncod, (char)1, pm);
+  codon_error(last_aa, valid_stops, title, ncod, (char)2, pm);
 
   /* if we are concatenating sequences then change the title to avger_of  */
   if (pm->totals)
@@ -220,26 +233,26 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
     switch ((int)pm->bulk)
     {
     case 'S':
-      rscu_usage_out(fblkout, ncod, naa, pm);
+      rscu_usage_out(fblkout, ncod, naa, title, pm);
       break;
     case 'C':
-      codon_usage_out(fblkout, ncod, last_aa, valid_stops, title, pm);
+      codon_usage_out(fblkout, ncod, title, pm);
       break;
     case 'L':
-      raau_usage_out(fblkout, naa, pm);
+      raau_usage_out(fblkout, naa, title, pm);
       break;
     case 'D':
-      dinuc_count(seq);
-      dinuc_out(fblkout, title, pm->separator);
+      dinuc_count(seq, din, &fram);
+      dinuc_out(din, fblkout, title, pm->separator);
       break;
     case 'A':
-      aa_usage_out(fblkout, naa, pm);
+      aa_usage_out(fblkout, naa, title, pm);
       break;
     case 'B':
-      gc_out(foutput, fblkout, 1, pm);
+      gc_out(foutput, fblkout, ncod, 1, title, pm);
       break;
     case 'O':
-      cutab_out(fblkout, ncod, naa, pm);
+      cutab_out(fblkout, ncod, naa, title, pm);
       break;
     }
   }
@@ -299,22 +312,22 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
     if (pm->enc)
       enc_out(foutput, ncod, naa, pm);
     if (pm->gc3s)
-      gc_out(foutput, fblkout, 3, pm);
+      gc_out(foutput, fblkout, ncod, 3, title, pm);
     if (pm->gc)
-      gc_out(foutput, fblkout, 2, pm);
+      gc_out(foutput, fblkout, ncod, 2, title, pm);
     if (pm->L_sym)
-      gc_out(foutput, fblkout, 4, pm);
+      gc_out(foutput, fblkout, ncod, 4, title, pm);
     if (pm->L_aa)
-      gc_out(foutput, fblkout, 5, pm);
+      gc_out(foutput, fblkout, ncod, 5, title, pm);
     if (pm->hyd)
-      hydro_out(foutput, naa, pm);
+      hydro_out(foutput, naa, title,  pm);
     if (pm->aro)
-      aromo_out(foutput, naa ,pm);
+      aromo_out(foutput, naa, title, pm);
 
     fprintf(foutput, "\n");
   }
 
-  clean_up(ncod, naa);
+  clean_up(ncod, naa, din, &fram, &valid_stops);
 
   return 0;
 }

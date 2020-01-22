@@ -32,18 +32,6 @@
 
 #include "codonW.h"
 
-char *title;
-long ncod[65];
-long naa[23];
-long din[3][16];
-long codon_tot;
-long num_sequence = 0;
-long num_seq_int_stop = 0;
-long tot;
-int last_aa = 0;
-int valid_stops = 0;
-int fram;
-
 /* define genetic codes   */
 static GENETIC_CODE_STRUCT cu_ref[] = {
     {

@@ -148,7 +148,7 @@ static int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu)
 /* pcu->ca contains codon to amino acid translations for the current code */
 /* and is assigned in initialise point                                    */
 /**************************************************************************/
-int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_STRUCT *pm)
+int codon_usage_tot(char *seq, long *codon_tot, int *valid_stops, long ncod[], long naa[], GENETIC_CODE_STRUCT *pcu)
 {
    char codon[4];
    int icode;
@@ -160,7 +160,7 @@ int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_ST
       strncpy(codon, (seq + i), 3);
       icode = ident_codon(codon);
       ncod[icode]++;             /*increment the codon count */
-      naa[pm->pcu->ca[icode]]++; /*increment the AA count    */
+      naa[pcu->ca[icode]]++; /*increment the AA count    */
       (*codon_tot)++;
    }
 
@@ -170,8 +170,8 @@ int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_ST
       ncod[0]++; /*increment untranslated    */
    }             /*codons                    */
 
-   if (pm->pcu->ca[icode] == 11)
-      valid_stops++;
+   if (pcu->ca[icode] == 11)
+      (*valid_stops)++;
 
    return icode;
 }
@@ -223,27 +223,34 @@ static int ident_codon(char *codon)
    return icode;
 }
 
+
 /****************** Codon error               *****************************/
 /* Does some basic error checking for the input data, it can be called    */
 /* using different error levels, thus generating different types of       */
 /* messages. Basically checks for start, stop codons and internal stop    */
 /* codons. As well as non-translatable and partial codons                 */
 /**************************************************************************/
-long codon_error(int x, int y, char *ttitle, char error_level, MENU_STRUCT *pm)
+int count_codons(long* ncod, long *loc_cod_tot) {
+   int i;
+
+   *loc_cod_tot = 0;
+   for (i = 1; i < 65; i++)
+      (*loc_cod_tot) += ncod[i];
+
+   return 0;
+}
+
+int codon_error(int x, int y, char *ttitle, long* ncod, char error_level, MENU_STRUCT *pm)
 {
    GENETIC_CODE_STRUCT *pcu = pm->pcu; 
 
    long ns = 0; /* number of stops       */
-   long loc_cod_tot = 0;
    int i;
    bool valid_start = true; // FIXME
 
    for (i = 1, ns = 0; i < 65; i++)
-   {
-      loc_cod_tot += ncod[i];
       if (pcu->ca[i] == 11)
          ns += ncod[i]; /*count  stop codons     */
-   }
 
    // TODO: CHECK FOR ERRORS WITHIN HERE ITSELF
    // if (in[1] == 'T' && (in[0] == 'A' || in[2] == 'G'))
@@ -254,14 +261,14 @@ long codon_error(int x, int y, char *ttitle, char error_level, MENU_STRUCT *pm)
    switch (error_level)
    {
    case 1: /*internal stop codons    */
-      ns = ns - valid_stops;
+      ns = ns - y;
       /* a stop was a valid_stop if it was the last codon of a sequence  */
 
       if (!valid_start && pm->warn)
       {
-         fprintf(pm->my_err, "\nWarning: Sequence %3li \"%-20.20s\" does "
+         fprintf(pm->my_err, "\nWarning: Sequence \"%-20.20s\" does "
                              "not begin with a recognised start codon\n",
-                 num_sequence, ttitle);
+                 ttitle);
       }
 
       if (ns && pm->warn)
@@ -271,17 +278,16 @@ long codon_error(int x, int y, char *ttitle, char error_level, MENU_STRUCT *pm)
                                 " codons (found %li such codons)\n",
                     ns);
          else
-            fprintf(pm->my_err, "\nWarning: Sequence %3li \"%-20.20s\" has "
+            fprintf(pm->my_err, "\nWarning: Sequence \"%-20.20s\" has "
                                 "%li internal stop codon(s)\n",
-                    num_sequence, ttitle, ns);
-         num_seq_int_stop++;
+                    ttitle, ns);
       }
       break;
    case 2:
       if (ncod[0] == 1 && pcu->ca[x] != 11 && pm->warn)
       { /*  last codon was partial */
          fprintf(pm->my_err,
-                 "\nWarning: Sequence %3li \"%-20.20s\" last codon was partial\n", num_sequence, ttitle);
+                 "\nWarning: Sequence \"%-20.20s\" last codon was partial\n", ttitle);
       }
       else
       {
@@ -294,18 +300,18 @@ long codon_error(int x, int y, char *ttitle, char error_level, MENU_STRUCT *pm)
                        ncod[0]);
             else
                fprintf(pm->my_err,
-                       "\nWarning: sequence %3li \"%-20.20s\" has %li non translatable"
+                       "\nWarning: Sequence \"%-20.20s\" has %li non translatable"
                        " codon(s)\n",
-                       num_sequence, ttitle, ncod[0]);
+                       ttitle, ncod[0]);
          }
          if (pcu->ca[x] != 11 && pm->warn)
          {
             if (!pm->totals)
             {
                fprintf(pm->my_err,
-                       "\nWarning: Sequence %3li \"%-20.20s\" is not terminated by"
+                       "\nWarning: Sequence \"%-20.20s\" is not terminated by"
                        " a stop codon\n",
-                       num_sequence, ttitle);
+                       ttitle);
             }
          }
       }
@@ -317,7 +323,7 @@ long codon_error(int x, int y, char *ttitle, char error_level, MENU_STRUCT *pm)
       if (pm->warn)
       {
          fprintf(pm->my_err,
-                 "\nSequence %li \"%-20.20s\" contains ", num_sequence, ttitle);
+                 "\nSequence \"%-20.20s\" contains ", ttitle);
          (y) ? fprintf(pm->my_err, "only %i ", (int)y) : fprintf(pm->my_err, "no ");
          fprintf(pm->my_err, "amino acids with %i synonymous codons\n", x);
          fprintf(pm->my_err, "\t--Nc was not calculated \n");
@@ -329,15 +335,14 @@ long codon_error(int x, int y, char *ttitle, char error_level, MENU_STRUCT *pm)
       my_exit(99, "Programme error in codon_error\n");
    }
 
-   return loc_cod_tot; /* Number of codons counted            */
+   return 0;
 }
 
 /****************** Codon Usage Out           *****************************/
 /* Writes codon usage output to file. Note this subroutine is only called */
 /* when machine readable output is selected, otherwise cutab_out is used  */
 /**************************************************************************/
-int codon_usage_out(FILE *fblkout, long *nncod, int last_aa,
-                    int vvalid_stops, char *ttitle, MENU_STRUCT *pm)
+int codon_usage_out(FILE *fblkout, long *nncod, char *ttitle, MENU_STRUCT *pm)
 {
    GENETIC_CODE_STRUCT *pcu = pm->pcu; 
 
@@ -345,7 +350,7 @@ int codon_usage_out(FILE *fblkout, long *nncod, int last_aa,
    int x;
    char sp = pm->separator;
 
-   ccodon_tot = codon_error(last_aa, vvalid_stops, "", (char)4, pm); /*dummy*/
+   count_codons(nncod, &ccodon_tot);
 
    /*example of output                                                     */
    /*0,0,0,0,3,2,2,0,0,0,0,0,0,3,0,0,                                      */
@@ -401,7 +406,7 @@ int rscu_usage(long *nncod, long *nnaa, float rscu[], int *ds, GENETIC_CODE_STRU
    return 0;
 }
 
-int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    float rscu[65];
    rscu_usage(nncod, nnaa, rscu, pm->ds, pm->pcu);
@@ -450,7 +455,7 @@ int raau_usage(long nnaa[], double raau[])
    return 0;
 }
 
-int raau_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
+int raau_usage_out(FILE *fblkout, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    AMINO_STRUCT *paa = pm->paa;
 
@@ -486,7 +491,7 @@ int raau_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
 /******************   AA usage output         *****************************/
 /* Writes amino acid usage output to file.                                */
 /**************************************************************************/
-int aa_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
+int aa_usage_out(FILE *fblkout, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    AMINO_STRUCT *paa = pm->paa;
 
@@ -602,7 +607,7 @@ int base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* It re-zeros all the main counters, but is not called when concatenating*/
 /* sequences together                                                     */
 /**************************************************************************/
-int clean_up(long *nncod, long *nnaa)
+int clean_up(long *nncod, long *nnaa, long din[3][16], int *fram, int *valid_stops)
 {
    int x;
    int i;
@@ -612,14 +617,15 @@ int clean_up(long *nncod, long *nnaa)
    for (x = 0; x < 23; x++)
       nnaa[x] = 0;
    /* dinucleotide count remembers the   */
-   dinuc_count(" "); /* last_base from the last fragment   */
+   dinuc_count(" ", din, fram); /* last_base from the last fragment   */
                         /* this causes the last base to be "" */
    for (x = 0; x < 3; x++)
       for (i = 0; i < 16; i++)
          din[x][i] = 0;
 
-   dinuc_count(" ");
-   valid_stops = codon_tot = fram = 0;
+   dinuc_count(" ", din, fram);
+   *valid_stops = *fram = 0;
+
    return 0;
 }
 /*****************Codon Adaptation Index output   *************************/
@@ -980,7 +986,7 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* number of values reported changes as it is assumed the user has access*/
 /* to a spreadsheet type programme if they are requesting tabular output */
 /*************************************************************************/
-int gc(int *ds, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu)
+int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu)
 {
    long id;
    // long bases[5]; /* base that are synonymous GCAT     */
@@ -1025,7 +1031,7 @@ int gc(int *ds, long bases[5], long base_tot[5], long base_1[5], long base_2[5],
    return 0;
 }
 
-int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
+int gc_out(FILE *foutput, FILE *fblkout, long *nncod, int which, char* title, MENU_STRUCT *pm)
 {
    long bases[5]; /* base that are synonymous GCAT     */
    long base_tot[5];
@@ -1035,7 +1041,7 @@ int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
    long tot_s = 0;
    long totalaa = 0;
 
-   gc(pm->ds, bases, base_tot, base_1, base_2, base_3, &tot_s, &totalaa, pm->pcu);
+   gc(pm->ds, nncod, bases, base_tot, base_1, base_2, base_3, &tot_s, &totalaa, pm->pcu);
 
    static char header = false;
    char sp = pm->separator;
@@ -1109,7 +1115,7 @@ int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
 /* ds points to an array[64] of synonymous values                         */
 /* it reveals how many synonyms there are for each aa                     */
 /**************************************************************************/
-int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int cutab_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    AMINO_STRUCT *paa = pm->paa;
    GENETIC_CODE_STRUCT *pcu = pm->pcu;
@@ -1122,7 +1128,8 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
    for (x = 0; x < 4; x++)
       last_row[x] = 0;
 
-   codon_tot = codon_error(1, 1, "", (char)4, pm); /*  dummy*/
+   long codon_tot;
+   count_codons(nncod, &codon_tot);
 
    for (x = 1; x < 65; x++)
    {
@@ -1158,7 +1165,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* codon and amino acid usage arrays ncod and naa to measure the parameter*/
 /* rather they use the raw sequence data                                  */
 /**************************************************************************/
-int dinuc_count(char *seq)
+int dinuc_count(char *seq, long din[3][16], int *fram)
 {
    int last, cur = 0;
    int i;
@@ -1195,9 +1202,9 @@ int dinuc_count(char *seq)
          continue; /* true if either of the base is not  */
                    /* a standard UTCG, or the current bas*/
                    /* is the start of the sequence       */
-      din[fram][((last - 1) * 4 + cur) - 1]++;
-      if (++fram == 3)
-         fram = 0; /* resets the frame to zero           */
+      din[*fram][((last - 1) * 4 + cur) - 1]++;
+      if (++(*fram) == 3)
+         *fram = 0; /* resets the frame to zero           */
    }
    return 0;
 }
@@ -1209,7 +1216,7 @@ int dinuc_count(char *seq)
 /* reading frames. Machine readable format writes all the data into a     */
 /* single row                                                             */
 /**************************************************************************/
-int dinuc(long dinuc_tot[4])
+int dinuc(long din[3][16], long dinuc_tot[4])
 {
    int i, x;
    
@@ -1226,13 +1233,13 @@ int dinuc(long dinuc_tot[4])
    return 0;
 }
 
-int dinuc_out(FILE *fblkout, char *ttitle, char sp) {
+int dinuc_out(long din[3][16], FILE *fblkout, char *ttitle, char sp) {
    static char called = false;
    char bases[5] = {'T', 'C', 'A', 'G'};
    int i, x, y;
 
    long dinuc_tot[4];
-   dinuc(dinuc_tot);
+   dinuc(din, dinuc_tot);
 
    if (!called)
    { /* write out the first row as a header*/
@@ -1340,7 +1347,7 @@ int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap)
    return 0;
 }
 
-int hydro_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
+int hydro_out(FILE *foutput, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    float out;
    char sp = pm->separator;
@@ -1384,7 +1391,7 @@ int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap)
    return 0;
 }
 
-int aromo_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
+int aromo_out(FILE *foutput, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    float out;
    char sp = pm->separator;
