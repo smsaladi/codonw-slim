@@ -147,6 +147,9 @@ FILE *open_file(char *filename, char *mode);
 // defined in codon_us.c
 int clean_up(long *ncod, long *naa, long din[3][16], int *fram, int *valid_stops);
 int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
+int ident_codon(char *codon);
+int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu);
+int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu);
 
 int count_codons(long* ncod, long *loc_cod_tot);
 int dinuc_count(char *seq, long din[3][16], int *fram);

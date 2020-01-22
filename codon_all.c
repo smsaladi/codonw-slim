@@ -57,10 +57,6 @@ Check for start, stop codons, internal stop, non-translatable and partial codons
 
 #include "codonW.h"
 
-static int ident_codon(char *codon);
-static int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu);
-static int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu);
-
 /********************* Initilize Pointers**********************************/
 /* Various pointers to structures are assigned here dependent on the      */
 /* genetic code chosen.                                                   */
@@ -100,7 +96,7 @@ int initialize_point(char code, char fop_species, char cai_species, MENU_STRUCT 
 /* Calculate how synonymous a codon is by comparing with all other codons */
 /* to see if they encode the same AA                                      */
 /**************************************************************************/
-static int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu)
+int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu)
 {
    int x, i;
 
@@ -118,7 +114,7 @@ static int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu)
 /* Calculate how synonymous an amino acid is by checking all codons if    */
 /* they encode this same AA                                               */
 /**************************************************************************/
-static int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu)
+int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu)
 {
    int x;
 
@@ -170,7 +166,7 @@ int codon_usage_tot(char *seq, long *codon_tot, int *valid_stops, long ncod[], l
 /* array into a numerical value in the range 0-64, zero is reserved for   */
 /* codons that contain at least one unrecognised base                     */
 /**************************************************************************/
-static int ident_codon(char *codon)
+int ident_codon(char *codon)
 {
    int icode = 0;
    int x;
