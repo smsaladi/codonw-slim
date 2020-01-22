@@ -69,8 +69,8 @@
 #include "codonW.h"
 
 static int ident_codon(char *codon);
-static int* how_synon(GENETIC_CODE_STRUCT *pcu);
-static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu);
+static int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu);
+static int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu);
 
 /********************* Initilize Pointers**********************************/
 /* Various pointers to structures are assigned here dependent on the      */
@@ -93,8 +93,14 @@ int initialize_point(char code, char fop_species, char cai_species, MENU_STRUCT 
    pm->pfop = &(ref->fop[fop_species]);
    pm->pcbi = &(ref->fop[fop_species]);
    pm->pcu = &(ref->cu[code]);
-   pm->ds = how_synon(pm->pcu);
-   pm->da = how_synon_aa(pm->pcu);
+
+   static int dds[65];
+   how_synon(dds, pm->pcu);
+   pm->ds = dds;
+
+   static int dda[22];
+   how_synon_aa(dda, pm->pcu);
+   pm->da = dda;
 
    fprintf(pm->my_err, "Genetic code set to %s %s\n", pm->pcu->des, pm->pcu->typ);
 
@@ -105,9 +111,8 @@ int initialize_point(char code, char fop_species, char cai_species, MENU_STRUCT 
 /* Calculate how synonymous a codon is by comparing with all other codons */
 /* to see if they encode the same AA                                      */
 /**************************************************************************/
-static int* how_synon(GENETIC_CODE_STRUCT *pcu)
+static int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu)
 {
-   static int dds[65];
    int x, i;
 
    for (x = 0; x < 65; x++)
@@ -118,15 +123,14 @@ static int* how_synon(GENETIC_CODE_STRUCT *pcu)
          if (pcu->ca[x] == pcu->ca[i])
             dds[x]++;
 
-   return dds;
+   return 0;
 }
 /*******************How Synonymous is this AA     *************************/
 /* Calculate how synonymous an amino acid is by checking all codons if    */
 /* they encode this same AA                                               */
 /**************************************************************************/
-static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
+static int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu)
 {
-   static int dda[22];
    int x;
 
    for (x = 0; x < 22; x++)
@@ -135,7 +139,7 @@ static int* how_synon_aa(GENETIC_CODE_STRUCT *pcu)
    for (x = 1; x < 65; x++)
       dda[pcu->ca[x]]++;
 
-   return dda;
+   return 0;
 }
 
 /****************** Codon Usage Counting      *****************************/
@@ -381,23 +385,34 @@ int codon_usage_out(FILE *fblkout, long *nncod, int last_aa,
 /* was cutab so this is automatically selected in codons.c                */
 /* RSCU values are genetic codon dependent                                */
 /**************************************************************************/
+int rscu_usage(long *nncod, long *nnaa, float rscu[], int *ds, GENETIC_CODE_STRUCT *pcu)
+{
+   int x;
+
+   /* ds points to an array[64] of synonym values i.e. how synon its AA is  */
+   for (x = 1; x < 65; x++) {
+      if (nnaa[pcu->ca[x]] != 0)
+         rscu[x] = ((float)nncod[x] / (float)nnaa[pcu->ca[x]]) * ((float)*(ds + x));
+      else
+         rscu[x] = 0.0;
+   }
+
+   
+   return 0;
+}
+
 int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
 {
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   int *ds = pm->ds;
+   float rscu[65];
+   rscu_usage(nncod, nnaa, rscu, pm->ds, pm->pcu);
 
    int x;
    char sp = pm->separator;
-
    /* ds points to an array[64] of synonym values i.e. how synon its AA is  */
 
    for (x = 1; x < 65; x++)
    {
-      if (nnaa[pcu->ca[x]] != 0)
-         fprintf(fblkout, "%5.3f%c",
-                 ((float)nncod[x] / (float)nnaa[pcu->ca[x]]) * ((float)*(ds + x)), sp);
-      else
-         fprintf(fblkout, "0.000%c", sp);
+      fprintf(fblkout, "%5.3f%c", rscu[x], sp);
 
       if (x == 64)
          fprintf(fblkout, "%-20.20s", title);
@@ -405,17 +420,40 @@ int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
       if (!(x % 16))
          fprintf(fblkout, "\n");
    }
+
    return 0;
 }
+
 /******************   RAAU output             *****************************/
 /* Writes Relative amino acid usage output to file. Amino Acid usage is   */
 /* normalised for gene length                                             */
 /**************************************************************************/
+int raau_usage(long nnaa[], double raau[])
+{
+   int i;
+
+   // total No. of AAs
+   long aa_tot = 0;
+
+   for (i = 1; i < 22; i++)
+      if (i != 11)
+         aa_tot += nnaa[i];
+   
+   for (i = 0; i < 22; i++)
+      if (i == 11)
+         raau[i] = 0;
+      else if (aa_tot)
+         raau[i] = (double)nnaa[i] / (double)aa_tot;
+      else /* No AminoAcids! */
+         raau[i] = 0;
+
+   return 0;
+}
+
 int raau_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
 {
    AMINO_STRUCT *paa = pm->paa;
 
-   long aa_tot = 0;
    static char first_line = true;
    int i, x;
    char sp;
@@ -431,23 +469,20 @@ int raau_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
       fprintf(fblkout, "\n");
       first_line = false;
    }
-   for (i = 1; i < 22; i++)
-      if (i != 11)
-         aa_tot += nnaa[i]; /* total No. of AAs      */
 
    fprintf(fblkout, "%.30s", title);
 
+   double raau[22];
+   raau_usage(nnaa, raau);
+
    for (x = 0; x < 22; x++)
-      if (x == 11)
-         fprintf(fblkout, "%c0.0000", sp); /* report 0 for stops    */
-      else if (aa_tot)
-         fprintf(fblkout, "%c%.4f", sp, (double)nnaa[x] / (double)aa_tot);
-      else /*What no AminoAcids!!!! */
-         fprintf(fblkout, "%c%c", sp, sp);
+      fprintf(fblkout, "%c%.4f", sp, raau[x]);
 
    fprintf(fblkout, "\n");
+
    return 0;
 }
+
 /******************   AA usage output         *****************************/
 /* Writes amino acid usage output to file.                                */
 /**************************************************************************/
@@ -477,6 +512,7 @@ int aa_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
    fprintf(fblkout, "\n");
    return 0;
 }
+
 /******************  Base Silent output     *******************************/
 /* Calculates and write the base composition at silent sites              */
 /* normalised as a function of the possible usage at that silent site with*/
@@ -485,18 +521,13 @@ int aa_usage_out(FILE *fblkout, long *nnaa, MENU_STRUCT *pm)
 /* option to use any base at the third position                           */
 /* All synonymous AA can select between a G or C though                   */
 /**************************************************************************/
-int base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int base_sil_us(long *nncod, long *nnaa, double base_sil[], int *ds, int *da, GENETIC_CODE_STRUCT *pcu)
 {
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   int *ds = pm->ds;
-   int *da = pm->da;
-
    int id, i, x, y, z;
    long bases_s[4]; /* synonymous GCAT bases               */
-
    long cb[4]; /* codons that could have been GCAT    */
+
    int done[4];
-   char sp = pm->separator;
 
    for (x = 0; x < 4; x++)
    {
@@ -540,17 +571,32 @@ int base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
             }
    }
 
-   /* Now the easy bit ... just output the results to file                */
+   /* Now the easy bit ... just output the results                */
    for (i = 0; i < 4; i++)
    {
       if (cb[i] > 0)
-         fprintf(foutput, "%6.4f%c", (double)bases_s[i] / (double)cb[i], sp);
+         base_sil[i] = (double)bases_s[i] / (double)cb[i];
       else
-         fprintf(foutput, "0.0000%c", sp);
+         base_sil[i] = 0;
    }
 
    return 0;
 }
+
+int base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+{
+   double base_sil[4];
+
+   base_sil_us(nncod, nnaa, base_sil, pm->ds, pm->da, pm->pcu);
+
+   char sp = pm->separator;
+
+   for (int i = 0; i < 4; i++)
+      fprintf(foutput, "%6.4f%c", base_sil[i], sp);
+
+   return 0;
+}
+
 /******************  Clean up               *******************************/
 /* Called after each sequence has been completely read from disk          */
 /* It re-zeros all the main counters, but is not called when concatenating*/
@@ -591,17 +637,11 @@ int clean_up(long *nncod, long *nnaa)
 /* adaptiveness value of zero, which could result in a CAI of zero;       */
 /* these codons have fitness of zero (<.0001) are adjusted to 0.01        */
 /**************************************************************************/
-int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
+int cai(long *nncod, double *sigma, int *ds, CAI_STRUCT *pcai, GENETIC_CODE_STRUCT *pcu, FILE *caifile, MENU_STRUCT *pm)
 {
-   CAI_STRUCT *pcai = pm->pcai;
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   int *ds = pm->ds;
-
    long totaa = 0;
-   double sigma;
    float ftemp;
    int x;
-   char sp = pm->separator;
    static char cai_ttt = false;
    static char description[61];
    static char reference[61];
@@ -613,15 +653,15 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
       user_cai.des = description; /* assign an array to a pointer  */
       user_cai.ref = reference;   /* as above                      */
 
-      if (pm->caifile)
+      if (caifile)
       {
-         rewind(pm->caifile); /* unlikely unless fopfile = caifile   */
+         rewind(caifile); /* unlikely unless fopfile = caifile   */
          x = 0;
          strcpy(user_cai.des, "User supplied CAI adaptation values ");
          strcpy(user_cai.ref, "No reference");
          user_cai.cai_val[x++] = 0.0F;
 
-         while ((fscanf(pm->caifile, "%f ", &ftemp)) != EOF)
+         while ((fscanf(caifile, "%f ", &ftemp)) != EOF)
          {
             /* if any bad CAI values are read EXIT*/
             if (ftemp < 0 || ftemp > 1.0)
@@ -648,27 +688,39 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 
    } /* matches if (!cai_ttt )             */
 
-   for (x = 1, sigma = 0; x < 65; x++)
+   for (x = 1, *sigma = 0; x < 65; x++)
    {
       if (pcu->ca[x] == 11 || *(ds + x) == 1)
          continue;
       if (pcai->cai_val[x] < 0.0001)     /* if value is effectively zero       */
          pcai->cai_val[x] = 0.01F;       /* make it .01 */
-      sigma += (double)*(nncod + x) * log((double)pcai->cai_val[x]);
+      *sigma += (double)*(nncod + x) * log((double)pcai->cai_val[x]);
       totaa += *(nncod + x);
    }
 
    if (totaa)
    { /* catch floating point overflow error*/
-      sigma = sigma / (double)totaa;
-      sigma = exp(sigma);
+      *sigma = *sigma / (double)totaa;
+      *sigma = exp(*sigma);
    }
    else
-      sigma = 0;
+      *sigma = 0;
 
-   fprintf(foutput, "%5.3f%c", sigma, sp);
    return 0;
 }
+
+int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
+{
+   double sigma;
+
+   cai(nncod, &sigma, pm->ds, pm->pcai, pm->pcu, pm->caifile, pm);
+
+   char sp = pm->separator;
+   fprintf(foutput, "%5.3f%c", sigma, sp);
+
+   return 0;
+}
+
 /*****************Codon Bias Index output        **************************/
 /* Codon bias index is a measure of directional codon bias, it measures   */
 /* the extent to which a gene uses a subset of optimal codons.            */
@@ -681,24 +733,13 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 /* This results in a negative value for CBI.                              */
 /* ( Bennetzen and Hall 1982 )                                            */
 /**************************************************************************/
-int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, FILE *cbifile, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pcbi)
 {
-   AMINO_STRUCT *paa = pm->paa;
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   FOP_STRUCT *pfop = pm->pfop;
-   FOP_STRUCT *pcbi = pm->pcbi;
-   CAI_STRUCT *pcai = pm->pcai;
-   AMINO_PROP_STRUCT *pap = pm->pap;
-   int *ds = pm->ds;
-   int *da = pm->da;
-
    long tot_cod = 0;
    long opt = 0;
    float exp_cod = 0.0F;
-   float fcbi;
    int c, x;
    char str[2];
-   char sp = pm->separator;
    char message[MAX_MESSAGE_LEN];
 
    static char description[61];
@@ -713,15 +754,15 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
       user_cbi.des = description; /* assign a pointer to array     */
       user_cbi.ref = reference;
 
-      if (pm->cbifile)
+      if (cbifile)
       {
-         rewind(pm->cbifile); /* fopfile can be the same as cbifile */
+         rewind(cbifile); /* fopfile can be the same as cbifile */
          strcpy(user_cbi.des, "User supplied choice");
          strcpy(user_cbi.ref, "No reference");
          x = 0;
          user_cbi.fop_cod[x++] = 0;
 
-         while ((c = fgetc(pm->cbifile)) != EOF && x <= 66)
+         while ((c = fgetc(cbifile)) != EOF && x <= 66)
          {
             sprintf(str, "%c", c);
             if (isdigit(c) && atoi(str) >= 0 && atoi(str) <= 3)
@@ -739,7 +780,7 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
             my_exit(99, message);
          }
          pcbi = (&user_cbi);
-      } /*             matches if(pm->cbifile)  */
+      } /*             matches if(cbifile)  */
 
       fprintf(stderr, "Using %s (%s) \noptimal codons to calculate "
              "CBI\n",
@@ -790,10 +831,20 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
    }    /*                   for (    )        */
 
    if (tot_cod - exp_cod)
-      fcbi = (opt - exp_cod) / (tot_cod - exp_cod);
+      *fcbi = (opt - exp_cod) / (tot_cod - exp_cod);
    else
-      fcbi = 0.0F;
+      *fcbi = 0.0F;
 
+   return 0;
+}
+
+int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+{
+   float fcbi;
+
+   cbi(nncod, nnaa, &fcbi, pm->ds, pm->da, pm->cbifile, pm->pcu, pm->pcbi);
+
+   char sp = pm->separator;
    fprintf(foutput, "%5.3f%c", fcbi, sp); /* CBI     QED     */
 
    return 0;
@@ -811,27 +862,15 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* codons are used). When calculating the modified Fop index, any negative */
 /* values are adjusted to zero.                                            */
 /***************************************************************************/
-int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
+int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop, MENU_STRUCT *pm)
 {
-   AMINO_STRUCT *paa = pm->paa;
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   FOP_STRUCT *pfop = pm->pfop;
-   FOP_STRUCT *pcbi = pm->pcbi;
-   CAI_STRUCT *pcai = pm->pcai;
-   AMINO_PROP_STRUCT *pap = pm->pap;
-   int *ds = pm->ds;
-
    long nonopt = 0;
    long std = 0;
    long opt = 0;
-   float ffop;
    int c, x;
-   char nonopt_codons = false;
    
    char str[2];
    char message[MAX_MESSAGE_LEN];
-
-   char sp = pm->separator;
 
    static char first_call = true;
    static char description[61];
@@ -921,7 +960,6 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
          std += *(nncod + x);
          break;
       case 1:
-         nonopt_codons = true;
          nonopt += *(nncod + x);
          break;
       default:
@@ -940,12 +978,21 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
    /* only ask this once  ...            */
 
    if (factor_in_rare && (opt + nonopt + std))
-      ffop = (float)(opt - nonopt) / (float)(opt + nonopt + std);
+      *ffop = (float)(opt - nonopt) / (float)(opt + nonopt + std);
    else if ((opt + nonopt + std))
-      ffop = (float)opt / (float)(opt + nonopt + std);
+      *ffop = (float)opt / (float)(opt + nonopt + std);
    else
-      ffop = 0.0;
+      *ffop = 0.0;
 
+   return 0;
+}
+
+int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm) {
+   float ffop;
+
+   int retval = fop(nncod, &ffop, pm->ds, pm->pcu, pm->pfop, pm);
+
+   char sp = pm->separator;
    fprintf(foutput, "%5.3f%c", ffop, sp);
 
    return 0;
@@ -959,19 +1006,15 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
 /* needed when calculating this index. Initially the homozygosity for each*/
 /* amino acid is estimated from the squared codon frequencies.            */
 /**************************************************************************/
-int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu, MENU_STRUCT *pm)
 {
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   int *da = pm->da;
-
    int numaa[9];
    int fold[9];
    int error_t = false;
    int i, z, x;
    double totb[9];
    double averb = 0, bb = 0, k2 = 0, s2 = 0;
-   float enc_tot = 0.0F;
-   char sp = pm->separator;
+   *enc_tot = 0.0F;
 
    /* don't assume that 6 is the largest possible amino acid family assume 9*/
    for (i = 0; i < 9; i++)
@@ -1019,7 +1062,7 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
       fold[*(da + i)]++; /* fold z=4 can have 9 in univ code */
    }                     /* but some aa may be absent from   */
                          /* gene therefore numaa[z] may be 0 */
-   enc_tot = (float)fold[1];
+   *enc_tot = (float)fold[1];
 
    for (z = 2, averb = 0, error_t = false; z <= 8; z++)
    {
@@ -1034,15 +1077,24 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
          else
          { /* write error to stderr             */
             codon_error(z, numaa[z], title, 3, pm);
-            error_t = true; /* error catch for strange genes     */
-            break;
+            return 1;
          }
-         enc_tot += (float)fold[z] / (float)averb;
+         *enc_tot += (float)fold[z] / (float)averb;
          /* the calculation                   */
       }
    }
 
-   if (error_t)
+   return 0;
+}
+
+int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
+{
+   char sp = pm->separator;
+   float enc_tot;
+
+   int retval = enc(nncod, nnaa, &enc_tot, pm->da, pm->pcu, pm);
+
+   if (retval == 1)
       fprintf(foutput, "*****%c", sp);
    else if (enc_tot <= 61)
       fprintf(foutput, "%5.2f%c", enc_tot, sp);
@@ -1067,29 +1119,13 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* number of values reported changes as it is assumed the user has access*/
 /* to a spreadsheet type programme if they are requesting tabular output */
 /*************************************************************************/
-int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
+int gc(int *ds, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu)
 {
-   AMINO_STRUCT *paa = pm->paa;
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-   FOP_STRUCT *pfop = pm->pfop;
-   FOP_STRUCT *pcbi = pm->pcbi;
-   CAI_STRUCT *pcai = pm->pcai;
-   AMINO_PROP_STRUCT *pap = pm->pap;
-   int *ds = pm->ds;
-
    long id;
-   long bases[5]; /* base that are synonymous GCAT     */
-   long base_tot[5];
-   long base_1[5];
-   long base_2[5];
-   long base_3[5];
-   long tot_s = 0;
-   long totalaa = 0;
-   static char header = false;
+   // long bases[5]; /* base that are synonymous GCAT     */
+   *tot_s = 0;
+   *totalaa = 0;
    int x, y, z;
-   char sp = pm->separator;
-
-   typedef double lf;
 
    for (x = 0; x < 5; x++)
    {
@@ -1115,15 +1151,35 @@ int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
             base_tot[z] += ncod[id]; /* will be fooled a little if there   */
             base_3[z] += ncod[id];   /* non translatable codons, but these */
                                      /* are ignored when the avg is calc   */
-            totalaa += ncod[id];
+            *totalaa += ncod[id];
 
             if (*(ds + id) == 1)
                continue; /* if not synon  skip codon           */
 
             bases[z] += ncod[id]; /* count no of codons ending in Z     */
 
-            tot_s += ncod[id]; /* count tot no of silent codons      */
+            *tot_s += ncod[id]; /* count tot no of silent codons      */
          }
+
+   return 0;
+}
+
+int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
+{
+   long bases[5]; /* base that are synonymous GCAT     */
+   long base_tot[5];
+   long base_1[5];
+   long base_2[5];
+   long base_3[5];
+   long tot_s = 0;
+   long totalaa = 0;
+
+   gc(pm->ds, bases, base_tot, base_1, base_2, base_3, &tot_s, &totalaa, pm->pcu);
+
+   static char header = false;
+   char sp = pm->separator;
+   
+   typedef double lf;
 
    if (!tot_s || !totalaa)
    {
@@ -1131,6 +1187,7 @@ int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm)
       fprintf(pm->my_err, "No output was written to file   \n");
       return 1;
    }
+
    switch ((int)which)
    {
    case 1: /* exhaustive output for analysis     */
@@ -1233,6 +1290,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
            (long)codon_tot, title, pcu->des);
    return 0;
 }
+
 /********************  Dinuc_count    *************************************/
 /* Count the frequency of all 16 dinucleotides in all three possible      */
 /* reading frames. This one of the few functions that does not use the    */
@@ -1282,6 +1340,7 @@ int dinuc_count(char *seq)
    }
    return 0;
 }
+
 /***************** Dinuc_out           ************************************/
 /* Outputs the frequency of dinucleotides, either in fout rows per seq    */
 /* if the output is meant to be in a human readable form, each row repre- */
@@ -1289,13 +1348,10 @@ int dinuc_count(char *seq)
 /* reading frames. Machine readable format writes all the data into a     */
 /* single row                                                             */
 /**************************************************************************/
-int dinuc_out(FILE *fblkout, char *ttitle, char sp)
+int dinuc(long dinuc_tot[4])
 {
-   static char called = false;
-   char bases[5] = {'T', 'C', 'A', 'G'};
-   long dinuc_tot[4];
-   int i, x, y;
-
+   int i, x;
+   
    for (x = 0; x < 4; x++)
       dinuc_tot[x] = 0;
 
@@ -1305,6 +1361,17 @@ int dinuc_out(FILE *fblkout, char *ttitle, char sp)
          dinuc_tot[x] += din[x][i]; /* count dinuc usage in each frame   */
          dinuc_tot[3] += din[x][i]; /* and total dinuc usage,            */
       }
+
+   return 0;
+}
+
+int dinuc_out(FILE *fblkout, char *ttitle, char sp) {
+   static char called = false;
+   char bases[5] = {'T', 'C', 'A', 'G'};
+   int i, x, y;
+
+   long dinuc_tot[4];
+   dinuc(dinuc_tot);
 
    if (!called)
    { /* write out the first row as a header*/
@@ -1378,6 +1445,7 @@ int dinuc_out(FILE *fblkout, char *ttitle, char sp)
    return 0;
 }
 
+
 /*********************  hydro_out        **********************************/
 /* The general average hydropathicity or (GRAVY) score, for the hypothet- */
 /* ical translated gene product. It is calculated as the arithmetic mean  */
@@ -1390,34 +1458,44 @@ int dinuc_out(FILE *fblkout, char *ttitle, char sp)
 /* paa                points to a struct containing Amino Acid values     */
 /* pap->hydro         Pointer to hydropathicity values for each AA        */
 /**************************************************************************/
-int hydro_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
+int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap)
 {
-   AMINO_PROP_STRUCT *pap = pm->pap;
-
    long a2_tot = 0;
-   float hydro = 0.0F;
+   *hydro = 0.0F;
    int i;
-   char sp = pm->separator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)
          a2_tot += nnaa[i];
 
+   /* whow   .. no amino acids what happened     */
    if (!a2_tot)
-   { /* whow   .. no amino acids what happened     */
+      return 1;
+
+   for (i = 1; i < 22; i++)
+      if (i != 11)
+         *hydro += ((float)nnaa[i] / (float)a2_tot) * (float)pap->hydro[i];
+
+   return 0;
+}
+
+int hydro_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
+{
+   float out;
+   char sp = pm->separator;
+
+   int retval = hydro(nnaa, &out, pm->pap);
+   if(retval == 1) {
       fprintf(pm->my_err, "Warning %.20s appear to be too short\n", title);
       fprintf(pm->my_err, "No output was written to file\n");
       return 1;
    }
-
-   for (i = 1; i < 22; i++)
-      if (i != 11)
-         hydro += ((float)nnaa[i] / (float)a2_tot) * (float)pap->hydro[i];
-
-   fprintf(foutput, "%8.6f%c", hydro, sp);
-
+      
+   fprintf(foutput, "%8.6f%c", out, sp);
    return 0;
+
 }
+
 /**************** Aromo_out ***********************************************/
 /* Aromaticity score of protein. This is the frequency of aromatic amino  */
 /* acids (Phe, Tyr, Trp) in the hypothetical translated gene product      */
@@ -1425,29 +1503,38 @@ int hydro_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
 /* paa                points to a struct containing Amino Acid values     */
 /* pap->aromo         Pointer to aromaticity values for each AA           */
 /**************************************************************************/
-int aromo_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
+int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap)
 {
-   AMINO_PROP_STRUCT *pap = pm->pap;
-
    long a1_tot = 0;
-   float aromo = 0.0F;
+   *aromo = 0.0F;
    int i;
-   char sp = pm->separator;
 
    for (i = 1; i < 22; i++)
       if (i != 11)
          a1_tot += nnaa[i];
 
    if (!a1_tot)
-   {
+      return 1;
+
+   for (i = 1; i < 22; i++)
+      if (i != 11)
+         *aromo += ((float)nnaa[i] / (float)a1_tot) * (float)pap->aromo[i];
+   
+   return 0;
+}
+
+int aromo_out(FILE *foutput, long *nnaa, MENU_STRUCT *pm)
+{
+   float out;
+   char sp = pm->separator;
+
+   int retval = aromo(nnaa, &out, pm->pap);
+   if(retval == 1) {
       fprintf(pm->my_err, "Warning %.20s appear to be too short\n", title);
       fprintf(pm->my_err, "No output was written to file\n");
       return 1;
    }
-   for (i = 1; i < 22; i++)
-      if (i != 11)
-         aromo += ((float)nnaa[i] / (float)a1_tot) * (float)pap->aromo[i];
-
-   fprintf(foutput, "%8.6f%c", aromo, sp);
+      
+   fprintf(foutput, "%8.6f%c", out, sp);
    return 0;
 }

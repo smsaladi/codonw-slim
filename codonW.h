@@ -181,3 +181,16 @@ int dinuc_out(FILE *fblkout, char *title, char sep);
 int enc_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 int gc_out(FILE *foutput, FILE *fblkout, int which, MENU_STRUCT *pm);
 int base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
+
+
+int rscu_usage(long *nncod, long *nnaa, float rscu[], int *ds, GENETIC_CODE_STRUCT *pcu);
+int raau_usage(long nnaa[], double raau[]);
+int base_sil_us(long *nncod, long *nnaa, double base_sil[], int *ds, int *da, GENETIC_CODE_STRUCT *pcu);
+int cai(long *nncod, double *sigma, int *ds, CAI_STRUCT *pcai, GENETIC_CODE_STRUCT *pcu, FILE *caifile, MENU_STRUCT *pm);
+int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, FILE *cbifile, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pcbi);
+int fop(long *nncod, float *ffop, int *ds, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop, MENU_STRUCT *pm);
+int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu, MENU_STRUCT *pm);
+int gc(int *ds, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu);
+int dinuc(long dinuc_tot[4]);
+int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap);
+int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap);

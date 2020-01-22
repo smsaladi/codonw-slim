@@ -45,7 +45,7 @@ int valid_stops = 0;
 int fram;
 
 /* define genetic codes   */
-static GENETIC_CODE_STRUCT cu[] = {
+static GENETIC_CODE_STRUCT cu_ref[] = {
     {
         "Universal Genetic code",
         "TGA=* TAA=* TAG=*",
@@ -172,7 +172,7 @@ static AMINO_STRUCT amino_acids = {
     }
 };
 
-static FOP_STRUCT fop[] = {
+static FOP_STRUCT fop_ref[] = {
     {
         "Escherichia coli",
         "Ikemura (1985) Mol. Biol. Evol. 2:13-34 (updated by INCBI 1991)",
@@ -263,7 +263,7 @@ static FOP_STRUCT fop[] = {
     }
 };
 
-static CAI_STRUCT cai[] = {  
+static CAI_STRUCT cai_ref[] = {  
     {
         "Escherichia coli",
         "No reference",
@@ -375,9 +375,9 @@ MENU_STRUCT Z_menu = {
 };
 
 REF_STRUCT Z_ref = {
-    cu,
-    fop,
-    cai,
+    cu_ref,
+    fop_ref,
+    cai_ref,
 
     &amino_acids,
     &amino_prop
