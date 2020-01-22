@@ -155,7 +155,7 @@ int codon_usage_tot(char *seq, long *codon_tot, long ncod[], long naa[], MENU_ST
    {
       strncpy(codon, (seq + i), 3);
       icode = ident_codon(codon);
-      ncod[icode]++;         /*increment the codon count */
+      ncod[icode]++;             /*increment the codon count */
       naa[pm->pcu->ca[icode]]++; /*increment the AA count    */
       (*codon_tot)++;
    }
@@ -1241,43 +1241,42 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /**************************************************************************/
 int dinuc_count(char *seq)
 {
-   char last_base;
-   static char a = 0;
+   int last, cur = 0;
    int i;
 
    long ttot = (long)strlen(seq);
    for (i = 0; i < ttot; i++)
    {
-      last_base = a;
+      last = cur;
       switch (seq[i])
       {
       case 't':
       case 'T':
       case 'u':
       case 'U':
-         a = 1;
+         cur = 1;
          break;
       case 'c':
       case 'C':
-         a = 2;
+         cur = 2;
          break;
       case 'a':
       case 'A':
-         a = 3;
+         cur = 3;
          break;
       case 'g':
       case 'G':
-         a = 4;
+         cur = 4;
          break;
       default:
-         a = 0;
+         cur = 0;
          break;
       }
-      if (!a || !last_base)
+      if (cur == 0 || i == 0)
          continue; /* true if either of the base is not  */
                    /* a standard UTCG, or the current bas*/
                    /* is the start of the sequence       */
-      din[fram][((last_base - 1) * 4 + a) - 1]++;
+      din[fram][((last - 1) * 4 + cur) - 1]++;
       if (++fram == 3)
          fram = 0; /* resets the frame to zero           */
    }
