@@ -427,16 +427,20 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STRUCT *
    return 0;
 }
 
-/********************  Dinuc_count    *************************************/
+/********************  Dinuc_count  Dinuc_out  ****************************/
 /* Count the frequency of all 16 dinucleotides in all three possible      */
-/* reading frames. This one of the few functions that does not use the    */
-/* codon and amino acid usage arrays ncod and naa to measure the parameter*/
-/* rather they use the raw sequence data                                  */
+/* reading frames.                                                        */
+/*                                                                        */
+/* Outputs the frequency of dinucleotides, either in fout rows per seq    */
+/* if the output is meant to be in a human readable form, each row repre- */
+/* senting a reading frame. The fourth row is the total of the all the    */
+/* reading frames. Machine readable format writes all the data into a     */
+/* single row                                                             */
 /**************************************************************************/
-int dinuc_count(char *seq, long din[3][16], int *fram)
+int dinuc_count(char *seq, long din[3][16], long dinuc_tot[4], int *fram)
 {
    int last, cur = 0;
-   int i;
+   int i, x;
 
    long ttot = (long)strlen(seq);
    for (i = 0; i < ttot; i++)
@@ -474,19 +478,6 @@ int dinuc_count(char *seq, long din[3][16], int *fram)
       if (++(*fram) == 3)
          *fram = 0; /* resets the frame to zero           */
    }
-   return 0;
-}
-
-/***************** Dinuc_out           ************************************/
-/* Outputs the frequency of dinucleotides, either in fout rows per seq    */
-/* if the output is meant to be in a human readable form, each row repre- */
-/* senting a reading frame. The fourth row is the total of the all the    */
-/* reading frames. Machine readable format writes all the data into a     */
-/* single row                                                             */
-/**************************************************************************/
-int dinuc(long din[3][16], long dinuc_tot[4])
-{
-   int i, x;
    
    for (x = 0; x < 4; x++)
       dinuc_tot[x] = 0;
@@ -497,17 +488,27 @@ int dinuc(long din[3][16], long dinuc_tot[4])
          dinuc_tot[x] += din[x][i]; /* count dinuc usage in each frame   */
          dinuc_tot[3] += din[x][i]; /* and total dinuc usage,            */
       }
-
+   
    return 0;
 }
 
-int dinuc_out(long din[3][16], FILE *fblkout, char *ttitle, char sp) {
+int dinuc_out(char *seq, FILE *fblkout, char *ttitle, char sp) {
    static char called = false;
    char bases[5] = {'T', 'C', 'A', 'G'};
    int i, x, y;
 
+   long din[3][16];
    long dinuc_tot[4];
-   dinuc(din, dinuc_tot);
+   int fram = 0;
+
+   for (x = 0; x < 3; x++)
+      for (i = 0; i < 16; i++)
+         din[x][i] = 0;
+
+   for (x = 0; x < 4; x++)
+      dinuc_tot[x] = 0;
+
+   dinuc_count(seq, din, dinuc_tot, &fram);
 
    if (!called)
    { /* write out the first row as a header*/

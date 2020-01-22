@@ -145,14 +145,13 @@ int my_exit(int exit_value, char *message);
 FILE *open_file(char *filename, char *mode);
 
 // defined in codon_us.c
-int clean_up(long *ncod, long *naa, long din[3][16], int *fram, int *valid_stops);
+int clean_up(long *ncod, long *naa, int *valid_stops);
 int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
 int ident_codon(char *codon);
 int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu);
 int how_synon_aa(int dda[], GENETIC_CODE_STRUCT *pcu);
 
 int count_codons(long* ncod, long *loc_cod_tot);
-int dinuc_count(char *seq, long din[3][16], int *fram);
 
 int codon_usage_tot(char *seq, long *codon_tot, int *valid_stops, long ncod[], long naa[], GENETIC_CODE_STRUCT *pcu);
 int codon_usage_out(FILE *fblkout, long *ncod, char *info, MENU_STRUCT *pm);
@@ -165,7 +164,7 @@ int fop_out(FILE *foutput, long *ncod, MENU_STRUCT *pm);
 int hydro_out(FILE *foutput, long *naa, char* title, MENU_STRUCT *pm);
 int aromo_out(FILE *foutput, long *naa, char* title, MENU_STRUCT *pm);
 int cutab_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STRUCT *pm);
-int dinuc_out(long din[3][16], FILE *fblkout, char *title, char sep);
+int dinuc_out(char *seq, FILE *fblkout, char *ttitle, char sp);
 int enc_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
 int gc_out(FILE *foutput, FILE *fblkout, long *ncod, int which, char* title, MENU_STRUCT *pm);
 int base_sil_us_out(FILE *foutput, long *ncod, long *naa, MENU_STRUCT *pm);
@@ -179,6 +178,6 @@ int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, GENETIC_CODE_STR
 int fop(long *nncod, float *ffop, int *ds, bool factor_in_rare, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop);
 int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu);
 int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu);
-int dinuc(long din[3][16], long dinuc_tot[4]);
+int dinuc_count(char *seq, long din[3][16], long dinuc_tot[4], int *fram);
 int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap);
 int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap);

@@ -41,7 +41,6 @@
 /* rscu_usage_out     Write out RSCU                                      */
 /* codon_usage_out    Write out Codon Usage                               */
 /* raau_usage_out     Write out normalised amino acid usage               */
-/* dinuc_count        Count the dinucleotide usage                        */
 /* dinuc_out          Write out dinucleotide usage                        */
 /* aa_usage_out       Write out amino acid usage                          */
 /* gc_out             Writes various analyses of base usage               */
@@ -95,7 +94,6 @@ long num_seq_int_stop;
 long tot;
 int last_aa;
 int valid_stops;
-int fram;
 
 /**************************   MAIN   **************************************/
 /* The main function processes commandline arguments to decide analysis to*/
@@ -108,7 +106,7 @@ int main(int argc, char *argv[])
 {
   FILE *finput = NULL, *foutput = NULL, *fblkout = NULL;
 
-  clean_up(ncod, naa, din, &fram, &valid_stops); /* zero count of codons and amino acids   */
+  clean_up(ncod, naa, &valid_stops); /* zero count of codons and amino acids   */
 
 #if defined(__MWERKS__) /* Macintosh code-warrior */
   argc = ccommand(&argv);
@@ -234,8 +232,7 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
       raau_usage_out(fblkout, naa, title, pm);
       break;
     case 'D':
-      dinuc_count(seq, din, &fram);
-      dinuc_out(din, fblkout, title, pm->separator);
+      dinuc_out(seq, fblkout, title, pm->separator);
       break;
     case 'A':
       aa_usage_out(fblkout, naa, title, pm);
@@ -319,7 +316,7 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
     fprintf(foutput, "\n");
   }
 
-  clean_up(ncod, naa, din, &fram, &valid_stops);
+  clean_up(ncod, naa, &valid_stops);
 
   return 0;
 }

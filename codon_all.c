@@ -224,7 +224,7 @@ int count_codons(long* ncod, long *loc_cod_tot) {
 /* It re-zeros all the main counters, but is not called when concatenating*/
 /* sequences together                                                     */
 /**************************************************************************/
-int clean_up(long *nncod, long *nnaa, long din[3][16], int *fram, int *valid_stops)
+int clean_up(long *nncod, long *nnaa, int *valid_stops)
 {
    int x;
    int i;
@@ -233,15 +233,7 @@ int clean_up(long *nncod, long *nnaa, long din[3][16], int *fram, int *valid_sto
       nncod[x] = 0;
    for (x = 0; x < 23; x++)
       nnaa[x] = 0;
-   /* dinucleotide count remembers the   */
-   dinuc_count(" ", din, fram); /* last_base from the last fragment   */
-                        /* this causes the last base to be "" */
-   for (x = 0; x < 3; x++)
-      for (i = 0; i < 16; i++)
-         din[x][i] = 0;
-
-   dinuc_count(" ", din, fram);
-   *valid_stops = *fram = 0;
+   *valid_stops = 0;
 
    return 0;
 }
