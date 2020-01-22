@@ -30,7 +30,6 @@
 /* initialize_point    assigns genetic code dependent parameters to structs*/
 /* clean_up           Re-zeros various internal counters and arrays       */
 /* open_file          Open files, checks for existing files               */
-/* fileclose          Closes files and returns a NULL pointer or exits    */
 /* textbin            Converts codon usage to binary data file            */
 /* PrepAFC            Prepare for the COA                                 */
 /* DiagoRC            This routine generates the COA                      */
@@ -39,7 +38,6 @@
 /* inertialig         analyse row inertia and records the results to file */
 /* inertiacol         analyse column inertia and record the results       */
 /* suprow             add supplementary genes into COA                    */
-/* codon_error        Called after all codons read, checks data was OK    */
 /* rscu_usage_out     Write out RSCU                                      */
 /* codon_usage_out    Write out Codon Usage                               */
 /* raau_usage_out     Write out normalised amino acid usage               */
@@ -218,12 +216,6 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
   valid_stops = 0;
   last_aa = codon_usage_tot(seq, &codon_tot, &valid_stops, ncod, naa, pm->pcu);
 
-  /* codon_error, if 4th parameter is 1, then checks for valid start and  */
-  /* internal stop codon, if 4th parmater is 2, checks that the last codon*/
-  /* is a stop or was partial, and for non-translatable codons            */
-  codon_error(last_aa, valid_stops, title, ncod, (char)1, pm);
-  codon_error(last_aa, valid_stops, title, ncod, (char)2, pm);
-
   /* if we are concatenating sequences then change the title to avger_of  */
   if (pm->totals)
     strcpy(title, "Average_of_genes");
@@ -340,58 +332,6 @@ int print_output(char *seq, char *title, FILE *foutput, FILE *fblkout, MENU_STRU
 
 int my_exit(int error_num, char *message)
 {
-
-  // fileclose(&pm->inputfile);
-  // fileclose(&pm->outputfile);
-  // fileclose(&pm->tidyoutfile);
-
-  // fileclose(&pm->cuout);
-  // fileclose(&pm->fopfile);
-  // fileclose(&pm->cbifile);
-  // fileclose(&pm->caifile);
-  // fileclose(&pm->logfile);
-
-  // if (pm->inputfile = fopen("cbrawin", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbrawin");
-  // }
-  // if (pm->inputfile = fopen("cbfcco", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbfcco");
-  // }
-  // if (pm->inputfile = fopen("cbfcli", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbfcli");
-  // }
-  // if (pm->inputfile = fopen("cbfcpc", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbfcpc");
-  // }
-  // if (pm->inputfile = fopen("cbfcpl", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbfcpl");
-  // }
-  // if (pm->inputfile = fopen("cbfcta", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbfcta");
-  // }
-  // if (pm->inputfile = fopen("cbfcvp", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cbfcvp");
-  // }
-  // if (pm->inputfile = fopen("cb1rawin", "r"))
-  // {
-  //   fclose(pm->inputfile);
-  //   remove("cb1rawin");
-  // }
-
   switch ((int)error_num)
   {
 
@@ -434,27 +374,6 @@ int my_exit(int error_num, char *message)
     printf("for unknown reason\n");
     exit(1);
     break;
-  }
-  return 0;
-}
-
-/************************** file_close   **********************************/
-/* Fileclose function checks whether the filepointer is open, if so it    */
-/* attempts to close the open file handle and assigns a null pointer      */
-/* to that handle                                                         */
-/**************************************************************************/
-
-int fileclose(FILE **file_pointer)
-{
-  if (*file_pointer != NULL)
-  {
-    if (fclose(*file_pointer) == EOF)
-    {
-      fprintf(stderr, "Failed to close file %i \n", errno);
-      perror("Unexpected condition in fileclose");
-      exit(7);
-    }
-    *file_pointer = NULL; /* make sure file_pointer is null*/
   }
   return 0;
 }

@@ -30,7 +30,6 @@
 /* codon_usage_tot    Counts codon and amino acid usage                   */
 /* ident_codon        Converts codon into a numerical value in range 1-64 */
 /* codon_usage_out    Write out Codon Usage to file                       */
-/* codon_error        Called after all codons read, checks data was OK    */
 /* rscu_usage_out     Write out RSCU                                      */
 /* raau_usage_out     Write out normalised amino acid usage               */
 /* aa_usage_out       Write out amino acid usage                          */
@@ -55,9 +54,14 @@
 /* tidy               reads the input data                                */
 /* output             called from tidy to decide what to do with the data */
 /* open_file          Open files, checks for existing files               */
-/* fileclose          Closes files and returns a NULL pointer or exits    */
 /*                                                                        */
 /**************************************************************************/
+
+/*
+Codon error checking 
+Check for start, stop codons, internal stop, non-translatable and partial codons
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -223,117 +227,12 @@ static int ident_codon(char *codon)
    return icode;
 }
 
-
-/****************** Codon error               *****************************/
-/* Does some basic error checking for the input data, it can be called    */
-/* using different error levels, thus generating different types of       */
-/* messages. Basically checks for start, stop codons and internal stop    */
-/* codons. As well as non-translatable and partial codons                 */
-/**************************************************************************/
 int count_codons(long* ncod, long *loc_cod_tot) {
    int i;
 
    *loc_cod_tot = 0;
    for (i = 1; i < 65; i++)
       (*loc_cod_tot) += ncod[i];
-
-   return 0;
-}
-
-int codon_error(int x, int y, char *ttitle, long* ncod, char error_level, MENU_STRUCT *pm)
-{
-   GENETIC_CODE_STRUCT *pcu = pm->pcu; 
-
-   long ns = 0; /* number of stops       */
-   int i;
-   bool valid_start = true; // FIXME
-
-   for (i = 1, ns = 0; i < 65; i++)
-      if (pcu->ca[i] == 11)
-         ns += ncod[i]; /*count  stop codons     */
-
-   // TODO: CHECK FOR ERRORS WITHIN HERE ITSELF
-   // if (in[1] == 'T' && (in[0] == 'A' || in[2] == 'G'))
-   //    valid_start = true; /* Yeup it could be a start codon   */
-   // else
-   //    valid_start = false; /* Nope it doesn't seem to be one   */
-
-   switch (error_level)
-   {
-   case 1: /*internal stop codons    */
-      ns = ns - y;
-      /* a stop was a valid_stop if it was the last codon of a sequence  */
-
-      if (!valid_start && pm->warn)
-      {
-         fprintf(pm->my_err, "\nWarning: Sequence \"%-20.20s\" does "
-                             "not begin with a recognised start codon\n",
-                 ttitle);
-      }
-
-      if (ns && pm->warn)
-      {
-         if (pm->totals && pm->warn)
-            fprintf(pm->my_err, "\nWarning: some sequences had internal stop"
-                                " codons (found %li such codons)\n",
-                    ns);
-         else
-            fprintf(pm->my_err, "\nWarning: Sequence \"%-20.20s\" has "
-                                "%li internal stop codon(s)\n",
-                    ttitle, ns);
-      }
-      break;
-   case 2:
-      if (ncod[0] == 1 && pcu->ca[x] != 11 && pm->warn)
-      { /*  last codon was partial */
-         fprintf(pm->my_err,
-                 "\nWarning: Sequence \"%-20.20s\" last codon was partial\n", ttitle);
-      }
-      else
-      {
-         if (ncod[0] && pm->warn)
-         { /* non translatable codons */
-            if (pm->totals)
-               fprintf(pm->my_err,
-                       "\nWarning: some sequences had non translatable"
-                       " codons (found %li such codons)\n",
-                       ncod[0]);
-            else
-               fprintf(pm->my_err,
-                       "\nWarning: Sequence \"%-20.20s\" has %li non translatable"
-                       " codon(s)\n",
-                       ttitle, ncod[0]);
-         }
-         if (pcu->ca[x] != 11 && pm->warn)
-         {
-            if (!pm->totals)
-            {
-               fprintf(pm->my_err,
-                       "\nWarning: Sequence \"%-20.20s\" is not terminated by"
-                       " a stop codon\n",
-                       ttitle);
-            }
-         }
-      }
-      break;
-   case 3:
-      /* Nc error routines see codon_us      */
-      if (x == 3)
-         x = 4; /* if x=3 there are no 3 or 4 fold AA  */
-      if (pm->warn)
-      {
-         fprintf(pm->my_err,
-                 "\nSequence \"%-20.20s\" contains ", ttitle);
-         (y) ? fprintf(pm->my_err, "only %i ", (int)y) : fprintf(pm->my_err, "no ");
-         fprintf(pm->my_err, "amino acids with %i synonymous codons\n", x);
-         fprintf(pm->my_err, "\t--Nc was not calculated \n");
-      }
-      break;
-   case 4: /* run silent                          */
-      break;
-   default:
-      my_exit(99, "Programme error in codon_error\n");
-   }
 
    return 0;
 }

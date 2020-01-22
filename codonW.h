@@ -142,7 +142,6 @@ int proc_comm_line(int *argc, char ***arg_list, MENU_STRUCT *pm);
 // defined in codons.c
 int tidy(FILE *finput, FILE *foutput, FILE *fblkout);
 int my_exit(int exit_value, char *message);
-int fileclose(FILE **file_pointer);
 FILE *open_file(char *filename, char *mode);
 
 // defined in codon_us.c
@@ -150,8 +149,6 @@ int clean_up(long *ncod, long *naa, long din[3][16], int *fram, int *valid_stops
 int initialize_point(char code, char fop_type, char cai_type, MENU_STRUCT *pm, REF_STRUCT *ref);
 
 int count_codons(long* ncod, long *loc_cod_tot);
-int codon_error(int last_aa, int valid_stops, char *title, long* ncod,
-                 char error_level, MENU_STRUCT *pm);
 int dinuc_count(char *seq, long din[3][16], int *fram);
 
 int codon_usage_tot(char *seq, long *codon_tot, int *valid_stops, long ncod[], long naa[], GENETIC_CODE_STRUCT *pcu);
