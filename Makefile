@@ -1,6 +1,6 @@
 override cflags = $(CFLAGS) -g
 
-objects = codon_us.o codons.o commline.o defaults.o
+objects = codon_all.o codon_idx.o codon_blk.o codons.o commline.o defaults.o
 
 CC=cc
 CFLAGS= -O3 -DBSD
@@ -14,8 +14,14 @@ codonw: $(objects)
 clean:
 	\rm -f $(objects) bin/codonw
 
-codon_us.o: codon_us.c codonW.h
-	$(CC) -c $(CFLAGS) codon_us.c
+codon_all.o: codon_all.c codonW.h
+	$(CC) -c $(CFLAGS) codon_all.c
+
+codon_idx.o: codon_idx.c codonW.h
+	$(CC) -c $(CFLAGS) codon_idx.c
+
+codon_blk.o: codon_blk.c codonW.h
+	$(CC) -c $(CFLAGS) codon_blk.c
 
 codons.o: codons.c codonW.h kseq.h
 	$(CC) -c $(CFLAGS) codons.c
