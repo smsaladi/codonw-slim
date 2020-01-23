@@ -26,14 +26,14 @@ cdef extern from "include/codonW.h":
         char *cod[65]
 
     ctypedef struct AMINO_PROP_STRUCT:
-        float hydro[22]
-        int aromo[22]
+        float *hydro[22]
+        int *aromo[22]
 
     GENETIC_CODE_STRUCT *cu_ref
     FOP_STRUCT *fop_ref
     CAI_STRUCT *cai_ref
-    AMINO_STRUCT *amino_acids
-    AMINO_PROP_STRUCT *amino_prop
+    AMINO_STRUCT amino_acids
+    AMINO_PROP_STRUCT amino_prop
 
     int ident_codon(char *codon)
     int how_synon(int dds[], GENETIC_CODE_STRUCT *pcu)
@@ -49,5 +49,5 @@ cdef extern from "include/codonW.h":
     int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu)
     int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu)
     int dinuc_count(char *seq, long din[3][16], long dinuc_tot[4], int *fram)
-    int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap)
-    int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap)
+    int hydro(long *nnaa, float *hydro, float hydro_ref[22])
+    int aromo(long *nnaa, float *aromo, int aromo_ref[22])
