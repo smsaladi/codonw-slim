@@ -57,7 +57,7 @@ Check for start, stop codons, internal stop, non-translatable and partial codons
 #include <limits.h>
 #include <stdbool.h>
 
-#include "codonW.h"
+#include "../include/codonW.h"
 
 /****************** Codon Usage Out           *****************************/
 /* Writes codon usage output to file. Note this subroutine is only called */

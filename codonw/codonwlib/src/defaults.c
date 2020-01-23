@@ -30,7 +30,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#include "codonW.h"
+#include "../include/codonW.h"
 
 /* define genetic codes   */
 static GENETIC_CODE_STRUCT cu_ref[] = {

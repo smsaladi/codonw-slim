@@ -55,7 +55,7 @@ Check for start, stop codons, internal stop, non-translatable and partial codons
 #include <limits.h>
 #include <stdbool.h>
 
-#include "codonW.h"
+#include "../include/codonW.h"
 
 /********************* Initilize Pointers**********************************/
 /* Various pointers to structures are assigned here dependent on the      */
