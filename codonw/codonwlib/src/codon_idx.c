@@ -499,7 +499,7 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 /* paa                points to a struct containing Amino Acid values     */
 /* pap->hydro         Pointer to hydropathicity values for each AA        */
 /**************************************************************************/
-int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap)
+int hydro(long *nnaa, float *hydro, float hydro_ref[22])
 {
    long a2_tot = 0;
    *hydro = 0.0F;
@@ -515,7 +515,7 @@ int hydro(long *nnaa, float *hydro, AMINO_PROP_STRUCT *pap)
 
    for (i = 1; i < 22; i++)
       if (i != 11)
-         *hydro += ((float)nnaa[i] / (float)a2_tot) * (float)pap->hydro[i];
+         *hydro += ((float)nnaa[i] / (float)a2_tot) * hydro_ref[i];
 
    return 0;
 }
@@ -525,7 +525,7 @@ int hydro_out(FILE *foutput, long *nnaa, char* title, MENU_STRUCT *pm)
    float out;
    char sp = pm->separator;
 
-   int retval = hydro(nnaa, &out, pm->pap);
+   int retval = hydro(nnaa, &out, pm->pap->hydro);
    if(retval == 1) {
       fprintf(pm->my_err, "Warning %.20s appear to be too short\n", title);
       fprintf(pm->my_err, "No output was written to file\n");
@@ -544,7 +544,7 @@ int hydro_out(FILE *foutput, long *nnaa, char* title, MENU_STRUCT *pm)
 /* paa                points to a struct containing Amino Acid values     */
 /* pap->aromo         Pointer to aromaticity values for each AA           */
 /**************************************************************************/
-int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap)
+int aromo(long *nnaa, float *aromo, int aromo_ref[22])
 {
    long a1_tot = 0;
    *aromo = 0.0F;
@@ -559,7 +559,7 @@ int aromo(long *nnaa, float *aromo, AMINO_PROP_STRUCT *pap)
 
    for (i = 1; i < 22; i++)
       if (i != 11)
-         *aromo += ((float)nnaa[i] / (float)a1_tot) * (float)pap->aromo[i];
+         *aromo += ((float)nnaa[i] / (float)a1_tot) * (float)aromo_ref[i];
    
    return 0;
 }
@@ -569,7 +569,7 @@ int aromo_out(FILE *foutput, long *nnaa, char* title, MENU_STRUCT *pm)
    float out;
    char sp = pm->separator;
 
-   int retval = aromo(nnaa, &out, pm->pap);
+   int retval = aromo(nnaa, &out, pm->pap->aromo);
    if(retval == 1) {
       fprintf(pm->my_err, "Warning %.20s appear to be too short\n", title);
       fprintf(pm->my_err, "No output was written to file\n");
