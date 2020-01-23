@@ -461,8 +461,10 @@ int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *p
             fprintf(stderr, "\t -- Nc was not calculated\n");
             return 1;
          }
-         *enc_tot += (float)fold[z] / (float)averb;
          /* the calculation                   */
+         *enc_tot += (float)fold[z] / (float)averb;
+         if (*enc_tot > 61)
+            *enc_tot = 61;
       }
    }
 
@@ -478,11 +480,9 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 
    if (retval == 1)
       fprintf(foutput, "*****%c", sp);
-   else if (enc_tot <= 61)
-      fprintf(foutput, "%5.2f%c", enc_tot, sp);
    else
-      fprintf(foutput, "61.00%c", sp);
-
+      fprintf(foutput, "%5.2f%c", enc_tot, sp);
+      
    return 0;
 }
 
