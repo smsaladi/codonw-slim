@@ -141,22 +141,10 @@ static AMINO_STRUCT amino_acids = {
     },
     {
         "BAD",
-        "UUU", "UCU", "UAU", "UGU",
-        "UUC", "UCC", "UAC", "UGC",
-        "UUA", "UCA", "UAA", "UGA",
-        "UUG", "UCG", "UAG", "UGG",
-        "CUU", "CCU", "CAU", "CGU",
-        "CUC", "CCC", "CAC", "CGC",
-        "CUA", "CCA", "CAA", "CGA",
-        "CUG", "CCG", "CAG", "CGG",
-        "AUU", "ACU", "AAU", "AGU",
-        "AUC", "ACC", "AAC", "AGC",
-        "AUA", "ACA", "AAA", "AGA",
-        "AUG", "ACG", "AAG", "AGG",
-        "GUU", "GCU", "GAU", "GGU",
-        "GUC", "GCC", "GAC", "GGC",
-        "GUA", "GCA", "GAA", "GGA",
-        "GUG", "GCG", "GAG", "GGG"
+        "UUU", "UCU", "UAU", "UGU", "UUC", "UCC", "UAC", "UGC", "UUA", "UCA", "UAA", "UGA", "UUG", "UCG", "UAG", "UGG",
+        "CUU", "CCU", "CAU", "CGU", "CUC", "CCC", "CAC", "CGC", "CUA", "CCA", "CAA", "CGA", "CUG", "CCG", "CAG", "CGG",
+        "AUU", "ACU", "AAU", "AGU", "AUC", "ACC", "AAC", "AGC", "AUA", "ACA", "AAA", "AGA", "AUG", "ACG", "AAG", "AGG",
+        "GUU", "GCU", "GAU", "GGU", "GUC", "GCC", "GAC", "GGC", "GUA", "GCA", "GAA", "GGA", "GUG", "GCG", "GAG", "GGG"
     }
 };
 
