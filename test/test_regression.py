@@ -124,7 +124,7 @@ def test_bulk_regression_b(blk):
     return
 
 
-def _test_bulk_regression_dinuc():
+def test_bulk_regression_dinuc():
     ref_fn = "{p}/ref/input.{b}.blk".format(p=path, b='dinuc')
     def read_3frame_col(f):
         df = pd.read_csv(f, sep='[\\s,]+', header=0, index_col='title', engine='python')
@@ -134,11 +134,12 @@ def _test_bulk_regression_dinuc():
 
     df_test = test_seqs.to_frame()
     df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x.encode()))
-    print(df_test.iloc[0]['seq'])
 
-    df_out = df_test['seqw'].apply(lambda x: x.dinuc().values) #.reshape([1, 16 * 4]))
-    print(df_out.iloc[0]) 
-    df_out.columns = df_ref.columns
+    def dinuc_ser(x):
+        return pd.Series(x.dinuc().values.reshape([16 * 4]),
+                         index=df_ref.columns)
+
+    df_out = df_test['seqw'].apply(dinuc_ser)
 
     compare_df(df_ref, df_out, "dinuc")
     return
