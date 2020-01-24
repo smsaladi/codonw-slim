@@ -9,8 +9,13 @@ from ctypes import c_int, c_long, c_float, c_double
 import numpy as np
 cimport numpy as np
 np.import_array()
+import pandas as pd
 
 cimport codonwlib
+
+ref_codons = codonwlib.amino_acids.cod
+ref_aa1 = codonwlib.amino_acids.aa1
+ref_aa3 = codonwlib.amino_acids.aa3
 
 cdef class CodonSeq:
     # Use memory view to arrays
@@ -75,14 +80,14 @@ cdef class CodonSeq:
         cdef int ret = codonwlib.enc(&self.ncod[0], &self.naa[0], &enc_val, &self.dda[0], &self.ref_code)
         return enc_val
 
-    cpdef float hydro(self):
+    cpdef float hydropathy(self):
         """Calculate mean hydropathy
         """
         cdef float hydro_val
         cdef int ret = codonwlib.hydro(&self.naa[0], &hydro_val, <float (*)>codonwlib.amino_prop.hydro)
         return hydro_val
 
-    cpdef float aromo(self):
+    cpdef float aromaticity(self):
         """Calculate mean aromaticity
         """
         cdef float aromo_val
@@ -97,47 +102,122 @@ cdef class CodonSeq:
                                         &self.dds[0], &self.dda[0], &self.ref_code)
         return base_sil_vals
 
-    cpdef np.ndarray[dtype=float, ndim=1, mode="c"] rscu(self):
+    cpdef np.ndarray[dtype=float, ndim=1, mode="c"] _rscu(self):
         """Calculate Relative Synonymous Codon Usage
         """
         cdef np.ndarray[dtype=float, ndim=1, mode="c"] rscu_vals = np.zeros([65], dtype=c_float)
         cdef int ret = codonwlib.rscu_usage(&self.ncod[0], &self.naa[0], &rscu_vals[0], &self.dds[0], &self.ref_code)
         return rscu_vals
 
-    cpdef np.ndarray[dtype=double, ndim=1, mode="c"] raau(self):
+    def rscu(self):
+        """Calculate Relative Synonymous Codon Usage
+        """
+        v = pd.Series(self._rscu()[1:65], index=ref_codons[1:65])
+        v.index = v.index.str.decode('UTF-8')
+        return v
+
+    cpdef np.ndarray[dtype=double, ndim=1, mode="c"] _raau(self):
         """Calculate Relative Amino Acid Usage
         """
         cdef np.ndarray[dtype=double, ndim=1, mode="c"] raau_vals = np.zeros([65], dtype=c_double)
         cdef int ret = codonwlib.raau_usage(&self.naa[0], &raau_vals[0])
         return raau_vals
 
-    cpdef gc(self):
-        """Calculate various %GC-elated metrics
+    def raau(self):
+        """Calculate Relative Amino Acid Usage
+        """
+        v = pd.Series(self._raau()[1:22], index=ref_aa1[1:22])
+        v.index = v.index.str.decode('UTF-8')
+        return v
+
+    cpdef np.ndarray[dtype=long, ndim=2, mode="c"] _bases(self):
+        """Calculates base composition
         """
         cdef long tot_s
         cdef long totalaa
-        cdef np.ndarray[dtype=long, ndim=1, mode="c"] bases = np.zeros([5], dtype=c_long)
-        cdef np.ndarray[dtype=long, ndim=1, mode="c"] base_tot = np.zeros([5], dtype=c_long)
-        cdef np.ndarray[dtype=long, ndim=1, mode="c"] base_1 = np.zeros([5], dtype=c_long)
-        cdef np.ndarray[dtype=long, ndim=1, mode="c"] base_2 = np.zeros([5], dtype=c_long)
-        cdef np.ndarray[dtype=long, ndim=1, mode="c"] base_3 = np.zeros([5], dtype=c_long)
+        cdef np.ndarray[dtype=long, ndim=2, mode="c"] bases = np.zeros([5, 5], dtype=c_long)
+        cdef np.ndarray[dtype=double, ndim=1, mode="c"] metrics = np.zeros([18], dtype=c_double)
 
         cdef int ret = codonwlib.gc(&self.dds[0], &self.ncod[0],
-            &bases[0], &base_tot[0], &base_1[0], &base_2[0], &base_3[0],
-            &tot_s, &totalaa, &self.ref_code)
-        
-        return (bases, base_tot, base_1, base_2, base_3)
+            &bases[4, 0], &bases[3, 0], &bases[0, 0], &bases[1, 0], &bases[2, 0],
+            &tot_s, &totalaa, &metrics[0], &self.ref_code)
 
-    cpdef np.ndarray[dtype=long, ndim=1, mode="c"] dinuc(self):
+        return bases[0:6, 1:5]
+
+    def bases(self):
+        """Calculates base composition
+        """
+        v = pd.DataFrame(self._bases(),
+            columns=['T', 'C', 'A', 'G'],
+            index=['1', '2', '3', 'all', 'syn'])
+        return v
+
+    cpdef np.ndarray[dtype=double, ndim=1, mode="c"] _gc(self):
+        """Calculates various %GC-related metrics
+        """
+        cdef long tot_s
+        cdef long totalaa
+        cdef np.ndarray[dtype=long, ndim=2, mode="c"] bases = np.zeros([5, 5], dtype=c_long)
+        cdef np.ndarray[dtype=double, ndim=1, mode="c"] metrics = np.zeros([20], dtype=c_double)
+
+        cdef int ret = codonwlib.gc(&self.dds[0], &self.ncod[0],
+            &bases[4, 0], &bases[3, 0], &bases[0, 0], &bases[1, 0], &bases[2, 0],
+            &tot_s, &totalaa, &metrics[2], &self.ref_code)
+
+        metrics[0] = <double>totalaa;
+        metrics[1] = <double>tot_s;
+        return metrics
+
+    def gc(self):
+        """Calculates various %GC-related metrics
+        """
+        v = pd.Series(self._gc(),
+            index=['Len_aa', 'Len_sym',
+                   'GC', 'GC3s', 'GCn3s',
+                   'GC1', 'GC2', 'GC3',
+                   'T1', 'T2', 'T3',
+                   'C1', 'C2', 'C3',
+                   'A1', 'A2', 'A3',
+                   'G1', 'G2', 'G3'])
+        return v
+
+    cpdef np.ndarray[dtype=double, ndim=2, mode="c"] _dinuc(self, bool pct):
         """Calculate Dinucleotide Usage
         """
-        cdef np.ndarray[dtype=long, ndim=2, mode="c"] din = np.zeros([3, 16], dtype=c_long)
+        cdef np.ndarray[dtype=long, ndim=2, mode="c"] dinuc_frames = np.zeros([4, 16], dtype=c_long)
         cdef np.ndarray[dtype=long, ndim=1, mode="c"] dinuc_tot = np.zeros([4], dtype=c_long)
-        cdef int fram = 0;
+        cdef int fram = 0
 
-        cdef int ret = codonwlib.dinuc_count(self.seq, <long (*)[16]>&din[0, 0], &dinuc_tot[0], &fram)
+        cdef int ret = codonwlib.dinuc_count(self.seq,
+            <long (*)[16]>&dinuc_frames[0, 0], &dinuc_tot[0], &fram)
 
-        return dinuc_tot
+        dinuc_frames[3, :] = np.sum(dinuc_frames, axis=0)
+
+        if pct:
+            return dinuc_frames / np.reshape(dinuc_tot, [4, 1])
+
+        return dinuc_frames.astype(np.double)
+
+    def dinuc(self, pct=True):
+        """Calculate Dinucleotide Usage
+        If `pct`, report percentages
+        """
+        
+        cdef np.ndarray[dtype=double, ndim=2, mode="c"] frames = self._dinuc(pct)
+
+        if pct:
+            final_dtype = np.double
+        else:
+            final_dtype = long
+
+        v = pd.DataFrame(frames.astype(final_dtype),
+            columns=['TT', 'TC', 'TA', 'TG',
+                   'CT', 'CC', 'CA', 'CG',
+                   'AT', 'AC', 'AA', 'AG',
+                   'GT', 'GC', 'GA', 'GG'],
+            index=['1:2', '2:3', '3:1', 'all'])
+        
+        return v
 
 """
 Want to expose codonwlib.
