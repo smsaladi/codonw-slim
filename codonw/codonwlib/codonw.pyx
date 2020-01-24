@@ -25,6 +25,17 @@ ref_aa3 = convert_char(codonwlib.amino_acids.aa3)
 aa1_aa3 = pd.Series(index=ref_aa1, data=ref_aa3)
 aa3_aa1 = pd.Series(index=ref_aa3, data=ref_aa1)
 
+"""
+Would be great to expose these internals as pd.Series...
+    FOP_STRUCT *fop_ref
+    CAI_STRUCT *cai_ref
+    AMINO_PROP_STRUCT *amino_prop
+"""
+
+def get_reference_code(idx):
+    cseq = CodonSeq("ATG", idx)
+    return cseq.genetic_code
+
 cdef class CodonSeq:
     # Use memory view to arrays
     # https://suzyahyah.github.io/cython/programming/2018/12/01/Gotchas-in-Cython.html
@@ -260,12 +271,3 @@ cdef class CodonSeq:
             index=['1:2', '2:3', '3:1', 'all'])
         
         return v
-
-"""
-Want to expose codonwlib.
-    GENETIC_CODE_STRUCT *cu_ref
-    FOP_STRUCT *fop_ref
-    CAI_STRUCT *cai_ref
-    AMINO_STRUCT *amino_acids
-    AMINO_PROP_STRUCT *amino_prop
-"""
