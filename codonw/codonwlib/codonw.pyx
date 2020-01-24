@@ -28,7 +28,6 @@ aa3_aa1 = pd.Series(index=ref_aa3, data=ref_aa1)
 cdef class CodonSeq:
     # Use memory view to arrays
     # https://suzyahyah.github.io/cython/programming/2018/12/01/Gotchas-in-Cython.html
-    cdef public genetic_code
     cdef public codonwlib.GENETIC_CODE_STRUCT ref_code
     cdef public int[::1] dds
     cdef public int[::1] dda
@@ -39,11 +38,14 @@ cdef class CodonSeq:
     cdef public long[::1] ncod
     cdef public long[::1] naa
 
-    def __init__(self, object seq, int genetic_code=0):
+    def __init__(self, object seq, genetic_code=0):
         self.dds = np.zeros([65], dtype=c_int)
         self.dda = np.zeros([23], dtype=c_int)
-        self.genetic_code = genetic_code
-        self.ref_code = codonwlib.cu_ref[self.genetic_code]
+
+        if isinstance(genetic_code, int):
+            self.ref_code = codonwlib.cu_ref[genetic_code]
+        else:
+            self.genetic_code = genetic_code
 
         codonwlib.how_synon(&self.dds[0], &self.ref_code)
         codonwlib.how_synon_aa(&self.dda[0], &self.ref_code)
@@ -58,6 +60,27 @@ cdef class CodonSeq:
             &self.codon_tot, &self.valid_stops, &self.ncod[0], &self.naa[0], &self.ref_code)
         
         return
+
+    # Read/Set genetic code through pd.Series
+    @property
+    def genetic_code(self):
+        cdef np.ndarray[dtype=object, ndim=1, mode="c"] aa = np.array(ref_aa1, dtype=object)
+        return pd.Series(aa[self.ref_code.ca], index=ref_codons,
+                         name=self.ref_code.des.decode('UTF-8'))
+
+    @genetic_code.setter
+    def genetic_code(self, ser):
+        if 'UNK' not in ser:
+            ser['UNK'] = 'X'
+        
+        # place in required order and map amino acids letter to code
+        ser = ser[ref_codons]
+        aa_to_idx = pd.Series(np.arange(len(ref_aa1)), index=ref_aa1)
+
+        self.ref_code = codonwlib.GENETIC_CODE_STRUCT(b"", b"")
+        self.ref_code.ca = aa_to_idx[ser].values
+        return
+
 
     cpdef double cai(self, int cai_ref=0):
         """Calculates Codon Adaptation Index
