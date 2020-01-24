@@ -366,9 +366,9 @@ int gc_out(FILE *foutput, FILE *fblkout, long *nncod, int which, char* title, ME
       }
       /* now print the information          */
       fprintf(fblkout, "%-.20s%c", title, sp);
-      fprintf(fblkout, "%ld%c%ld%c", totalaa, sp, totalaa, sp);
+      fprintf(fblkout, "%ld%c%ld", totalaa, sp, tot_s);
       for (i = 0; i < 18; i++)
-         fprintf(fblkout, "%5.3f%c", metrics[i], sp);
+         fprintf(fblkout, "%c%5.3f", sp, metrics[i]);
       fprintf(fblkout, "\n");
       break;
    case 2: /* a bit more simple ... GC content   */
