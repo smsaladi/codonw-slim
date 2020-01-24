@@ -552,16 +552,16 @@ int dinuc_out(char *seq, FILE *fblkout, char *ttitle, char sp) {
       switch (x)
       {
       case 0:
-         fprintf(fblkout, "1:2%c", sp);
+         fprintf(fblkout, "%c1:2", sp);
          break;
       case 1:
-         fprintf(fblkout, "2:3%c", sp);
+         fprintf(fblkout, "%c2:3", sp);
          break;
       case 2:
-         fprintf(fblkout, "3:1%c", sp);
+         fprintf(fblkout, "%c3:1", sp);
          break;
       case 3:
-         fprintf(fblkout, "all%c", sp);
+         fprintf(fblkout, "%call", sp);
          break;
       }
 
@@ -569,21 +569,20 @@ int dinuc_out(char *seq, FILE *fblkout, char *ttitle, char sp) {
       {
          for (i = 0; i < 16; i++)
             if (dinuc_tot[x])
-               fprintf(fblkout, "%5.3f%c",
+               fprintf(fblkout, "%c%5.3f", sp,
                        (float)(din[0][i] + din[1][i] + din[2][i]) /
-                           (float)dinuc_tot[x],
-                       sp);
+                           (float)dinuc_tot[x]);
             else
-               fprintf(fblkout, "%5.3f%c", 0.00, sp);
+               fprintf(fblkout, "%c%5.3f", sp, 0.00);
       }
       else
       {
          for (i = 0; i < 16; i++)
             if (dinuc_tot[x])
-               fprintf(fblkout, "%5.3f%c",
-                       (float)din[x][i] / (float)dinuc_tot[x], sp);
+               fprintf(fblkout, "%c%5.3f", sp,
+                       (float)din[x][i] / (float)dinuc_tot[x]);
             else
-               fprintf(fblkout, "%5.3f%c", 0.00, sp);
+               fprintf(fblkout, "%c%5.3f", 0.00);
       }
 
       if (x == 3)
