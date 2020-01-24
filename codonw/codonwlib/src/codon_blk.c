@@ -254,7 +254,7 @@ int aa_usage_out(FILE *fblkout, long *nnaa, char* title, MENU_STRUCT *pm)
 /* number of values reported changes as it is assumed the user has access*/
 /* to a spreadsheet type programme if they are requesting tabular output */
 /*************************************************************************/
-int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, GENETIC_CODE_STRUCT *pcu)
+int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, double gc_metrics[], GENETIC_CODE_STRUCT *pcu)
 {
    long id;
    // long bases[5]; /* base that are synonymous GCAT     */
@@ -296,6 +296,34 @@ int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], lon
             *tot_s += ncod[id]; /* count tot no of silent codons      */
          }
 
+
+   /* Calculate metrics */
+   typedef double lf;
+   double metrics_local[] = {
+      (lf)(base_tot[2] + base_tot[4]) / (lf)(*totalaa * 3),
+      (lf)(bases[2] + bases[4]) / (lf)*tot_s,
+      (lf)(base_tot[2] + base_tot[4] - bases[2] - bases[4]) / (lf)(*totalaa * 3 - *tot_s),
+      (lf)(base_1[2] + base_1[4]) / (lf)(*totalaa),
+      (lf)(base_2[2] + base_2[4]) / (lf)(*totalaa),
+      (lf)(base_3[2] + base_3[4]) / (lf)(*totalaa),
+      (lf)base_1[1] / (lf)*totalaa,
+      (lf)base_2[1] / (lf)*totalaa,
+      (lf)base_3[1] / (lf)*totalaa,
+      (lf)base_1[2] / (lf)*totalaa,
+      (lf)base_2[2] / (lf)*totalaa,
+      (lf)base_3[2] / (lf)*totalaa,
+      (lf)base_1[3] / (lf)*totalaa,
+      (lf)base_2[3] / (lf)*totalaa,
+      (lf)base_3[3] / (lf)*totalaa,
+      (lf)base_1[4] / (lf)*totalaa,
+      (lf)base_2[4] / (lf)*totalaa,
+      (lf)base_3[4] / (lf)*totalaa
+   };
+
+   // Copy into output array
+   for (x = 0; x < 18; x++)
+      gc_metrics[x] = metrics_local[x];
+
    return 0;
 }
 
@@ -308,8 +336,10 @@ int gc_out(FILE *foutput, FILE *fblkout, long *nncod, int which, char* title, ME
    long base_3[5];
    long tot_s = 0;
    long totalaa = 0;
+   double metrics[18];
+   int i;
 
-   gc(pm->ds, nncod, bases, base_tot, base_1, base_2, base_3, &tot_s, &totalaa, pm->pcu);
+   gc(pm->ds, nncod, bases, base_tot, base_1, base_2, base_3, &tot_s, &totalaa, &metrics, pm->pcu);
 
    static char header = false;
    char sp = pm->separator;
@@ -336,30 +366,10 @@ int gc_out(FILE *foutput, FILE *fblkout, long *nncod, int which, char* title, ME
       }
       /* now print the information          */
       fprintf(fblkout, "%-.20s%c", title, sp);
-      fprintf(fblkout,
-               "%ld%c%ld%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
-               "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f%c"
-               "%5.3f%c%5.3f%c%5.3f%c%5.3f%c%5.3f\n",
-               totalaa, sp,
-               tot_s, sp,
-               (lf)(base_tot[2] + base_tot[4]) / (lf)(totalaa * 3), sp,
-               (lf)(bases[2] + bases[4]) / (lf)tot_s, sp,
-               (lf)(base_tot[2] + base_tot[4] - bases[2] - bases[4]) / (lf)(totalaa * 3 - tot_s), sp,
-               (lf)(base_1[2] + base_1[4]) / (lf)(totalaa), sp,
-               (lf)(base_2[2] + base_2[4]) / (lf)(totalaa), sp,
-               (lf)(base_3[2] + base_3[4]) / (lf)(totalaa), sp,
-               (lf)base_1[1] / (lf)totalaa, sp,
-               (lf)base_2[1] / (lf)totalaa, sp,
-               (lf)base_3[1] / (lf)totalaa, sp,
-               (lf)base_1[2] / (lf)totalaa, sp,
-               (lf)base_2[2] / (lf)totalaa, sp,
-               (lf)base_3[2] / (lf)totalaa, sp,
-               (lf)base_1[3] / (lf)totalaa, sp,
-               (lf)base_2[3] / (lf)totalaa, sp,
-               (lf)base_3[3] / (lf)totalaa, sp,
-               (lf)base_1[4] / (lf)totalaa, sp,
-               (lf)base_2[4] / (lf)totalaa, sp,
-               (lf)base_3[4] / (lf)totalaa);
+      fprintf(fblkout, "%ld%c%ld%c", totalaa, sp, totalaa, sp);
+      for (i = 0; i < 18; i++)
+         fprintf(fblkout, "%5.3f%c", metrics[i], sp);
+      fprintf(fblkout, "\n");
       break;
    case 2: /* a bit more simple ... GC content   */
       fprintf(foutput, "%5.3f%c", (lf)((base_tot[2] + base_tot[4]) / (lf)(totalaa * 3)), sp);
