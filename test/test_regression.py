@@ -52,7 +52,7 @@ def compare_df(df_ref, df_test, name):
 
 def test_index_regression():
     df_test = test_seqs.to_frame()
-    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x.encode()))
+    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x))
     df_test['CAI'] = df_test['seqw'].apply(lambda x: x.cai())
     df_test['CBI'] = df_test['seqw'].apply(lambda x: x.cbi())
     df_test['Fop'] = df_test['seqw'].apply(lambda x: x.fop())
@@ -84,7 +84,7 @@ def test_bulk_regression_a(blk):
     df_ref.dropna(axis=1, inplace=True)
 
     df_test = test_seqs.to_frame()
-    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x.encode()))
+    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x))
     if blk == "aau":
         df_ref.rename(columns=codonw.aa3_aa1.to_dict(), inplace=True)
         def func(x): return x.aa_usage()
@@ -110,7 +110,7 @@ def test_bulk_regression_b(blk):
     df_ref = read_table64(ref_fn)
 
     df_test = test_seqs.to_frame()
-    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x.encode()))
+    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x))
 
     if blk == "cu":
         def func(x): return x.codon_usage()
@@ -133,7 +133,7 @@ def test_bulk_regression_dinuc():
     df_ref = read_3frame_col(ref_fn)
 
     df_test = test_seqs.to_frame()
-    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x.encode()))
+    df_test['seqw'] = df_test['seq'].apply(lambda x: codonw.CodonSeq(x))
 
     def dinuc_ser(x):
         return pd.Series(x.dinuc().values.reshape([16 * 4]),

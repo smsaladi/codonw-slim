@@ -53,7 +53,7 @@ cdef class CodonSeq:
         self.ncod = np.zeros([65], dtype=c_long)
         self.naa = np.zeros([22], dtype=c_long)
 
-        self.seq = seq
+        self.seq = seq.encode()
         codonwlib.codon_usage_tot(<char *>self.seq,
             &self.codon_tot, &self.valid_stops, &self.ncod[0], &self.naa[0], &self.ref_code)
         
