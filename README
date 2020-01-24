@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/smsaladi/codonw-slim.svg?branch=master)](https://travis-ci.org/smsaladi/codonw-slim)
 
 
 CodonW is a package for codon usage analysis. It was designed to simplify
