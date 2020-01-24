@@ -13,9 +13,15 @@ import pandas as pd
 
 cimport codonwlib
 
-ref_codons = codonwlib.amino_acids.cod
-ref_aa1 = codonwlib.amino_acids.aa1
-ref_aa3 = codonwlib.amino_acids.aa3
+def convert_char(arr):
+    return [c.decode('UTF-8') for c in arr]
+
+ref_codons = convert_char(codonwlib.amino_acids.cod)
+ref_aa1 = convert_char(codonwlib.amino_acids.aa1)
+ref_aa3 = convert_char(codonwlib.amino_acids.aa3)
+
+aa1_aa3 = pd.Series(index=ref_aa1, data=ref_aa3)
+aa3_aa1 = pd.Series(index=ref_aa3, data=ref_aa1)
 
 cdef class CodonSeq:
     # Use memory view to arrays
@@ -43,7 +49,7 @@ cdef class CodonSeq:
         self.codon_tot = 0
         self.valid_stops = 0
         self.ncod = np.zeros([65], dtype=c_long)
-        self.naa = np.zeros([23], dtype=c_long)
+        self.naa = np.zeros([22], dtype=c_long)
 
         self.seq = seq
         codonwlib.codon_usage_tot(self.seq,
@@ -63,35 +69,40 @@ cdef class CodonSeq:
         """Calculate codon bias index
         """
         cdef float cbi_val
-        cdef int ret = codonwlib.cbi(&self.ncod[0], &self.naa[0], &cbi_val, &self.dds[0], &self.dda[0], &self.ref_code, &codonwlib.fop_ref[cai_ref])
+        cdef int ret = codonwlib.cbi(&self.ncod[0], &self.naa[0], &cbi_val, \
+            &self.dds[0], &self.dda[0], &self.ref_code, &codonwlib.fop_ref[cai_ref])
         return cbi_val
 
     cpdef float fop(self, bool factor_in_rare=False, int fop_ref=0):
         """Calculate fraction of optimal codons
         """
         cdef float fop_val
-        cdef int ret = codonwlib.fop(&self.ncod[0], &fop_val, &self.dds[0], factor_in_rare, &self.ref_code, &codonwlib.fop_ref[fop_ref])
+        cdef int ret = codonwlib.fop(&self.ncod[0], &fop_val, \
+            &self.dds[0], factor_in_rare, &self.ref_code, &codonwlib.fop_ref[fop_ref])
         return fop_val
 
     cpdef float enc(self):
         """Calculate effective number of codons (E_nc)
         """
         cdef float enc_val
-        cdef int ret = codonwlib.enc(&self.ncod[0], &self.naa[0], &enc_val, &self.dda[0], &self.ref_code)
+        cdef int ret = codonwlib.enc(&self.ncod[0], &self.naa[0], &enc_val, \
+            &self.dda[0], &self.ref_code)
         return enc_val
 
     cpdef float hydropathy(self):
         """Calculate mean hydropathy
         """
         cdef float hydro_val
-        cdef int ret = codonwlib.hydro(&self.naa[0], &hydro_val, <float (*)>codonwlib.amino_prop.hydro)
+        cdef int ret = codonwlib.hydro(&self.naa[0], &hydro_val, \
+            <float (*)>codonwlib.amino_prop.hydro)
         return hydro_val
 
     cpdef float aromaticity(self):
         """Calculate mean aromaticity
         """
         cdef float aromo_val
-        cdef int ret = codonwlib.aromo(&self.naa[0], &aromo_val, <int (*)>codonwlib.amino_prop.aromo)
+        cdef int ret = codonwlib.aromo(&self.naa[0], &aromo_val, \
+            <int (*)>codonwlib.amino_prop.aromo)
         return aromo_val
 
     cpdef np.ndarray[dtype=double, ndim=1, mode="c"] silent_base_usage(self):
@@ -101,6 +112,16 @@ cdef class CodonSeq:
         cdef int ret = codonwlib.base_sil_us(&self.ncod[0], &self.naa[0], &base_sil_vals[0],
                                         &self.dds[0], &self.dda[0], &self.ref_code)
         return base_sil_vals
+
+    def codon_usage(self):
+        """Codon tabulation
+        """
+        return pd.Series(self.ncod[1:65], index=ref_codons[1:65])
+        
+    def aa_usage(self):
+        """Amino acid tabulation
+        """
+        return pd.Series(self.naa, index=ref_aa1)
 
     cpdef np.ndarray[dtype=float, ndim=1, mode="c"] _rscu(self):
         """Calculate Relative Synonymous Codon Usage
@@ -112,23 +133,19 @@ cdef class CodonSeq:
     def rscu(self):
         """Calculate Relative Synonymous Codon Usage
         """
-        v = pd.Series(self._rscu()[1:65], index=ref_codons[1:65])
-        v.index = v.index.str.decode('UTF-8')
-        return v
+        return pd.Series(self._rscu()[1:65], index=ref_codons[1:65])
 
     cpdef np.ndarray[dtype=double, ndim=1, mode="c"] _raau(self):
         """Calculate Relative Amino Acid Usage
         """
-        cdef np.ndarray[dtype=double, ndim=1, mode="c"] raau_vals = np.zeros([65], dtype=c_double)
+        cdef np.ndarray[dtype=double, ndim=1, mode="c"] raau_vals = np.zeros([22], dtype=c_double)
         cdef int ret = codonwlib.raau_usage(&self.naa[0], &raau_vals[0])
         return raau_vals
 
     def raau(self):
         """Calculate Relative Amino Acid Usage
         """
-        v = pd.Series(self._raau()[1:22], index=ref_aa1[1:22])
-        v.index = v.index.str.decode('UTF-8')
-        return v
+        return pd.Series(self._raau(), index=ref_aa1)
 
     cpdef np.ndarray[dtype=long, ndim=2, mode="c"] _bases(self):
         """Calculates base composition
@@ -193,10 +210,15 @@ cdef class CodonSeq:
 
         dinuc_frames[3, :] = np.sum(dinuc_frames, axis=0)
 
-        if pct:
-            return dinuc_frames / np.reshape(dinuc_tot, [4, 1])
+        cdef np.ndarray[dtype=double, ndim=2, mode="c"] dinuc_frames_out = \
+            np.zeros([4, 16], dtype=c_double)
 
-        return dinuc_frames.astype(np.double)
+        if pct:
+            dinuc_frames_out = dinuc_frames / np.reshape(dinuc_tot, [4, 1])
+        else:
+            dinuc_frames_out = dinuc_frames.astype(np.double)
+
+        return dinuc_frames_out
 
     def dinuc(self, pct=True):
         """Calculate Dinucleotide Usage
@@ -206,11 +228,11 @@ cdef class CodonSeq:
         cdef np.ndarray[dtype=double, ndim=2, mode="c"] frames = self._dinuc(pct)
 
         if pct:
-            final_dtype = np.double
+            def conv(x): return x
         else:
-            final_dtype = long
+            def conv(x): return x.astype(long)
 
-        v = pd.DataFrame(frames.astype(final_dtype),
+        v = pd.DataFrame(conv(frames),
             columns=['TT', 'TC', 'TA', 'TG',
                    'CT', 'CC', 'CA', 'CG',
                    'AT', 'AC', 'AA', 'AG',
