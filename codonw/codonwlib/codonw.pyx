@@ -2,6 +2,8 @@
 Wrappers around CodonW C functions
 """
 
+# cython: c_string_type=str, c_string_encoding=ascii
+
 from libcpp cimport bool
 from cython.operator cimport dereference
 from ctypes import c_int, c_long, c_float, c_double
@@ -31,13 +33,13 @@ cdef class CodonSeq:
     cdef public int[::1] dds
     cdef public int[::1] dda
 
-    cdef public char* seq
+    cdef public object seq
     cdef public long codon_tot
     cdef public int valid_stops
     cdef public long[::1] ncod
     cdef public long[::1] naa
 
-    def __init__(self, char* seq, int genetic_code=0):
+    def __init__(self, object seq, int genetic_code=0):
         self.dds = np.zeros([65], dtype=c_int)
         self.dda = np.zeros([23], dtype=c_int)
         self.genetic_code = genetic_code
@@ -52,7 +54,7 @@ cdef class CodonSeq:
         self.naa = np.zeros([22], dtype=c_long)
 
         self.seq = seq
-        codonwlib.codon_usage_tot(self.seq,
+        codonwlib.codon_usage_tot(<char *>self.seq,
             &self.codon_tot, &self.valid_stops, &self.ncod[0], &self.naa[0], &self.ref_code)
         
         return
@@ -205,20 +207,15 @@ cdef class CodonSeq:
         cdef np.ndarray[dtype=long, ndim=1, mode="c"] dinuc_tot = np.zeros([4], dtype=c_long)
         cdef int fram = 0
 
-        cdef int ret = codonwlib.dinuc_count(self.seq,
+        cdef int ret = codonwlib.dinuc_count(<char *>self.seq,
             <long (*)[16]>&dinuc_frames[0, 0], &dinuc_tot[0], &fram)
 
         dinuc_frames[3, :] = np.sum(dinuc_frames, axis=0)
-
-        cdef np.ndarray[dtype=double, ndim=2, mode="c"] dinuc_frames_out = \
-            np.zeros([4, 16], dtype=c_double)
-
+            
         if pct:
-            dinuc_frames_out = dinuc_frames / np.reshape(dinuc_tot, [4, 1])
-        else:
-            dinuc_frames_out = dinuc_frames.astype(np.double)
-
-        return dinuc_frames_out
+            return dinuc_frames / np.reshape(dinuc_tot, [4, 1])
+        
+        return dinuc_frames.astype(np.double)
 
     def dinuc(self, pct=True):
         """Calculate Dinucleotide Usage
@@ -228,11 +225,11 @@ cdef class CodonSeq:
         cdef np.ndarray[dtype=double, ndim=2, mode="c"] frames = self._dinuc(pct)
 
         if pct:
-            def conv(x): return x
+            def convert(x): return x
         else:
-            def conv(x): return x.astype(long)
+            def convert(x): return x.astype(long)
 
-        v = pd.DataFrame(conv(frames),
+        v = pd.DataFrame(convert(frames),
             columns=['TT', 'TC', 'TA', 'TG',
                    'CT', 'CC', 'CA', 'CG',
                    'AT', 'AC', 'AA', 'AG',
