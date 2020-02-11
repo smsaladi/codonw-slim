@@ -582,7 +582,7 @@ int dinuc_out(char *seq, FILE *fblkout, char *ttitle, char sp) {
                fprintf(fblkout, "%c%5.3f", sp,
                        (float)din[x][i] / (float)dinuc_tot[x]);
             else
-               fprintf(fblkout, "%c%5.3f", 0.00);
+               fprintf(fblkout, "%c%5.3f", sp, 0.00);
       }
 
       if (x == 3)
