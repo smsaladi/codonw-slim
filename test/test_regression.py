@@ -6,7 +6,6 @@ CodonW-slim regression tests
 
 import os
 import io
-import warnings
 
 import numpy as np
 import pandas as pd
@@ -48,7 +47,7 @@ def compare_df(df_ref, df_test, name):
     print()
 
     if missing:
-        warnings.warn("Missing: {} from {}".format(", ".join(missing), name), UserWarning)
+        UserWarning("Missing: {} from {}".format(", ".join(missing), name))
     
     return
 
@@ -62,7 +61,9 @@ def test_index_regression():
     df_test['Gravy'] = df_test['seqw'].apply(lambda x: x.hydropathy())
     df_test['Aromo'] = df_test['seqw'].apply(lambda x: x.aromaticity())
     df_test[['T3s', 'C3s', 'A3s', 'G3s']] = df_test['seqw'].apply(
-        lambda x: x.silent_base_usage()).apply(pd.Series)
+        lambda x: x.silent_base_usage())
+    df_test[['GC', 'L_sym', 'L_aa']] = df_test['seqw'].apply(
+        lambda x: x.bases2()[['GC', 'Len_sym', 'Len_aa']])
             
     # read ref and test output
     df_ref = pd.read_csv("{}/ref/input.out".format(path), index_col="title",
@@ -94,7 +95,7 @@ def test_bulk_regression_a(blk):
         df_ref.rename(columns=codonw.aa3_aa1.to_dict(), inplace=True)
         def func(x): return x.raau()
     elif blk == "base":
-        def func(x): return x.gc()
+        def func(x): return x.bases2().rename({'L_sym': 'Len_sym', 'L_aa': 'Len_aa'})
     
     df_test = df_test['seqw'].apply(lambda x: func(x))
     compare_df(df_ref, df_test, blk)
