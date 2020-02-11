@@ -17,7 +17,8 @@ codonwlib = Extension(
 
 setup(
     name='CodonW',
-    version='1.0',
+    version='1.5.0',
+    license='GPLv2',
     author='Shyam Saladi',
     author_email='saladi@caltech.edu',
     url='https://github.com/smsaladi/codonw-slim',
