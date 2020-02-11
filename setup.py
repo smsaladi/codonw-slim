@@ -1,3 +1,4 @@
+import os
 import glob
 
 from setuptools import setup
@@ -15,13 +16,19 @@ codonwlib = Extension(
     include_dirs=["codonw/codonwlib/include/", np.get_include()],
 )
 
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
-    name='CodonW',
+    name='codonw-slim',
     version='1.5.0',
     license='GPLv2',
     author='Shyam Saladi',
     author_email='saladi@caltech.edu',
     url='https://github.com/smsaladi/codonw-slim',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=[
         'codonw',
     ],

@@ -1,6 +1,6 @@
 """
 
-CodonW-slim regression tests
+codonw-slim regression tests
 
 """
 

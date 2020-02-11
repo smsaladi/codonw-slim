@@ -1,9 +1,9 @@
-sudo: false
 language: python
 cache:
   directories:
   - "$HOME/.cache/pip"
-os: linux
+os:
+- linux
 before_install:
 - pip install cython numpy biopython
 install:
@@ -12,8 +12,9 @@ script:
 - pytest -s -v --color=yes test/
 deploy:
   provider: pypi
-  user: saladi
+  username: "__token__"
   password:
-    secure: OI+Cx22V+036b1TWWCD8NoVO3SLDxmRH1ar8MZWWP1Ar2hEkPQZiXquVpRBm2u/pCmLXiL1EH8mt/uLyxcUYG6d5h9X3hXPRRSU/KGnLc277A1eBRQZ5C5Req1JlCk4SWQiJ/NM0yMRGjUsTkwvmIHGqHl+mm9RJG/hKVbHKTf5cBMY49aIJumvtybgjhTnfDoKY2H0Oe+4l4M+X5ilMVHJLnYKwhaMMQD+KtIOCV5p6AWwbtZglmpiSbG9g062v53/RoKXUG6BOD7bH3V5U6I4fXIdnK495d2ucRj+V7vbdh+fyXhjsxWQ4F5UlZeM9tDhWKpxFLGRwqm6vO1dxcEGIrBNdYy6Z+qWsFCeHossw/a70HgnLrWZSJ5CETZa44Vi7XIFJtM1pJYJRAewUIPuWe9yWlgukSlqYoMNmMtdMNQ2tY+NEDiiHQ0DvqALYkh3eqMFiSPtPOyBCoeiDp3f4LLbWKKw/Wrln2/u0p2MhYXKLsWjAB1ggZ+CGz1l9TsvELMJ0HRWFuWvvfqYF56SqOMbyFBSlGiZgR15HbeuPiaf/IwotyqHWg3sQXBE9KTRgBfC23/4Tt15rcjWguEIsKU1CMnjG3r5EG6uO2w9Zcwgs4GrfO03VRhTti8ZDKQCdHz1uQAkYRW1H9XFqpJLEeGmlHpVqH2xGGpon2w0=
+    secure: "OI+Cx22V+036b1TWWCD8NoVO3SLDxmRH1ar8MZWWP1Ar2hEkPQZiXquVpRBm2u/pCmLXiL1EH8mt/uLyxcUYG6d5h9X3hXPRRSU/KGnLc277A1eBRQZ5C5Req1JlCk4SWQiJ/NM0yMRGjUsTkwvmIHGqHl+mm9RJG/hKVbHKTf5cBMY49aIJumvtybgjhTnfDoKY2H0Oe+4l4M+X5ilMVHJLnYKwhaMMQD+KtIOCV5p6AWwbtZglmpiSbG9g062v53/RoKXUG6BOD7bH3V5U6I4fXIdnK495d2ucRj+V7vbdh+fyXhjsxWQ4F5UlZeM9tDhWKpxFLGRwqm6vO1dxcEGIrBNdYy6Z+qWsFCeHossw/a70HgnLrWZSJ5CETZa44Vi7XIFJtM1pJYJRAewUIPuWe9yWlgukSlqYoMNmMtdMNQ2tY+NEDiiHQ0DvqALYkh3eqMFiSPtPOyBCoeiDp3f4LLbWKKw/Wrln2/u0p2MhYXKLsWjAB1ggZ+CGz1l9TsvELMJ0HRWFuWvvfqYF56SqOMbyFBSlGiZgR15HbeuPiaf/IwotyqHWg3sQXBE9KTRgBfC23/4Tt15rcjWguEIsKU1CMnjG3r5EG6uO2w9Zcwgs4GrfO03VRhTti8ZDKQCdHz1uQAkYRW1H9XFqpJLEeGmlHpVqH2xGGpon2w0="
   on:
     tags: true
+  distributions: "sdist"

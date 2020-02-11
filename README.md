@@ -66,8 +66,8 @@ The following metrics are available:
     Number of synonymous codons,
     G+C content (overall and by codon position),
     G+C content of synonymous codons at the 3rd position,
-    G+C content of non-synonymous codons at the 3rd position
-    Number of synonymous codons
+    G+C content of non-synonymous codons at the 3rd position,
+    Number of synonymous codons,
     Number of amino acids
     - `CodonSeq.bases2`
 * Dinucleotide count by frame
