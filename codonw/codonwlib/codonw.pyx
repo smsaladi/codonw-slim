@@ -284,13 +284,31 @@ cdef class CodonSeq:
             <int (*)>codonwlib.amino_prop.aromo)
         return aromo_val
 
-    cpdef np.ndarray[dtype=double, ndim=1, mode="c"] silent_base_usage(self):
-        """Calculate silent base usage
-        """
+
+    cpdef np.ndarray[dtype=double, ndim=1, mode="c"] silent_base_usage_(self):
         cdef np.ndarray[dtype=double, ndim=1, mode="c"] base_sil_vals = np.zeros([4], dtype=c_double)
         cdef int ret = codonwlib.base_sil_us(&self.ncod[0], &self.naa[0], &base_sil_vals[0],
                                         &self.dds[0], &self.dda[0], &self.ref_code)
         return base_sil_vals
+
+    def silent_base_usage(self):
+        """Calculate silent base usage
+
+        Calculates the base composition at silent sites normalised by the possible
+        usage at that silent site with changing the amino acid composition.
+        For example, the index A3s is the frequency of codons have an A at their
+        synonymous third position, relative to the amino acids that could have a
+        synonym with A in the synonymous third codon position.
+
+        It is inspired by GC3s but is more complicated to calculate as not every
+        AA can use any base at the third position. When calculating GC3s each
+        synonymous amino acid has at least one synonym with G or C in the third
+        position. Two or three fold synonymous amino acids do not have an equal
+        choice between bases in the synonymous third position.
+        It's correlated with GC3s but not directly comparable. 
+        """
+        return pd.Series(self.silent_base_usage_(), index=['G3s', 'C3s', 'A3s', 'T3s'])
+        
 
     def codon_usage(self):
         """Codon tabulation
@@ -362,8 +380,18 @@ cdef class CodonSeq:
         metrics[1] = <double>tot_s;
         return metrics
 
-    def gc(self):
-        """Calculates various %GC-related metrics
+    def bases2(self):
+        """Calculates additional metrics related to nucleotide base composition
+
+        These metrics include the following and are returned as a pd.Series
+            * base composition in all frames
+            * length of gene
+            * Number of synonymous codons
+            * G+C content (overall and by codon position)
+            * G+C content of synonymous codons at the 3rd position
+            * G+C content of non-synonymous codons at the 3rd position
+            * Number of synonymous codons
+            * Number of amino acids
         """
         v = pd.Series(self._gc(),
             index=['Len_aa', 'Len_sym',
