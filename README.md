@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/smsaladi/codonw-slim.svg?branch=master)](https://travis-ci.org/smsaladi/codonw-slim)
+[![PyPI version](https://badge.fury.io/py/codonw-slim.svg)](https://badge.fury.io/py/codonw-slim)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/codonw-slim)
 
 codonw-slim
 ===========
