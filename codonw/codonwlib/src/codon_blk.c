@@ -1,53 +1,31 @@
-/**************************************************************************/
-/* CodonW codon usage analysis package                                    */
-/* Copyright (C) 2005            John F. Peden                            */
-/* This program is free software; you can redistribute                    */
-/* it and/or modify it under the terms of the GNU General Public License  */
-/* as published by the Free Software Foundation; version 2 of the         */
-/* License,                                                               */
-/*                                                                        */
-/* This program is distributed in the hope that it will be useful, but    */
-/* WITHOUT ANY WARRANTY; without even the implied warranty of             */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           */
-/* GNU General Public License for more details.                           */
-/* You should have received a copy of the GNU General Public License along*/
-/* with this program; if not, write to the Free Software Foundation, Inc.,*/
-/* 675 Mass Ave, Cambridge, MA 02139, USA.                                */
-/*                                                                        */
-/*                                                                        */
-/* The author can be contacted by email (jfp#hanson-codonw@yahoo.com Anti-*/
-/* Spam please change the # in my email to an _)                          */
-/*                                                                        */
-/* For the latest version and information see                             */
-/* http://codonw.sourceforge.net 					  */
-/**************************************************************************/
-/*                                                                        */
-/* -----------------------        codon_us.C     ------------------------ */
-/* This file contains most of the codon usage analysis subroutines        */
-/* except for the COA analysis                                            */
-/* Internal subroutines and functions                                     */
-/* codon_usage_out    Write out Codon Usage to file                       */
-/* rscu_usage_out     Write out RSCU                                      */
-/* raau_usage_out     Write out normalised amino acid usage               */
-/* aa_usage_out       Write out amino acid usage                          */
-/* gc_out             Writes various analyses of base usage               */
-/* cutab_out          Write a nice tabulation of the RSCU+CU+AA           */
-/* dinuc_count        Count the dinucleotide usage                        */
-/* dinuc_out          Write out dinucleotide usage                        */
-/*                                                                        */
-/*                                                                        */
-/* External subroutines to codon_us.c                                     */
-/* my_exit            Controls exit from CodonW closes any open files     */
-/* tidy               reads the input data                                */
-/* output             called from tidy to decide what to do with the data */
-/* open_file          Open files, checks for existing files               */
-/*                                                                        */
-/**************************************************************************/
+/*************************************************************************
 
-/*
-Codon error checking 
-Check for start, stop codons, internal stop, non-translatable and partial codons
-*/
+CodonW codon usage analysis package
+
+    Copyright (C) 2005            John F. Peden
+    Copyright (C) 2020            Shyam Saladi
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+675 Mass Ave, Cambridge, MA 02139, USA.
+
+*************************************************************************
+
+This file contains functions used to calculate bulk metrics related to a
+given gene sequence. Functions *_out are not used in the Python bindings
+and may be removed in the future.
+
+************************************************************************/
+
 
 #include <stdio.h>
 #include <string.h>
@@ -104,13 +82,7 @@ int codon_usage_out(FILE *fblkout, long *nncod, char *ttitle, MENU_STRUCT *pm)
    }
    return 0;
 }
-/******************  RSCU  Usage out          *****************************/
-/* Writes Relative synonymous codon usage output to file. Note this subrou*/
-/* tine is only called if machine readable output is selected             */
-/* If human readable format was selected then what the user really wanted */
-/* was cutab so this is automatically selected in codons.c                */
-/* RSCU values are genetic codon dependent                                */
-/**************************************************************************/
+/******************  Relative Synonymous Codon Usage **********************/
 int rscu_usage(long *nncod, long *nnaa, float rscu[], int *ds, GENETIC_CODE_STRUCT *pcu)
 {
    int x;
@@ -150,10 +122,7 @@ int rscu_usage_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STR
    return 0;
 }
 
-/******************   RAAU output             *****************************/
-/* Writes Relative amino acid usage output to file. Amino Acid usage is   */
-/* normalised for gene length                                             */
-/**************************************************************************/
+/****************** Relative amino acid usage output ********************/
 int raau_usage(long nnaa[], double raau[])
 {
    int i;
@@ -209,9 +178,6 @@ int raau_usage_out(FILE *fblkout, long *nnaa, char* title, MENU_STRUCT *pm)
    return 0;
 }
 
-/******************   AA usage output         *****************************/
-/* Writes amino acid usage output to file.                                */
-/**************************************************************************/
 int aa_usage_out(FILE *fblkout, long *nnaa, char* title, MENU_STRUCT *pm)
 {
    AMINO_STRUCT *paa = pm->paa;
@@ -240,20 +206,6 @@ int aa_usage_out(FILE *fblkout, long *nnaa, char* title, MENU_STRUCT *pm)
 }
 
 /*******************   G+C output          *******************************/
-/* This function is a real work horse, initially it counts base composit */
-/* ion in all frames, length of gene, num synonymous codons, number of   */
-/* non synonymous codons. Then dependent on the value for which used in  */
-/* switch statement. We return various analyses of this data             */
-/* if which ==1 then the output is very detailed, base by base etc.      */
-/* if which ==2 then the output is for GC content only                   */
-/* if which ==3 then the output is for GC3s (GC at synonymous 3rd posit) */
-/* if which ==4 then the output is for L_sym                             */
-/* if which ==5 then the output is for L_aa                              */
-/* The output from this subroutine is in a tabular format if human read- */
-/* able output is selected, and in columns if machine readable. Also the */
-/* number of values reported changes as it is assumed the user has access*/
-/* to a spreadsheet type programme if they are requesting tabular output */
-/*************************************************************************/
 int gc(int *ds, long *ncod, long bases[5], long base_tot[5], long base_1[5], long base_2[5], long base_3[5], long *tot_s, long *totalaa, double gc_metrics[], GENETIC_CODE_STRUCT *pcu)
 {
    long id;
@@ -437,16 +389,7 @@ int cutab_out(FILE *fblkout, long *nncod, long *nnaa, char* title, MENU_STRUCT *
    return 0;
 }
 
-/********************  Dinuc_count  Dinuc_out  ****************************/
-/* Count the frequency of all 16 dinucleotides in all three possible      */
-/* reading frames.                                                        */
-/*                                                                        */
-/* Outputs the frequency of dinucleotides, either in fout rows per seq    */
-/* if the output is meant to be in a human readable form, each row repre- */
-/* senting a reading frame. The fourth row is the total of the all the    */
-/* reading frames. Machine readable format writes all the data into a     */
-/* single row                                                             */
-/**************************************************************************/
+/********************  Dinucleotide Count ****************************/
 int dinuc_count(char *seq, long din[3][16], long dinuc_tot[4], int *fram)
 {
    int last, cur = 0;

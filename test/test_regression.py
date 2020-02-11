@@ -1,5 +1,7 @@
 """
-Codonw(-barebones) regression tests
+
+CodonW-slim regression tests
+
 """
 
 import os

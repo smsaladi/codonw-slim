@@ -1,53 +1,31 @@
-/**************************************************************************/
-/* CodonW codon usage analysis package                                    */
-/* Copyright (C) 2005            John F. Peden                            */
-/* This program is free software; you can redistribute                    */
-/* it and/or modify it under the terms of the GNU General Public License  */
-/* as published by the Free Software Foundation; version 2 of the         */
-/* License,                                                               */
-/*                                                                        */
-/* This program is distributed in the hope that it will be useful, but    */
-/* WITHOUT ANY WARRANTY; without even the implied warranty of             */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           */
-/* GNU General Public License for more details.                           */
-/* You should have received a copy of the GNU General Public License along*/
-/* with this program; if not, write to the Free Software Foundation, Inc.,*/
-/* 675 Mass Ave, Cambridge, MA 02139, USA.                                */
-/*                                                                        */
-/*                                                                        */
-/* The author can be contacted by email (jfp#hanson-codonw@yahoo.com Anti-*/
-/* Spam please change the # in my email to an _)                          */
-/*                                                                        */
-/* For the latest version and information see                             */
-/* http://codonw.sourceforge.net 					  */
-/**************************************************************************/
-/*                                                                        */
-/* -----------------------       codon_idx.C     ------------------------ */
-/* This file contains most of the codon usage analysis subroutines        */
-/* except for the COA analysis                                            */
-/* Internal subroutines and functions                                     */
-/* base_sil_us_out    Write out base composition at silent sites          */
-/* cai_out            Write out CAI usage                                 */
-/* cbi_out            Write out codon bias index                          */
-/* fop_out            Write out Frequency of Optimal codons               */
-/* enc_out            Write out Effective Number of codons                */
-/* gc_out             Writes various analyses of base usage               */
-/* hydro_out          Write out Protein hydropathicity                    */
-/* aromo_out          Write out Protein aromaticity                       */
-/*                                                                        */
-/*                                                                        */
-/* External subroutines to codon_us.c                                     */
-/* my_exit            Controls exit from CodonW closes any open files     */
-/* tidy               reads the input data                                */
-/* output             called from tidy to decide what to do with the data */
-/* open_file          Open files, checks for existing files               */
-/*                                                                        */
-/**************************************************************************/
+/*************************************************************************
 
-/*
-Codon error checking 
-Check for start, stop codons, internal stop, non-translatable and partial codons
-*/
+CodonW codon usage analysis package
+
+    Copyright (C) 2005            John F. Peden
+    Copyright (C) 2020            Shyam Saladi
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+675 Mass Ave, Cambridge, MA 02139, USA.
+
+*************************************************************************
+
+This file contains functions used to calculate single-value indicies
+related to a given gene sequence. Functions *_out are not used in the
+Python bindings and may be removed in the future.
+
+************************************************************************/
+
 
 #include <stdio.h>
 #include <string.h>
@@ -59,14 +37,7 @@ Check for start, stop codons, internal stop, non-translatable and partial codons
 
 #include "../include/codonW.h"
 
-/******************  Base Silent output     *******************************/
-/* Calculates and write the base composition at silent sites              */
-/* normalised as a function of the possible usage at that silent site with*/
-/* changing the amino acid composition of the protein. It is inspired by  */
-/* GC3s but is much more complicated to calculate as not every AA has the */
-/* option to use any base at the third position                           */
-/* All synonymous AA can select between a G or C though                   */
-/**************************************************************************/
+/****************** Silent Base Usage     *******************************/
 int base_sil_us(long *nncod, long *nnaa, double base_sil[], int *ds, int *da, GENETIC_CODE_STRUCT *pcu)
 {
    int id, i, x, y, z;
@@ -143,21 +114,7 @@ int base_sil_us_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
    return 0;
 }
 
-/*****************Codon Adaptation Index output   *************************/
-/* Codon Adaptation Index (CAI) (Sharp and Li 1987). CAI is a measurement */
-/* of the relative adaptiveness of the codon usage of a gene towards the  */
-/* codon usage of highly expressed genes. The relative adaptiveness (w) of*/
-/* each codon is the ratio of the usage of each codon, to that of the most*/
-/* abundant codon for the same amino acid. The relative adaptiveness of   */
-/* codons for albeit a limited choice of species, can be selected from the*/
-/* Menu. The user can also input a personal choice of values. The CAI     */
-/* index is defined as the geometric mean of these relative adaptiveness  */
-/* values. Non-synonymous codons and termination codons (genetic code     */
-/* dependent) are excluded. To aid computation, the CAI is calculated as  */
-/* using a natural log summation, To prevent a codon having a relative    */
-/* adaptiveness value of zero, which could result in a CAI of zero;       */
-/* these codons have fitness of zero (<.0001) are adjusted to 0.01        */
-/**************************************************************************/
+/***************** Codon Adaptation Index   *************************/
 int cai(long *nncod, double *sigma, int *ds, CAI_STRUCT *pcai, GENETIC_CODE_STRUCT *pcu)
 {
    long totaa = 0;
@@ -199,18 +156,7 @@ int cai_out(FILE *foutput, long *nncod, MENU_STRUCT *pm)
    return 0;
 }
 
-/*****************Codon Bias Index output        **************************/
-/* Codon bias index is a measure of directional codon bias, it measures   */
-/* the extent to which a gene uses a subset of optimal codons.            */
-/* CBI = ( Nopt-Nran)/(Nopt-Nran) Where Nopt = number of optimal codons;  */
-/* Ntot = number of synonymous codons; Nran = expected number of optimal  */
-/* codons if codons were assigned randomly. CBI is similar to Fop as used */
-/* by Ikemura, with Nran used as a scaling factor. In a gene with extreme */
-/* codon bias, CBI will equal 1.0, in a gene with random codon usage CBI  */
-/* will equal 0.0. Note that it is possible for Nopt to be less than Nran.*/
-/* This results in a negative value for CBI.                              */
-/* ( Bennetzen and Hall 1982 )                                            */
-/**************************************************************************/
+/*****************     Codon Bias Index     **************************/
 int cbi(long *nncod, long *nnaa, float *fcbi, int *ds, int *da, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pcbi)
 {
    long tot_cod = 0;
@@ -286,22 +232,7 @@ int cbi_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
    return 0;
 }
 
-/****************** Frequency of OPtimal codons output  ********************/
-/* Frequency of Optimal codons (Fop) (Ikemura 1981). This index, is ratio  */
-/* of optimal codons to synonymous codons (genetic code dependent). Optimal*/
-/* codons for several species are in-built and can be selected using Menu 3*/
-/* By default, the optimal codons of E. coli are assumed. The user may also*/
-/* enter a personal choice of optimal codons. If rare synonymous codons    */
-/* have been identified, there is a choice of calculating the original Fop */
-/* index or a modified index. Fop values for the original index are always */
-/* between 0 (where no optimal codons are used) and 1 (where only optimal  */
-/* codons are used). When calculating the modified Fop index, any negative */
-/* values are adjusted to zero.                                            */
-/***************************************************************************/
-// factor_in_rare
-// If non-optimal codons are identified in the set of optimal codons selected, use
-// in the calculation of a modified Fop, (Fop=(opt-rare)/total). Otherwise, the original
-// formulae (Fop=opt/total) is used.
+/****************** Frequency of OPtimal codons  ********************/
 int fop(long *nncod, float *ffop, int *ds, bool factor_in_rare, GENETIC_CODE_STRUCT *pcu, FOP_STRUCT *pfop)
 {
    long nonopt = 0;
@@ -379,14 +310,7 @@ int fop_out(FILE *foutput, long *nncod, MENU_STRUCT *pm) {
    return 0;
 }
 
-/***************  Effective Number of Codons output   *********************/
-/* The effective number of codons (NC) (Wright 1990). This index is a     */
-/* simple measure of overall codon bias and is analogous to the effective */
-/* number of alleles measure used in population genetics. Knowledge of the*/
-/* optimal codons or a reference set of highly expressed genes is not     */
-/* needed when calculating this index. Initially the homozygosity for each*/
-/* amino acid is estimated from the squared codon frequencies.            */
-/**************************************************************************/
+/***************  Effective Number of Codons   *********************/
 int enc(long *nncod, long *nnaa, float *enc_tot, int *da, GENETIC_CODE_STRUCT *pcu)
 {
    int numaa[9];
@@ -487,18 +411,7 @@ int enc_out(FILE *foutput, long *nncod, long *nnaa, MENU_STRUCT *pm)
 }
 
 
-/*********************  hydro_out        **********************************/
-/* The general average hydropathicity or (GRAVY) score, for the hypothet- */
-/* ical translated gene product. It is calculated as the arithmetic mean  */
-/* of the sum of the hydropathic indices of each amino acid. This index   */
-/* was used to quantify the major COA trends in the amino acid usage of   */
-/* E. coli genes (Lobry, 1994).                                           */
-/* Calculates and outputs total protein hydropathicity based on the Kyte  */
-/* and Dolittle Index of hydropathicity (1982)                            */
-/* nnaa               Array with frequency of amino acids                 */
-/* paa                points to a struct containing Amino Acid values     */
-/* pap->hydro         Pointer to hydropathicity values for each AA        */
-/**************************************************************************/
+/*********************  Hydropathy        **********************************/
 int hydro(long *nnaa, float *hydro, float hydro_ref[22])
 {
    long a2_tot = 0;
@@ -537,13 +450,7 @@ int hydro_out(FILE *foutput, long *nnaa, char* title, MENU_STRUCT *pm)
 
 }
 
-/**************** Aromo_out ***********************************************/
-/* Aromaticity score of protein. This is the frequency of aromatic amino  */
-/* acids (Phe, Tyr, Trp) in the hypothetical translated gene product      */
-/* nnaa               Array with frequency of amino acids                 */
-/* paa                points to a struct containing Amino Acid values     */
-/* pap->aromo         Pointer to aromaticity values for each AA           */
-/**************************************************************************/
+/**************** Aromaticity ***********************************************/
 int aromo(long *nnaa, float *aromo, int aromo_ref[22])
 {
    long a1_tot = 0;

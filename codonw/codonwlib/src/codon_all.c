@@ -1,51 +1,30 @@
-/**************************************************************************/
-/* CodonW codon usage analysis package                                    */
-/* Copyright (C) 2005            John F. Peden                            */
-/* This program is free software; you can redistribute                    */
-/* it and/or modify it under the terms of the GNU General Public License  */
-/* as published by the Free Software Foundation; version 2 of the         */
-/* License,                                                               */
-/*                                                                        */
-/* This program is distributed in the hope that it will be useful, but    */
-/* WITHOUT ANY WARRANTY; without even the implied warranty of             */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           */
-/* GNU General Public License for more details.                           */
-/* You should have received a copy of the GNU General Public License along*/
-/* with this program; if not, write to the Free Software Foundation, Inc.,*/
-/* 675 Mass Ave, Cambridge, MA 02139, USA.                                */
-/*                                                                        */
-/*                                                                        */
-/* The author can be contacted by email (jfp#hanson-codonw@yahoo.com Anti-*/
-/* Spam please change the # in my email to an _)                          */
-/*                                                                        */
-/* For the latest version and information see                             */
-/* http://codonw.sourceforge.net 					  */
-/**************************************************************************/
-/*                                                                        */
-/* -----------------------        codon_us.C     ------------------------ */
-/* This file contains most of the codon usage analysis subroutines        */
-/* except for the COA analysis                                            */
-/* Internal subroutines and functions                                     */
-/* initialize_point    assigns genetic code dependent parameters to structs*/
-/* codon_usage_tot    Counts codon and amino acid usage                   */
-/* ident_codon        Converts codon into a numerical value in range 1-64 */
-/* how_synon          Calculates how synonymous each codon is             */
-/* how_synon_aa       Calculates how synonymous each AA is                */
-/* clean_up           Re-zeros various internal counters and arrays       */
-/*                                                                        */
-/*                                                                        */
-/* External subroutines to codon_us.c                                     */
-/* my_exit            Controls exit from CodonW closes any open files     */
-/* tidy               reads the input data                                */
-/* output             called from tidy to decide what to do with the data */
-/* open_file          Open files, checks for existing files               */
-/*                                                                        */
-/**************************************************************************/
+/************************************************************************
 
-/*
-Codon error checking 
-Check for start, stop codons, internal stop, non-translatable and partial codons
-*/
+CodonW codon usage analysis package
+
+    Copyright (C) 2005            John F. Peden
+    Copyright (C) 2020            Shyam Saladi
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+675 Mass Ave, Cambridge, MA 02139, USA.
+
+*************************************************************************
+
+This file contains common functions used on the initialization of a
+genetic code or across the calculation of various codon indicies.
+
+************************************************************************/
+
 
 #include <stdio.h>
 #include <string.h>

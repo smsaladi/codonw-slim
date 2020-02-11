@@ -20,7 +20,7 @@ setup(
     version='1.0',
     author='Shyam Saladi',
     author_email='saladi@caltech.edu',
-    url='https://github.com/smsaladi/codonw-barebones',
+    url='https://github.com/smsaladi/codonw-slim',
     packages=[
         'codonw',
     ],

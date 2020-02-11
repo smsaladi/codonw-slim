@@ -1,5 +1,9 @@
 """
-Wrappers around CodonW C functions
+
+CodonW C functions are wrapped into methods of the `CodonSeq` class here.
+The method documentation is pulled from `README_indicies` as well as
+from the C code.
+
 """
 
 # cython: c_string_type=str, c_string_encoding=ascii
@@ -50,6 +54,21 @@ cdef class CodonSeq:
     cdef public long[::1] naa
 
     def __init__(self, object seq, genetic_code=0):
+        """Initializes an object of class CodonSeq
+
+        `seq`: the nucleotide sequence to be analyzed/for which metrics are desired
+
+        `genetic_code`: the genetic code to be used
+            0. Universal Genetic code [default]
+            1. Vertebrate Mitochondrial code
+            2. Yeast Mitochondrial code
+            3. Filamentous fungi Mitochondrial code
+            4. Insects and Plathyhelminthes Mitochondrial code
+            5. Nuclear code of Cilitia
+            6. Nuclear code of Euplotes
+            7. Mitochondrial code of Echinoderms
+
+        """
         self.dds = np.zeros([65], dtype=c_int)
         self.dda = np.zeros([23], dtype=c_int)
 
@@ -95,6 +114,39 @@ cdef class CodonSeq:
 
     cpdef double cai(self, int cai_ref=0):
         """Calculates Codon Adaptation Index
+
+        `cai_ref`: The relative adaptiveness of codon
+            0. Escherichia coli - No reference [default]
+            1. Bacillus subtilis - No reference
+            2. Saccharomyces cerevisiae - Sharp and Cowe (1991) Yeast 7:657-678
+
+        If you'd like to have user-provided reference values, please implement this
+        functionality and make a pull-request.
+
+
+        CAI is a measurement of the relative adaptiveness of the codon usage of a
+        gene towards the codon usage of highly expressed genes. The relative
+        adaptiveness (w) of each codon is the ratio of the usage of each codon, to
+        that of the most abundant codon for the same amino acid.
+        
+        The CAI index is defined as the geometric mean of these relative
+        adaptiveness values. Non-synonymous codons and termination codons (dependent
+        on genetic code) are excluded.
+
+        To prevent a codon absent from the reference set but present in other genes
+        from having a relative adaptiveness value of zero, which would cause CAI to
+        evaluate to zero for any genes which used that codon; it was suggested that
+        absent codons should be assigned a frequency of 0.5 (Sharp and Li 1987).
+        
+        An alternative suggestion was that such codons should be adjusted to
+        0.01, where otherwise it would be less than this value
+        [(Bulmer 1988)](https://doi.org/10.1046/j.1420-9101.1988.1010015.x).
+        
+        The CAI is calculated as using a natural log summation. To prevent a codon having
+        a relative adaptiveness value of zero, which could result in a CAI of zero, codons
+        with a value of < 0.0001 are adjusted to 0.01.
+
+        [Sharp and Li 1987](https://doi.org/10.1093/nar/15.3.1281)
         """
         cdef codonwlib.CAI_STRUCT ref_cai = codonwlib.cai_ref[cai_ref]
         cdef double cai_val = 0
@@ -103,6 +155,32 @@ cdef class CodonSeq:
 
     cpdef float cbi(self, int cai_ref=0):
         """Calculate codon bias index
+
+        `cai_ref`: The relative adaptiveness of codon
+            0. Escherichia coli - No reference [default]
+            1. Bacillus subtilis - No reference
+            2. Saccharomyces cerevisiae - Sharp and Cowe (1991) Yeast 7:657-678
+
+        If you'd like to have user-provided reference values, please implement this
+        functionality and make a pull-request.
+
+
+        Codon bias index is another measure of directional codon bias, it measures
+        the extent to which a gene uses a subset of optimal codons. CBI is similar
+        to Fop, with expected usage used as a scaling factor.
+
+            CBI = (Nopt-Nran)/(Nopt-Nran)
+            
+        where Nopt = number of optimal codons
+              Ntot = number of synonymous codons
+              Nran = expected number of optimal codons for randomly assigned codons 
+        
+        In a gene with extreme codon bias, CBI will equal 1.0. In a gene with random
+        codon usage CBI will equal 0.0. It is possible for the number of optimal
+        codons to be less than expected by random change (i.e. Nopt < Nran). This
+        results in a negative value for CBI.
+
+        [Bennetzen and Hall 1982](https://europepmc.org/article/MED/7037777)
         """
         cdef float cbi_val
         cdef int ret = codonwlib.cbi(&self.ncod[0], &self.naa[0], &cbi_val, \
@@ -111,6 +189,43 @@ cdef class CodonSeq:
 
     cpdef float fop(self, bool factor_in_rare=False, int fop_ref=0):
         """Calculate fraction of optimal codons
+
+        `fop_ref`:
+            0. Escherichia coli
+                - [Ikemura 1985](https://doi.org/10.1093/oxfordjournals.molbev.a040335)
+                  (updated by Irish National Centre for BioInformatics 1991)
+            1. Bacillus subtilis
+                - [Sharp, et al. 1990](https://doi.org/10.1016/B978-0-12-274162-3.50013-X)
+            2. Dictyostelium discoideum
+                - [Sharp & Devine 1989](https://doi.org/10.1093/nar/17.13.5029)
+            3. Aspergillus nidulans
+                - [Lloyd & Sharp 1991](https://doi.org/10.1007/bf00290679)
+            4. Saccharomyces cerevisiae
+                - [Sharp & Cowe 1991](https://doi.org/10.1002/yea.320070702)
+            5. Drosophila melanogaster
+                - [Shields, et al. 1988](https://doi.org/10.1093/oxfordjournals.molbev.a040525)
+            6. Caenorhabditis elegans
+                - [Stenico, Lloyd, & Sharp 1994](https://doi.org/10.1093/nar/22.13.2437)
+            7. Neurospora crassa
+                - Lloyd & Sharp 1993 (Citation cannot be found)
+    
+            If you'd like to have user-provided reference values, please implement this
+            functionality and make a pull-request.
+
+        `factor_in_rare`: 
+            If non-optimal codons are identified in the set of optimal codons selected, use
+            the following formulation: Fop = (opt-rare)/total
+
+
+        This index, is the ratio of optimal codons to synonymous codons:
+
+            Fop = opt/total
+
+        Fop values are always between 0 (where no optimal codons are used)
+        and 1 (where only optimal codons are used). When `factor_in_rare` is True,
+        negative values are adjusted to zero.
+
+        [Ikemura 1981](https://doi.org/10.1016/0022-2836(81)90003-6)
         """
         cdef float fop_val
         cdef int ret = codonwlib.fop(&self.ncod[0], &fop_val, \
@@ -118,7 +233,26 @@ cdef class CodonSeq:
         return fop_val
 
     cpdef float enc(self):
-        """Calculate effective number of codons (E_nc)
+        """Calculate effective number of codons
+
+        This index is a simple measure of overall codon bias and is analogous to the
+        effective number of alleles measure used in population genetics. Knowledge
+        of the optimal codons or a reference set of highly expressed genes is
+        unnecessary. Initially the homozygosity for each amino acid is estimated
+        from the squared codon frequencies.
+
+        The reported value of Nc is always between 20 (when only one codon is
+        effectively used for each amino acid) and 61 (when codons are used randomly).
+        If the calculated Nc is greater than 61 (because codon usage is more evenly
+        distributed than expected), it is adjusted to 61.
+
+        If amino acids are rare or missing, adjustments must be made. When
+        there are no amino acids in a synonymous family, Nc is not calculated
+        as the gene is either too short or has extremely skewed amino acid
+        usage. An exception to this is made for genetic codes where isoleucine is the
+        only 3-fold synonymous amino acid, and is not used in the protein gene.
+
+       [Wright 1990](https://doi.org/10.1016/0378-1119(90)90491-9)
         """
         cdef float enc_val
         cdef int ret = codonwlib.enc(&self.ncod[0], &self.naa[0], &enc_val, \
@@ -127,6 +261,12 @@ cdef class CodonSeq:
 
     cpdef float hydropathy(self):
         """Calculate mean hydropathy
+
+        The general average hydropathicity or (GRAVY) score, for the hypothetical
+        translated gene product. It is the arithmetic mean hydropathy values
+        assigned to each amino acid in a protein.
+
+        [Kyte & Doolittle 1982](https://doi.org/10.1016/0022-2836(82)90515-0)
         """
         cdef float hydro_val
         cdef int ret = codonwlib.hydro(&self.naa[0], &hydro_val, \
@@ -135,6 +275,9 @@ cdef class CodonSeq:
 
     cpdef float aromaticity(self):
         """Calculate mean aromaticity
+
+        The frequency of aromatic amino acids (Phe, Tyr, Trp) in the hypothetical
+        translated gene product.
         """
         cdef float aromo_val
         cdef int ret = codonwlib.aromo(&self.naa[0], &aromo_val, \
@@ -159,6 +302,7 @@ cdef class CodonSeq:
         """
         return pd.Series(self.naa, index=ref_aa1)
 
+
     cpdef np.ndarray[dtype=float, ndim=1, mode="c"] _rscu(self):
         """Calculate Relative Synonymous Codon Usage
         """
@@ -171,9 +315,8 @@ cdef class CodonSeq:
         """
         return pd.Series(self._rscu()[1:65], index=ref_codons[1:65])
 
+
     cpdef np.ndarray[dtype=double, ndim=1, mode="c"] _raau(self):
-        """Calculate Relative Amino Acid Usage
-        """
         cdef np.ndarray[dtype=double, ndim=1, mode="c"] raau_vals = np.zeros([22], dtype=c_double)
         cdef int ret = codonwlib.raau_usage(&self.naa[0], &raau_vals[0])
         return raau_vals
@@ -183,9 +326,8 @@ cdef class CodonSeq:
         """
         return pd.Series(self._raau(), index=ref_aa1)
 
+
     cpdef np.ndarray[dtype=long, ndim=2, mode="c"] _bases(self):
-        """Calculates base composition
-        """
         cdef long tot_s
         cdef long totalaa
         cdef np.ndarray[dtype=long, ndim=2, mode="c"] bases = np.zeros([5, 5], dtype=c_long)
@@ -198,16 +340,15 @@ cdef class CodonSeq:
         return bases[0:6, 1:5]
 
     def bases(self):
-        """Calculates base composition
+        """Calculates base composition (overall and by position)
         """
         v = pd.DataFrame(self._bases(),
             columns=['T', 'C', 'A', 'G'],
             index=['1', '2', '3', 'all', 'syn'])
         return v
 
+
     cpdef np.ndarray[dtype=double, ndim=1, mode="c"] _gc(self):
-        """Calculates various %GC-related metrics
-        """
         cdef long tot_s
         cdef long totalaa
         cdef np.ndarray[dtype=long, ndim=2, mode="c"] bases = np.zeros([5, 5], dtype=c_long)
@@ -234,9 +375,8 @@ cdef class CodonSeq:
                    'G1', 'G2', 'G3'])
         return v
 
+
     cpdef np.ndarray[dtype=double, ndim=2, mode="c"] _dinuc(self, bool pct):
-        """Calculate Dinucleotide Usage
-        """
         cdef np.ndarray[dtype=long, ndim=2, mode="c"] dinuc_frames = np.zeros([4, 16], dtype=c_long)
         cdef np.ndarray[dtype=long, ndim=1, mode="c"] dinuc_tot = np.zeros([4], dtype=c_long)
         cdef int fram = 0
@@ -253,7 +393,12 @@ cdef class CodonSeq:
 
     def dinuc(self, pct=True):
         """Calculate Dinucleotide Usage
-        If `pct`, report percentages
+        
+        `pct`:
+            If True, report percentages
+
+        The frequency of all 16 dinucleotides, in total, and across
+        all three possible reading frames, i.e. `1:2`, `2:3`, `3:1`.
         """
         
         cdef np.ndarray[dtype=double, ndim=2, mode="c"] frames = self._dinuc(pct)
