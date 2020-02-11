@@ -1,30 +1,22 @@
 sudo: false
-
 language: python
-
 cache:
   directories:
-    - $HOME/.cache/pip
-
+  - "$HOME/.cache/pip"
 os: linux
-
 python:
-  - "3.8"
-  - "3.5"
-
+- '3.8'
+- '3.5'
 before_install:
-  - pip install cython numpy biopython
-
+- pip install cython numpy biopython
 install:
-  - pip install .
-
+- pip install .
 script:
-  - pytest -s -v --color=yes test/
-
+- pytest -s -v --color=yes test/
 deploy:
   provider: pypi
   user: saladi
   password:
-    secure: cudBkFXgob9+FZ5ukpryWwvcSIyrK2tMSbd5eK5q6ssQr6BZeKoTe6JVHkIAQiABQbZL6AxCMRoqRNBOmu9wI8eBzwWNPCJC3rFIOThndGNWotFPetisZrsO6Ry30O08VMXH3PpaLenHGcIuOksAWycoRssyOdIT/xIx4CSJld6ShQwA+CaSfTBk0o0q7cbpY/3xmW+c5jMjzNhZH5RapR/m0bO7B6tn+p+jZM13B0CykCTopwry5goykNHonz64jCouljLvDmOVZqZa81k6pK7HwsE0BYCptbgGirwqXz5l7UQUna3HcOHJEqQl9bWqOAwr7+7crj0uHeg2lOhzYDnnzqbmjW5Dmlac3U6UZj+0R9I3HDRvmrU6qfiNIm5051bpdMlg660osxYpdIk1/3ebU8t6Qlj8PWcrBTtk4tsDsZEUi5Gp9AsyadC67el8E/12RbbePZdDD2S5JX6PUFkqy6v+VRoLTS2veyj/LX/RrelGL9+k3o4Zv4NOrO7NZyOT2z3Lz/eACYspC6PTLJTM0NZfBUwn4JFHVwIFhMt3eG9Ft4iU4/vh6gTgMYunZ/tuuRmf/APE9SJoUB0gBAzw3XFk051LGuzu/1QZqMOH5g/UEVSoFbM/sbfS4qykT0x7Di+fg8Tafn/2qOX6YTHTuqHhXsTaRFkD8e0s8lk=
+    secure: OI+Cx22V+036b1TWWCD8NoVO3SLDxmRH1ar8MZWWP1Ar2hEkPQZiXquVpRBm2u/pCmLXiL1EH8mt/uLyxcUYG6d5h9X3hXPRRSU/KGnLc277A1eBRQZ5C5Req1JlCk4SWQiJ/NM0yMRGjUsTkwvmIHGqHl+mm9RJG/hKVbHKTf5cBMY49aIJumvtybgjhTnfDoKY2H0Oe+4l4M+X5ilMVHJLnYKwhaMMQD+KtIOCV5p6AWwbtZglmpiSbG9g062v53/RoKXUG6BOD7bH3V5U6I4fXIdnK495d2ucRj+V7vbdh+fyXhjsxWQ4F5UlZeM9tDhWKpxFLGRwqm6vO1dxcEGIrBNdYy6Z+qWsFCeHossw/a70HgnLrWZSJ5CETZa44Vi7XIFJtM1pJYJRAewUIPuWe9yWlgukSlqYoMNmMtdMNQ2tY+NEDiiHQ0DvqALYkh3eqMFiSPtPOyBCoeiDp3f4LLbWKKw/Wrln2/u0p2MhYXKLsWjAB1ggZ+CGz1l9TsvELMJ0HRWFuWvvfqYF56SqOMbyFBSlGiZgR15HbeuPiaf/IwotyqHWg3sQXBE9KTRgBfC23/4Tt15rcjWguEIsKU1CMnjG3r5EG6uO2w9Zcwgs4GrfO03VRhTti8ZDKQCdHz1uQAkYRW1H9XFqpJLEeGmlHpVqH2xGGpon2w0=
   on:
     tags: true
