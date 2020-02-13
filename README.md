@@ -98,7 +98,7 @@ functionality and make a pull-request.
 
 ## Why the name codonW?
 
-Excepted directly from John Peden's CodonW README...
+Excerpted directly from John Peden's CodonW README...
 
 Well first you must realise that "clustal" (a very popular multiple
 alignment program by Des Higgins) was originally written in Paul's lab in
