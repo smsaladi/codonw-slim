@@ -20,9 +20,10 @@ this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-version = '1.5.0'
+version = '1.5.0.post1'
 # For travis/pypi-test
 if os.environ.get('TRAVIS') == 'true' and os.environ.get('TRAVIS_TAG') == '':
+      version = ".".join(version.split('.')[:3])
       N, M = os.environ['TRAVIS_JOB_NUMBER'].split('.')
       version = "{v}-a{N}.dev{M}".format(v=version, N=N, M=M)
 
