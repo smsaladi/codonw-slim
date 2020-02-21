@@ -20,9 +20,15 @@ this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+version = '1.5.0'
+# For travis/pypi-test
+if os.environ.get('TRAVIS') == 'true' and os.environ.get('TRAVIS_TAG') == '':
+      N, M = os.environ['TRAVIS_JOB_NUMBER'].split('.')
+      version = "{v}-a{N}.dev{M}".format(v=version, N=N, M=M)
+
 setup(
     name='codonw-slim',
-    version='1.5.0',
+    version=version,
     license='GPLv2',
     author='Shyam Saladi',
     author_email='saladi@caltech.edu',
