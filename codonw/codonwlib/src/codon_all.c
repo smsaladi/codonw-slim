@@ -34,7 +34,7 @@ genetic code or across the calculation of various codon indicies.
 #include <limits.h>
 #include <stdbool.h>
 
-#include "../include/codonW.h"
+#include "codonW.h"
 
 /********************* Initilize Pointers**********************************/
 /* Various pointers to structures are assigned here dependent on the      */
