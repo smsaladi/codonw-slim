@@ -33,7 +33,7 @@ codon indicies.
 #include <ctype.h>
 #include <stdbool.h>
 
-#include "../include/codonW.h"
+#include "codonW.h"
 
 /* define genetic codes   */
 GENETIC_CODE_STRUCT cu_ref[] = {

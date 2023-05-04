@@ -35,7 +35,7 @@ and may be removed in the future.
 #include <limits.h>
 #include <stdbool.h>
 
-#include "../include/codonW.h"
+#include "codonW.h"
 
 /****************** Codon Usage Out           *****************************/
 /* Writes codon usage output to file. Note this subroutine is only called */
